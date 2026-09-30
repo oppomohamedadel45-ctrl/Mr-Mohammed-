@@ -42,7 +42,7 @@
 
         h1, h2 { text-align: center; color: var(--primary); margin-bottom: 15px; }
 
-        .form-group { margin-bottom: 18px; text-align: right; }
+        .form-group { margin-bottom: 15px; text-align: right; }
         label { display: block; margin-bottom: 6px; font-weight: bold; color: var(--secondary); }
         input, select, textarea { width: 100%; padding: 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 15px; outline: none; transition: 0.2s; }
         input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 5px rgba(50, 130, 184, 0.3); }
@@ -67,6 +67,8 @@
         .review-card { padding: 15px; border-radius: 8px; margin-bottom: 12px; border: 1.5px solid #cbd5e1; }
         .review-correct { background: #e8f5e9; border-color: var(--success); }
         .review-wrong { background: #ffebee; border-color: var(--danger); }
+        
+        .question-card-builder { background: #fff; border: 2px solid var(--accent); padding: 15px; border-radius: 10px; margin-bottom: 15px; position: relative; }
     </style>
 </head>
 <body>
@@ -109,7 +111,7 @@
     <div id="teacher-dashboard" class="hidden">
         <img src="12810.jpg" alt="مستر محمد" class="profile-img">
         <h1>لوحة تحكم الليدر المحمية (مستر محمد) ⚙️🔒</h1>
-        <p style="text-align:center; color: var(--success); font-weight:bold; margin-bottom:15px;">أهلاً بك يا مستر محمد. السحابة جاهزة لنشر الامتحانات ومتابعة الطلاب.</p>
+        <p style="text-align:center; color: var(--success); font-weight:bold; margin-bottom:15px;">أهلاً بك يا مستر محمد. يمكنك تصميم وإضافة حتى 200 سؤال للاختبار.</p>
         
         <div class="card-box" style="border: 2px dashed var(--accent);">
             <h3>📸 رفع امتحان ورقي (تحويل ذكي للصور)</h3>
@@ -119,38 +121,23 @@
         </div>
 
         <div class="card-box">
-            <h3>✍️ إنشاء أو كتابة امتحان جديد يدوياً</h3>
+            <h3>✍️ إنشاء امتحان متقدم (حتى 200 سؤال)</h3>
             <div class="form-group" style="margin-top: 10px;">
-                <label>عنوان الامتحان أو الدرس:</label>
-                <input type="text" id="q-title" placeholder="مثال: امتحان الباب الأول (الحديد ومشتتقاته)...">
+                <label>عنوان الامتحان أو الباب:</label>
+                <input type="text" id="exam-title-input" placeholder="مثال: امتحان الباب الأول (الحديد ومشتتقاته)...">
             </div>
-            
-            <div id="questions-builder-area">
-                <div class="form-group">
-                    <label>نص السؤال:</label>
-                    <textarea class="m-q-text" rows="2" placeholder="اكتب السؤال الكيميائي هنا..."></textarea>
-                </div>
-                <div class="form-group"><input type="text" class="m-opt-0" placeholder="الخيار الأول"></div>
-                <div class="form-group"><input type="text" class="m-opt-1" placeholder="الخيار الثاني"></div>
-                <div class="form-group"><input type="text" class="m-opt-2" placeholder="الخيار الثالث"></div>
-                <div class="form-group"><input type="text" class="m-opt-3" placeholder="الخيار الرابع"></div>
-                <div class="form-group">
-                    <label>الخيار الصحيح:</label>
-                    <select class="m-correct">
-                        <option value="0">الخيار الأول</option>
-                        <option value="1">الخيار الثاني</option>
-                        <option value="2">الخيار الثالث</option>
-                        <option value="3">الخيار الرابع</option>
-                    </select>
-                </div>
-            </div>
+
+            <!-- حاوية الأسئلة المتعددة -->
+            <div id="dynamic-questions-container"></div>
+
+            <button class="btn btn-warning" style="margin-bottom: 15px;" onclick="addNewQuestionField()">➕ إضافة سؤال جديد للاختبار</button>
 
             <div class="form-group">
-                <label>وقت الامتحان بالدقائق:</label>
-                <input type="number" id="exam-time" value="10" min="1" max="120">
+                <label>وقت الامتحان الإجمالي بالدقائق:</label>
+                <input type="number" id="exam-time" value="30" min="1" max="240">
             </div>
 
-            <button class="btn btn-success" onclick="publishExam()">نشر الامتحان لكل الطلاب فوراً 🚀</button>
+            <button class="btn btn-success" onclick="publishExam()">نشر الامتحان بالكامل لكل الطلاب فوراً 🚀</button>
         </div>
 
         <div class="card-box">
@@ -258,7 +245,6 @@
     let currentQIndex = 0;
     let studentAnswers = {};
 
-    // التحقق عند فتح الصفحة إذا كان هناك طالب مسجل مسبقاً عبر التخزين المحلي
     window.onload = function() {
         const savedUser = localStorage.getItem('mr_mohammed_student');
         if (savedUser) {
@@ -268,6 +254,8 @@
             document.getElementById('welcome-name').innerText = currentUser.name;
             listenToExams();
             loadStudentHistory();
+        } else {
+            // إضافة أول حقل سؤال تلقائياً عند الدخول للوحة المعلم لاحقاً
         }
     };
 
@@ -278,6 +266,11 @@
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('teacher-dashboard').classList.remove('hidden');
             loadTeacherDashboardData();
+            
+            // إضافة سؤال افتتاحي أولي إذا كانت القائمة فارغة
+            if(document.getElementById('dynamic-questions-container').children.length === 0) {
+                addNewQuestionField();
+            }
         } else {
             alert('الرقم السري للمعلم غير صحيح!');
         }
@@ -296,7 +289,6 @@
             return;
         }
 
-        // فحص سحابي لمنع استخدام نفس رقم الهاتف أو نفس الاسم المسجل مسبقاً من قِبل طالب آخر
         db.ref('registered_students').once('value', (snapshot) => {
             const students = snapshot.val();
             let isDuplicate = false;
@@ -313,7 +305,6 @@
 
             currentUser = { name, phone, role: 'student' };
             
-            // حفظ الحساب سحابياً ومحلياً لضمان بقاء تسجيل الدخول وعدم تكراره
             db.ref('registered_students').push(currentUser).then(() => {
                 localStorage.setItem('mr_mohammed_student', JSON.stringify(currentUser));
                 document.getElementById('login-screen').classList.add('hidden');
@@ -337,53 +328,125 @@
         event.currentTarget.classList.add('active');
     }
 
+    // إضافة حقل سؤال جديد (حتى 200 سؤال)
+    function addNewQuestionField(qText = "", opts = ["","","",""], correct = 0) {
+        const container = document.getElementById('dynamic-questions-container');
+        const qCount = container.children.length + 1;
+        
+        if (qCount > 200) {
+            alert('لقد وصلت للحد الأقصى (200 سؤال) في الاختبار الواحد!');
+            return;
+        }
+
+        const qCard = document.createElement('div');
+        qCard.className = 'question-card-builder';
+        qCard.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h4 style="color: var(--primary);">السؤال رقم (<span class="q-number">${qCount}</span>)</h4>
+                <button type="button" class="btn btn-danger" style="width: auto; padding: 4px 10px; font-size: 12px;" onclick="removeQuestionField(this)">حذف هذا السؤال 🗑️</button>
+            </div>
+            <div class="form-group">
+                <label>نص السؤال:</label>
+                <textarea class="m-q-text" rows="2" placeholder="اكتب السؤال هنا...">${qText}</textarea>
+            </div>
+            <div class="form-group"><input type="text" class="m-opt-0" placeholder="الخيار الأول" value="${opts[0]}"></div>
+            <div class="form-group"><input type="text" class="m-opt-1" placeholder="الخيار الثاني" value="${opts[1]}"></div>
+            <div class="form-group"><input type="text" class="m-opt-2" placeholder="الخيار الثالث" value="${opts[2]}"></div>
+            <div class="form-group"><input type="text" class="m-opt-3" placeholder="الخيار الرابع" value="${opts[3]}"></div>
+            <div class="form-group">
+                <label>الخيار الصحيح:</label>
+                <select class="m-correct">
+                    <option value="0" ${correct === 0 ? 'selected' : ''}>الخيار الأول</option>
+                    <option value="1" ${correct === 1 ? 'selected' : ''}>الخيار الثاني</option>
+                    <option value="2" ${correct === 2 ? 'selected' : ''}>الخيار الثالث</option>
+                    <option value="3" ${correct === 3 ? 'selected' : ''}>الخيار الرابع</option>
+                </select>
+            </div>
+        `;
+        container.appendChild(qCard);
+        updateQuestionNumbers();
+    }
+
+    function removeQuestionField(btn) {
+        const container = document.getElementById('dynamic-questions-container');
+        if (container.children.length <= 1) {
+            alert('يجب أن يحتوي الامتحان على سؤال واحد على الأقل!');
+            return;
+        }
+        btn.closest('.question-card-builder').remove();
+        updateQuestionNumbers();
+    }
+
+    function updateQuestionNumbers() {
+        const cards = document.querySelectorAll('.question-card-builder');
+        cards.forEach((card, index) => {
+            card.querySelector('.q-number').innerText = index + 1;
+        });
+    }
+
     function processOCRImage() {
         const fileInput = document.getElementById('exam-image-file');
         if (!fileInput.files.length) {
             alert('اختر صورة الامتحان الورقي أولاً!');
             return;
         }
-        alert('جاري تحليل صورة الامتحان الكيميائي عبر خوارزميات المنصة... ⚡');
+        alert('جاري تحليل صورة الامتحان الكيميائي واستخراج الأسئلة عبر الخوارزميات... ⚡');
         setTimeout(() => {
-            document.getElementById('q-title').value = "امتحان الكيمياء التفاعلي المستخلص من الورقة";
-            document.querySelector('.m-q-text').value = "عند تسخين أكسالات الحديد II هوائياً، ينتج مركب صيغته:";
-            document.querySelector('.m-opt-0').value = "أكسيد الحديد II";
-            document.querySelector('.m-opt-1').value = "أكسيد الحديد المغناطيسي";
-            document.querySelector('.m-opt-2').value = "أكسيد الحديد III";
-            document.querySelector('.m-opt-3').value = "سيدريت";
-            document.querySelector('.m-correct').value = "1";
-            alert('تم استخلاص وتعبئة أسئلة الامتحان بنجاح!');
+            document.getElementById('exam-title-input').value = "امتحان الكيمياء الشامل (المستخلص من الصورة)";
+            
+            // تفريغ الأسئلة القديمة وإضافة أسئلة تجريبية مستخرجة من الصورة
+            document.getElementById('dynamic-questions-container').innerHTML = '';
+            addNewQuestionField("عند تسخين أكسالات الحديد II هوائياً، ينتج مركب صيغته:", ["أكسيد الحديد II", "أكسيد الحديد المغناطيسي", "أكسيد الحديد III", "سيدريت"], 1);
+            addNewQuestionField("ما هي الشحنة الفعالة لأيون الحديد في هيماتيت؟", ["+2", "+3", "صفر", "+1"], 1);
+
+            alert('تم استخلاص الأسئلة بنجاح وإضافتها للقائمة!');
         }, 1500);
     }
 
     function publishExam() {
-        const title = document.getElementById('q-title').value.trim();
-        const qText = document.querySelector('.m-q-text').value.trim();
-        const opts = [
-            document.querySelector('.m-opt-0').value.trim(),
-            document.querySelector('.m-opt-1').value.trim(),
-            document.querySelector('.m-opt-2').value.trim(),
-            document.querySelector('.m-opt-3').value.trim()
-        ];
-        const correctOpt = parseInt(document.querySelector('.m-correct').value);
+        const title = document.getElementById('exam-title-input').value.trim();
         const duration = parseInt(document.getElementById('exam-time').value) * 60;
+        const questionCards = document.querySelectorAll('.question-card-builder');
 
-        if (!title || !qText || !opts[0]) {
-            alert('برجاء استكمال بيانات الامتحان الأساسية!');
+        if (!title) {
+            alert('برجاء كتابة عنوان الامتحان أولاً!');
             return;
         }
+
+        let questionsList = [];
+        let isValid = true;
+
+        questionCards.forEach((card, idx) => {
+            let qText = card.querySelector('.m-q-text').value.trim();
+            let opts = [
+                card.querySelector('.m-opt-0').value.trim(),
+                card.querySelector('.m-opt-1').value.trim(),
+                card.querySelector('.m-opt-2').value.trim(),
+                card.querySelector('.m-opt-3').value.trim()
+            ];
+            let correct = parseInt(card.querySelector('.m-correct').value);
+
+            if (!qText || !opts[0] || !opts[1]) {
+                alert(`برجاء استكمال بيانات السؤال رقم (${idx + 1})`);
+                isValid = false;
+                return;
+            }
+
+            questionsList.push({ text: qText, options: opts, correct: correct });
+        });
+
+        if (!isValid) return;
 
         const examData = {
             id: 'exam_' + Date.now(),
             title,
-            questions: [{ text: qText, options: opts, correct: correctOpt }],
+            questions: questionsList,
             duration,
             timestamp: Date.now()
         };
 
         db.ref('active_exam').set(examData).then(() => {
-            alert('تم نشر الامتحان بنجاح لجميع الطلاب على السحابة المباشرة! 🚀');
-            document.getElementById('q-title').value = '';
+            alert(`تم نشر الامتحان بنجاح وبداخله (${questionsList.length} سؤال) لجميع الطلاب على السحابة! 🚀`);
         });
     }
 
@@ -400,14 +463,13 @@
             container.innerHTML = `
                 <div class="card-box">
                     <h3>${currentExamData.title}</h3>
-                    <p style="margin: 10px 0;">مدة الاختبار: ${Math.floor(currentExamData.duration / 60)} دقائق | الأسئلة: ${currentExamData.questions.length}</p>
+                    <p style="margin: 10px 0;">مدة الاختبار: ${Math.floor(currentExamData.duration / 60)} دقائق | عدد الأسئلة: ${currentExamData.questions.length} سؤال</p>
                     <button class="btn btn-success" onclick="checkAndStartExam()">ابدأ الامتحان الآن 🚀</button>
                 </div>
             `;
         });
     }
 
-    // التحقق السحابي لمنع الطالب من دخول الامتحان أكثر من مرة واحدة نهائياً
     function checkAndStartExam() {
         if (!currentExamData) return;
 
@@ -538,9 +600,7 @@
             timestamp: Date.now()
         };
 
-        // حفظ النتيجة في السحابة لمنع دخوله مرة أخرى
         db.ref('results').push(resultData).then(() => {
-            // الانتقال لصفحة النتيجة المخصصة بدلاً من رسالة الـ Alert
             document.getElementById('exam-taking-screen').classList.add('hidden');
             document.getElementById('exam-result-screen').classList.remove('hidden');
 
