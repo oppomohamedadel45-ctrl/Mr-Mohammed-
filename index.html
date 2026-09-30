@@ -6,6 +6,9 @@
     <title>منصة مستر محمد عادل التعليمية</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <style>
         :root {
             --primary: #1e3c72;
@@ -28,14 +31,12 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
 
-        /* شاشة الدخول */
         #loginScreen {
             max-width: 420px; margin: 60px auto; background: var(--card);
             padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08);
             text-align: center;
         }
 
-        /* الصفحة الرئيسية */
         #mainApp { display: none; }
 
         nav {
@@ -63,7 +64,6 @@
             width: 100%; padding: 12px; border: 1.5px solid #cbd5e1;
             border-radius: 8px; font-size: 15px; outline: none;
         }
-        input:focus, textarea:focus, select:focus { border-color: var(--primary); }
 
         .btn {
             width: 100%; padding: 12px; border: none; border-radius: 8px;
@@ -72,9 +72,7 @@
         .btn-primary { background: var(--primary); color: white; }
         .btn-success { background: var(--success); color: white; }
         .btn-danger { background: var(--danger); color: white; }
-        .btn:hover { opacity: 0.9; }
 
-        /* الأسئلة والتفاعل */
         .q-card {
             background: #f8fafc; padding: 18px; border-radius: 10px;
             border-right: 5px solid var(--primary); margin-bottom: 15px;
@@ -84,16 +82,14 @@
             background: white; border: 1.5px solid #e2e8f0; border-radius: 8px;
             text-align: right; cursor: pointer; font-size: 15px; transition: 0.2s;
         }
-        .opt-btn.selected { background: #e0e7ff; border-color: var(--primary); font-weight: bold; }
+        .opt-btn:hover { background: #e0e7ff; }
 
-        /* الجداول والتقارير */
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th, td { padding: 12px; text-align: center; border-bottom: 1px solid #e2e8f0; }
         th { background: #f1f5f9; font-weight: 800; }
 
         .badge { padding: 5px 12px; border-radius: 20px; color: white; font-size: 13px; font-weight: bold; }
         .badge-perfect { background: var(--success); }
-        .badge-active { background: var(--warning); color: #333; }
         .badge-fail { background: var(--danger); }
 
         .user-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
@@ -103,38 +99,32 @@
 
     <header>
         <h1>منصة مستر محمد عادل التعليمية</h1>
-        <p>نظام الامتحانات الذكي والمتابعة الحية للطلاب</p>
+        <p>نظام الامتحانات المباشر للطلاب</p>
     </header>
 
-    <!-- شاشة تسجيل الدخول -->
     <div id="loginScreen">
-        <h2 style="margin-bottom: 20px; color: var(--primary);">تسجيل الدخول</h2>
+        <h2 style="margin-bottom: 20px; color: var(--primary);">تسجيل دخول الطالب</h2>
         <div class="form-group">
-            <label>اسم المستخدم (الاسم بالكامل):</label>
-            <input type="text" id="userNameInput" placeholder="أدخل اسمك هنا...">
+            <label>اسمك بالكامل:</label>
+            <input type="text" id="userNameInput" placeholder="أدخل اسمك بالكامل لبدء الامتحان...">
         </div>
         <div class="form-group">
-            <label>كود الدخول (الرمز السرّي):</label>
-            <input type="password" id="userCodeInput" placeholder="أدخل الرمز السرّي...">
+            <label>كود خاص (اختياري للمعلم فقط):</label>
+            <input type="password" id="userCodeInput" placeholder="اتركه فارغاً إذا كنت طالباً">
         </div>
         <button class="btn btn-primary" onclick="handleLogin()">دخول المنصة</button>
-        <p style="margin-top: 15px; font-size: 13px; color: #666;">
-            رمز الطالب: <b>8888</b> | رمز القائد (المالك): <b>12345</b>
-        </p>
     </div>
 
-    <!-- التطبيق الرئيسي -->
     <div id="mainApp">
         <nav>
             <button id="navLeader" onclick="showTab('tabLeader')">لوحة التحكم (المالك)</button>
-            <button id="navQuizzes" onclick="showTab('tabQuizzes')">الامتحانات الحية</button>
+            <button id="navQuizzes" onclick="showTab('tabQuizzes')">الامتحانات المتاحة</button>
             <button id="navMyGrades" onclick="showTab('tabMyGrades')">سجل درجاتي</button>
             <button id="navLeaderboard" onclick="showTab('tabLeaderboard')">لوحة المتصدرين</button>
             <button style="background: var(--danger); color: white;" onclick="logout()">خروج</button>
         </nav>
 
         <div class="container">
-            <!-- معلومات المستخدم الحالية -->
             <div class="card user-info">
                 <div>
                     مرحباً بك: <b id="displayUserName" style="color: var(--primary);"></b> 
@@ -142,12 +132,12 @@
                 </div>
             </div>
 
-            <!-- 1. لوحة المالك / القائد -->
+            <!-- لوحة التحكم للمالك فقط -->
             <div id="tabLeader" class="tab-content">
                 <div class="card">
-                    <h3>➕ إضافة امتحان جديد (يدوياً)</h3>
+                    <h3>➕ إضافة امتحان جديد (نشر فوري للجميع)</h3>
                     <div class="form-group" style="margin-top: 15px;">
-                        <input type="text" id="qTitle" placeholder="عنوان الامتحان (مثال: اختبار الفيزياء - الفصل الأول)">
+                        <input type="text" id="qTitle" placeholder="عنوان الامتحان">
                     </div>
                     <div class="form-group">
                         <textarea id="qText" rows="2" placeholder="اكتب نص السؤال هنا..."></textarea>
@@ -165,50 +155,46 @@
                             <option value="3">الخيار الرابع</option>
                         </select>
                     </div>
-                    <button class="btn btn-success" onclick="addQuestion()">حفظ وإتاحة الامتحان للطلاب</button>
+                    <button class="btn btn-success" onclick="addQuestion()">حفظ ونشر لكل الطلاب 🚀</button>
                 </div>
 
                 <div class="card">
-                    <h3>📸 تحويل صورة إلى امتحان ذكي (OCR)</h3>
-                    <p style="font-size: 14px; color: #666; margin-bottom: 10px;">ارفع صورة تحتوي على سؤال وامتحان وسيتم قراءتها تلقائياً:</p>
+                    <h3>📸 تحويل صورة إلى امتحان (OCR)</h3>
                     <input type="file" id="ocrFile" accept="image/*" onchange="processImage(this)">
                     <p id="ocrStatus" style="margin-top: 10px; font-weight: bold; color: var(--primary);"></p>
                 </div>
 
                 <div class="card">
-                    <h3>📊 متابعة درجات وتفاعل الطلاب (بث حي)</h3>
+                    <h3>📊 نتائج درجات جميع الطلاب الحية</h3>
                     <table>
                         <thead>
                             <tr>
                                 <th>اسم الطالب</th>
-                                <th>اسم الامتحان</th>
+                                <th>الامتحان</th>
                                 <th>الدرجة</th>
                                 <th>الحالة</th>
                             </tr>
                         </thead>
-                        <tbody id="studentResultsTable">
-                            <!-- نتائج الطلاب تظهر هنا -->
-                        </tbody>
+                        <tbody id="studentResultsTable"></tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- 2. الامتحانات الحية -->
+            <!-- الامتحانات الحية للطلاب -->
             <div id="tabQuizzes" class="tab-content">
                 <div id="quizListArea"></div>
             </div>
 
-            <!-- 3. سجل درجات الطالب الخاص -->
+            <!-- سجل درجات الطالب -->
             <div id="tabMyGrades" class="tab-content">
                 <div class="card">
-                    <h3>📜 تقرير درجاتي واختباراتي</h3>
+                    <h3>📜 تقرير درجاتي</h3>
                     <table>
                         <thead>
                             <tr>
                                 <th>اسم الامتحان</th>
                                 <th>الدرجة</th>
                                 <th>النسبة المئوية</th>
-                                <th>التقييم</th>
                             </tr>
                         </thead>
                         <tbody id="myGradesTable"></tbody>
@@ -216,7 +202,7 @@
                 </div>
             </div>
 
-            <!-- 4. لوحة المتصدرين -->
+            <!-- لوحة المتصدرين -->
             <div id="tabLeaderboard" class="tab-content">
                 <div class="card">
                     <h3>🏆 ترتيب الطلاب الأوائل</h3>
@@ -236,27 +222,32 @@
     </div>
 
     <script>
+        // إعداد السيرفر السحابي
+        const firebaseConfig = {
+            databaseURL: "https://mr-mohammed-default-rtdb.firebaseio.com"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
         let currentUser = null;
 
-        // تسجيل الدخول
         function handleLogin() {
             const name = document.getElementById('userNameInput').value.trim();
             const code = document.getElementById('userCodeInput').value.trim();
 
-            if (!name) return alert('برجاء كتابة الاسم أولاً');
+            if (!name) return alert('برجاء كتابة الاسم بالكامل أولاً');
 
+            // كود المالك السرّي للتسجيل كمدير
             if (code === '12345') {
                 currentUser = { name, role: 'leader' };
-            } else if (code === '8888') {
-                currentUser = { name, role: 'student' };
             } else {
-                return alert('رمز الدخول غير صحيح! (الطالب: 8888 | المالك: 12345)');
+                currentUser = { name, role: 'student' };
             }
 
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
             document.getElementById('displayUserName').innerText = currentUser.name;
-            document.getElementById('displayUserRole').innerText = currentUser.role === 'leader' ? 'المالك / القائد' : 'طالب';
+            document.getElementById('displayUserRole').innerText = currentUser.role === 'leader' ? 'المالك / المعلم' : 'طالب';
 
             if (currentUser.role === 'student') {
                 document.getElementById('navLeader').style.display = 'none';
@@ -265,26 +256,19 @@
                 document.getElementById('navLeader').style.display = 'inline-block';
                 showTab('tabLeader');
             }
-            renderAllData();
+            listenToData();
         }
 
-        function logout() {
-            location.reload();
-        }
+        function logout() { location.reload(); }
 
-        // التبديل بين الشاشات
         function showTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
             document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).style.display = 'block';
-            
             const btn = document.getElementById('nav' + tabId.replace('tab', ''));
             if(btn) btn.classList.add('active');
-
-            renderAllData();
         }
 
-        // إضافة سؤال
         function addQuestion() {
             const title = document.getElementById('qTitle').value.trim();
             const text = document.getElementById('qText').value.trim();
@@ -296,133 +280,96 @@
 
             if (!text || !opt1 || !opt2) return alert('برجاء كتابة السؤال والخيارين الأول والثاني على الأقل');
 
-            const quizzes = JSON.parse(localStorage.getItem('app_quizzes') || '[]');
-            quizzes.push({ id: Date.now(), title: title || 'اختبار عام', text, options: [opt1, opt2, opt3, opt4], correct });
-            localStorage.setItem('app_quizzes', JSON.stringify(quizzes));
+            const newQuiz = {
+                title: title || 'اختبار عام',
+                text: text,
+                options: [opt1, opt2, opt3, opt4],
+                correct: correct
+            };
 
-            alert('تمت إضافة السؤال والامتحان بنجاح!');
-            document.getElementById('qText').value = '';
-            document.getElementById('opt1').value = '';
-            document.getElementById('opt2').value = '';
-            document.getElementById('opt3').value = '';
-            document.getElementById('opt4').value = '';
-            renderAllData();
+            db.ref('quizzes').push(newQuiz).then(() => {
+                alert('تم نشر الامتحان لجميع الطلاب بنجاح!');
+                document.getElementById('qText').value = '';
+                document.getElementById('opt1').value = '';
+                document.getElementById('opt2').value = '';
+                document.getElementById('opt3').value = '';
+                document.getElementById('opt4').value = '';
+            });
         }
 
-        // OCR - تحويل الصور لأسئلة
         function processImage(input) {
             if (!input.files[0]) return;
             const status = document.getElementById('ocrStatus');
-            status.innerText = 'جارٍ تحليل الصورة واستخراج السؤال... برجاء الانتظار';
-
-            Tesseract.recognize(input.files[0], 'ara+eng')
-                .then(({ data: { text } }) => {
-                    status.innerText = 'تم الاستخراج بنجاح!';
-                    document.getElementById('qText').value = text;
-                })
-                .catch(err => {
-                    status.innerText = 'حدث خطأ أثناء قراءة الصورة';
-                });
+            status.innerText = 'جارٍ تحليله بالذكاء الاصطناعي...';
+            Tesseract.recognize(input.files[0], 'ara+eng').then(({ data: { text } }) => {
+                status.innerText = 'تم الاستخراج!';
+                document.getElementById('qText').value = text;
+            });
         }
 
-        // إرسال حل الامتحان من قبل الطالب
-        function submitExam(quizId, selectedOpt) {
-            const quizzes = JSON.parse(localStorage.getItem('app_quizzes') || '[]');
-            const quiz = quizzes.find(q => q.id === quizId);
-            const isCorrect = quiz.correct == selectedOpt;
-
-            const results = JSON.parse(localStorage.getItem('app_results') || '[]');
-            results.push({
+        function submitExam(quizId, selectedOpt, correctOpt, title) {
+            const isCorrect = selectedOpt == correctOpt;
+            const newResult = {
                 student: currentUser.name,
-                quizTitle: quiz.title,
+                quizTitle: title,
                 score: isCorrect ? 10 : 0,
                 maxScore: 10,
-                status: isCorrect ? 'قفل الامتحان 🎯' : 'تم الحل'
-            });
+                status: isCorrect ? 'إجابة صحيحة 🎯' : 'إجابة خاطئة'
+            };
 
-            localStorage.setItem('app_results', JSON.stringify(results));
-            alert(isCorrect ? 'إجابة ممتازة! لقد قفلت السؤال وحصلت على 10/10' : 'إجابة خاطئة، حظ سعيد المرة القادمة!');
-            renderAllData();
+            db.ref('results').push(newResult).then(() => {
+                alert(isCorrect ? 'إجابة ممتازة! حصلت على (10/10)' : 'إجابة خاطئة!');
+            });
         }
 
-        // تحديث كل البيانات في الشاشات
-        function renderAllData() {
-            const quizzes = JSON.parse(localStorage.getItem('app_quizzes') || '[]');
-            const results = JSON.parse(localStorage.getItem('app_results') || '[]');
-
-            // 1. عرض الامتحانات للطالب
-            const quizArea = document.getElementById('quizListArea');
-            if (quizzes.length === 0) {
-                quizArea.innerHTML = '<div class="card"><p>لا توجد امتحانات متاحة حالياً.</p></div>';
-            } else {
+        function listenToData() {
+            db.ref('quizzes').on('value', snapshot => {
+                const quizArea = document.getElementById('quizListArea');
                 quizArea.innerHTML = '';
-                quizzes.forEach((q, idx) => {
-                    let html = `
-                        <div class="card q-card">
-                            <h3>${q.title}</h3>
-                            <p style="font-size: 17px; margin: 12px 0;"><b>سؤال:</b> ${q.text}</p>
-                    `;
-                    q.options.forEach((opt, optIdx) => {
+                const data = snapshot.val();
+                if (!data) {
+                    quizArea.innerHTML = '<div class="card"><p>لا توجد امتحانات متاحة حالياً.</p></div>';
+                    return;
+                }
+                Object.keys(data).forEach(id => {
+                    const q = data[id];
+                    let html = `<div class="card q-card"><h3>${q.title}</h3><p style="font-size: 17px; margin: 12px 0;">${q.text}</p>`;
+                    q.options.forEach((opt, idx) => {
                         if (opt) {
-                            html += `<button class="opt-btn" onclick="submitExam(${q.id}, ${optIdx})">${opt}</button>`;
+                            html += `<button class="opt-btn" onclick="submitExam('${id}', ${idx}, ${q.correct}, '${q.title}')">${opt}</button>`;
                         }
                     });
                     html += `</div>`;
                     quizArea.innerHTML += html;
                 });
-            }
-
-            // 2. نتائج ومتابعة الطلاب للمالك
-            const tableBody = document.getElementById('studentResultsTable');
-            tableBody.innerHTML = '';
-            results.forEach(r => {
-                const badgeClass = r.score === 10 ? 'badge-perfect' : 'badge-fail';
-                tableBody.innerHTML += `
-                    <tr>
-                        <td><b>${r.student}</b></td>
-                        <td>${r.quizTitle}</td>
-                        <td>${r.score} / ${r.maxScore}</td>
-                        <td><span class="badge ${badgeClass}">${r.status}</span></td>
-                    </tr>
-                `;
             });
 
-            // 3. درجات الطالب الحالي
-            const myGradesBody = document.getElementById('myGradesTable');
-            myGradesBody.innerHTML = '';
-            const myResults = results.filter(r => r.student === (currentUser ? currentUser.name : ''));
-            myResults.forEach(r => {
-                myGradesBody.innerHTML += `
-                    <tr>
-                        <td>${r.quizTitle}</td>
-                        <td>${r.score} / ${r.maxScore}</td>
-                        <td>${(r.score / r.maxScore) * 100}%</td>
-                        <td><span class="badge ${r.score === 10 ? 'badge-perfect' : 'badge-fail'}">${r.score === 10 ? 'ممتاز' : 'يحتاج تحسين'}</span></td>
-                    </tr>
-                `;
-            });
+            db.ref('results').on('value', snapshot => {
+                const results = snapshot.val() ? Object.values(snapshot.val()) : [];
+                
+                const tableBody = document.getElementById('studentResultsTable');
+                tableBody.innerHTML = '';
+                results.forEach(r => {
+                    tableBody.innerHTML += `<tr><td><b>${r.student}</b></td><td>${r.quizTitle}</td><td>${r.score}/${r.maxScore}</td><td><span class="badge ${r.score===10?'badge-perfect':'badge-fail'}">${r.status}</span></td></tr>`;
+                });
 
-            // 4. لوحة المتصدرين
-            const leaderboardBody = document.getElementById('leaderboardTable');
-            leaderboardBody.innerHTML = '';
-            const scoresMap = {};
-            results.forEach(r => {
-                scoresMap[r.student] = (scoresMap[r.student] || 0) + r.score;
-            });
+                const myGradesBody = document.getElementById('myGradesTable');
+                myGradesBody.innerHTML = '';
+                results.filter(r => r.student === currentUser.name).forEach(r => {
+                    myGradesBody.innerHTML += `<tr><td>${r.quizTitle}</td><td>${r.score}/${r.maxScore}</td><td>${(r.score/r.maxScore)*100}%</td></tr>`;
+                });
 
-            const sortedStudents = Object.keys(scoresMap).sort((a, b) => scoresMap[b] - scoresMap[a]);
-            sortedStudents.forEach((std, index) => {
-                leaderboardBody.innerHTML += `
-                    <tr>
-                        <td><b>#${index + 1} ${index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}</b></td>
-                        <td>${std}</td>
-                        <td><b>${scoresMap[std]} نقطة</b></td>
-                    </tr>
-                `;
+                const leaderboardBody = document.getElementById('leaderboardTable');
+                leaderboardBody.innerHTML = '';
+                const scoresMap = {};
+                results.forEach(r => { scoresMap[r.student] = (scoresMap[r.student] || 0) + r.score; });
+                const sorted = Object.keys(scoresMap).sort((a,b) => scoresMap[b] - scoresMap[a]);
+                sorted.forEach((std, idx) => {
+                    leaderboardBody.innerHTML += `<tr><td><b>#${idx+1} ${idx===0?'🥇':idx===1?'🥈':'🥉'}</b></td><td>${std}</td><td><b>${scoresMap[std]} نقطة</b></td></tr>`;
+                });
             });
         }
     </script>
 </body>
 </html>
-
 
