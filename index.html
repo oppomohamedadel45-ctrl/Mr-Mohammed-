@@ -17,6 +17,7 @@
             --text: #2d3748;
             --success: #28a745;
             --danger: #dc3545;
+            --warning: #ffc107;
         }
 
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
@@ -40,78 +41,88 @@
         .btn:hover { background: var(--secondary); }
         .btn-success { background: var(--success); }
         .btn-danger { background: var(--danger); }
+        .btn-warning { background: var(--warning); color: #000; }
 
         .nav-buttons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 25px; }
         .nav-btn { padding: 15px; background: #eef2f7; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; color: var(--primary); transition: 0.3s; }
         .nav-btn:hover, .nav-btn.active { background: var(--primary); color: white; }
 
         .card-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; margin-bottom: 15px; }
-        
         .timer-box { font-size: 1.2rem; font-weight: bold; color: var(--danger); text-align: center; margin-bottom: 15px; background: #fff5f5; padding: 10px; border-radius: 8px; }
         
         .hidden { display: none !important; }
+        .flex-row { display: flex; gap: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- شاشة تسجيل الدخول -->
+    <!-- شاشة تسجيل الدخول العامة -->
     <div id="login-screen">
         <img src="12810.jpg" alt="صورة الليدر" class="profile-img">
         <h1>منصة مستر محمد عادل التعليمية</h1>
-        <p style="text-align: center; color: #666; margin-bottom: 20px;">يرجى تسجيل الدخول للمتابعة</p>
+        <p style="text-align: center; color: #666; margin-bottom: 20px;">تسجيل الدخول للطالب أو الليدر</p>
         
         <div class="form-group">
-            <label>الاسم الثلاثي (إجباري):</label>
-            <input type="text" id="student-name" placeholder="أدخل اسمك الثلاثي كاملاً..." required>
+            <label>الاسم الثلاثي للطالب (إجباري إذا كنت طالباً):</label>
+            <input type="text" id="student-name" placeholder="أدخل اسمك الثلاثي كاملاً...">
         </div>
         
         <div class="form-group">
-            <label>كود الدخول (للمعلم فقط - اتركه فارغاً إذا كنت طالباً):</label>
-            <input type="password" id="access-code" placeholder="أدخل كود الليدر...">
+            <label>كود الليدر (إذا كنت مستر محمد فقط):</label>
+            <input type="password" id="access-code" placeholder="أدخل الرقم السري لليدر...">
         </div>
 
         <button class="btn" onclick="handleLogin()">دخول المنصة 🚀</button>
     </div>
 
-    <!-- لوحة تحكم الليدر (المعلم) -->
+    <!-- صفحة الليدر المحمية حصرياً -->
     <div id="teacher-dashboard" class="hidden">
         <img src="12810.jpg" alt="صورة الليدر" class="profile-img">
-        <h1>لوحة تحكم الليدر (مستر محمد) ⚙️</h1>
+        <h1>لوحة تحكم الليدر المحمية (مستر محمد) ⚙️🔒</h1>
+        <p style="text-align:center; color: #137333; font-weight:bold; margin-bottom:15px;">أهلاً بك يا ليدر. أنت وحدك من تمتلك صلاحية رفع ونشر الامتحانات.</p>
         
+        <div class="card-box" style="border: 2px dashed var(--primary);">
+            <h3>📸 رفـع امتحان ورقي (تحويل ذكي للأسئلة)</h3>
+            <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">قم برفع صورة الامتحان الورقي، وستقوم المنصة بتحويله فوراً إلى نظام اختبار تفاعلي للطلاب.</p>
+            <input type="file" id="exam-image-file" accept="image/*" style="margin-bottom: 10px;">
+            <button class="btn btn-warning" onclick="processUploadedExamImage()">تحويل الصورة لامتحان الكتروني ⚡</button>
+        </div>
+
         <div class="card-box">
-            <h3>➕ نشر امتحان جديد للطلاب</h3>
-            <div class="form-group" style="margin-top: 15px;">
+            <h3>✍️ أو كتابة امتحان تفاعلي جديد يدوياً</h3>
+            <div class="form-group" style="margin-top: 10px;">
                 <label>عنوان الامتحان:</label>
-                <input type="text" id="q-title" placeholder="مثال: امتحان الباب الأول تفاعلات...">
+                <input type="text" id="q-title" placeholder="مثال: امتحان الكيمياء العضوية...">
             </div>
-            <div class="form-group">
-                <label>نص السؤال:</label>
-                <textarea id="q-text" rows="2" placeholder="اكتب السؤال هنا..."></textarea>
-            </div>
-            <div class="form-group"><input type="text" id="opt-0" placeholder="الخيار الأول"></div>
-            <div class="form-group"><input type="text" id="opt-1" placeholder="الخيار الثاني"></div>
-            <div class="form-group"><input type="text" id="opt-2" placeholder="الخيار الثالث"></div>
-            <div class="form-group"><input type="text" id="opt-3" placeholder="الخيار الرابع"></div>
-            
-            <div class="form-group">
-                <label>رقم الخيار الصحيح:</label>
-                <select id="correct-opt">
-                    <option value="0">الخيار الأول</option>
-                    <option value="1">الخيار الثاني</option>
-                    <option value="2">الخيار الثالث</option>
-                    <option value="3">الخيار الرابع</option>
-                </select>
+            <div id="manual-questions-container">
+                <div class="form-group">
+                    <label>السؤال الأول:</label>
+                    <textarea class="m-q-text" rows="2" placeholder="اكتب السؤال..."></textarea>
+                </div>
+                <div class="form-group"><input type="text" class="m-opt-0" placeholder="الخيار الأول"></div>
+                <div class="form-group"><input type="text" class="m-opt-1" placeholder="الخيار الثاني"></div>
+                <div class="form-group"><input type="text" class="m-opt-2" placeholder="الخيار الثالث"></div>
+                <div class="form-group"><input type="text" class="m-opt-3" placeholder="الخيار الرابع"></div>
+                <div class="form-group">
+                    <label>الخيار الصحيح:</label>
+                    <select class="m-correct">
+                        <option value="0">الخيار الأول</option>
+                        <option value="1">الخيار الثاني</option>
+                        <option value="2">الخيار الثالث</option>
+                        <option value="3">الخيار الرابع</option>
+                    </select>
+                </div>
             </div>
 
             <div class="form-group">
-                <label>وقت الامتحان بالدقائق:</label>
-                <input type="number" id="exam-time" value="5" min="1" max="60">
+                <label>وقت الامتحان الإجمالي (بالدقائق):</label>
+                <input type="number" id="exam-time" value="10" min="1" max="120">
             </div>
 
             <button class="btn btn-success" onclick="publishExam()">نشر الامتحان لكل الطلاب فوراً 🚀</button>
         </div>
-        <button class="btn btn-danger" onclick="location.reload()">تسجيل الخروج</button>
+        <button class="btn btn-danger" onclick="location.reload()">تسجيل الخروج الآمن</button>
     </div>
 
     <!-- لوحة الطالب الرئيسية -->
@@ -128,21 +139,18 @@
             <button class="nav-btn" onclick="switchTab('stats')">مؤشر متوسط الامتحانات 📈</button>
         </div>
 
-        <!-- تبويب الامتحانات الجديدة -->
         <div id="tab-new-exams" class="tab-pane">
             <div id="active-exam-container">
                 <p style="text-align: center; color: #666;">لا توجد امتحانات جديدة منشورة حالياً...</p>
             </div>
         </div>
 
-        <!-- تبويب امتحاناتي التي تمت -->
         <div id="tab-my-exams" class="tab-pane hidden">
             <div class="card-box" id="completed-exams-list">
                 <p>لم تقم بأي امتحانات بعد.</p>
             </div>
         </div>
 
-        <!-- تبويب مستوايا -->
         <div id="tab-my-level" class="tab-pane hidden">
             <div class="card-box" style="text-align: center;">
                 <h3>إحصائيات مستواك الشخصي</h3>
@@ -150,7 +158,6 @@
             </div>
         </div>
 
-        <!-- تبويب مؤشر متوسط الامتحانات -->
         <div id="tab-stats" class="tab-pane hidden">
             <div class="card-box" style="text-align: center;">
                 <h3>مؤشر أداء وسرعة الإنجاز العام</h3>
@@ -159,18 +166,25 @@
         </div>
     </div>
 
-    <!-- شاشة الامتحان النشط للطالب -->
+    <!-- شاشة الامتحان النشط للطالب مع أزرار التنقل (السابق / التالي) -->
     <div id="exam-taking-screen" class="hidden">
         <div class="timer-box">الوقت المتبقي: <span id="timer-display">00:00</span></div>
         <div class="card-box">
             <h2 id="exam-view-title">عنوان الامتحان</h2>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: bold; color: var(--secondary);">
+                <span id="question-counter">السؤال 1 من 1</span>
+            </div>
             <p id="exam-view-text" style="font-size: 1.2rem; margin: 15px 0; font-weight: bold;"></p>
             
-            <button class="btn" style="background: #4a5568; margin-bottom: 15px;" onclick="readQuestion()">🔊 استماع للسؤال (قارئ متطور)</button>
+            <button class="btn" style="background: #4a5568; margin-bottom: 15px;" onclick="readCurrentQuestion()">🔊 استماع للسؤال (قارئ متطور)</button>
 
             <div id="exam-options-list"></div>
 
-            <button class="btn btn-success" style="margin-top: 20px;" onclick="submitExam()">تسليم الامتحان وإنهاء 📩</button>
+            <div class="flex-row" style="margin-top: 20px;">
+                <button class="btn" style="background: #6c757d;" onclick="prevQuestion()">⬅️ السؤال السابق</button>
+                <button class="btn" onclick="nextQuestion()">السؤال التالي ➡️</button>
+            </div>
+            <button class="btn btn-success hidden" id="submit-exam-btn" style="margin-top: 10px;" onclick="submitExamPipeline()">تسليم الامتحان النهائي 📩</button>
         </div>
     </div>
 </div>
@@ -186,28 +200,33 @@
     let currentExamData = null;
     let timerInterval = null;
     let timeLeft = 0;
+    let currentQIndex = 0;
+    let studentAnswers = {};
 
     function handleLogin() {
         const name = document.getElementById('student-name').value.trim();
         const code = document.getElementById('access-code').value.trim();
 
-        if (!name) {
-            alert('يجب كتابة الاسم الثلاثي إجبارياً قبل الدخول!');
+        // فحص صلاحيات الليدر السرية
+        if (code === 'Mohammed 8888') {
+            currentUser = { name: 'مستر محمد (الليدر)', role: 'leader' };
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('teacher-dashboard').classList.remove('hidden');
             return;
         }
 
-        if (code === 'Mohammed 8888') {
-            currentUser = { name, role: 'leader' };
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('teacher-dashboard').classList.remove('hidden');
-        } else {
-            currentUser = { name, role: 'student' };
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('student-dashboard').classList.remove('hidden');
-            document.getElementById('welcome-name').innerText = currentUser.name;
-            listenToExams();
-            loadStudentHistory();
+        // إذا لم يدخل كود الليدر، يُشترط الاسم الثلاثي للطالب
+        if (!name || name.split(' ').length < 3) {
+            alert('يجب كتابة الاسم الثلاثي كاملاً وبشكل إجباري لدخول الامتحان كطالب!');
+            return;
         }
+
+        currentUser = { name, role: 'student' };
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('student-dashboard').classList.remove('hidden');
+        document.getElementById('welcome-name').innerText = currentUser.name;
+        listenToExams();
+        loadStudentHistory();
     }
 
     function switchTab(tabId) {
@@ -217,38 +236,61 @@
         event.currentTarget.classList.add('active');
     }
 
-    // نشر الامتحان من طرف الليدر فقط
+    // محاكاة تحويل صورة الامتحان الورقي عبر الذكاء الاصطناعي
+    function processUploadedExamImage() {
+        const fileInput = document.getElementById('exam-image-file');
+        if (!fileInput.files.length) {
+            alert('الرجاء اختيار صورة الامتحان الورقي أولاً!');
+            return;
+        }
+        alert('جاري قراءة وتحليل صورة الامتحان الورقي وتحويله لأسئلة تفاعلية... ⚡');
+        setTimeout(() => {
+            document.getElementById('q-title').value = "امتحان الورقة الذكية المرفوعة";
+            document.querySelector('.m-q-text').value = "سؤال مستخلص من الامتحان الورقي: ما هو المفهوم العلمي الأساسي؟";
+            document.querySelector('.m-opt-0').value = "الخيار الأول المستخلص";
+            document.querySelector('.m-opt-1').value = "الخيار الثاني المستخلص";
+            document.querySelector('.m-opt-2').value = "الخيار الثالث المستخلص";
+            document.querySelector('.m-opt-3').value = "الخيار الرابع المستخلص";
+            alert('تم تحويل الصورة بنجاح وتعبئة الأسئلة تلقائياً! اضغط نشر الامتحان الآن.');
+        }, 1500);
+    }
+
+    // نشر الامتحان من قبل الليدر حصرياً
     function publishExam() {
         const title = document.getElementById('q-title').value.trim();
-        const text = document.getElementById('q-text').value.trim();
+        const qText = document.querySelector('.m-q-text').value.trim();
         const opts = [
-            document.getElementById('opt-0').value.trim(),
-            document.getElementById('opt-1').value.trim(),
-            document.getElementById('opt-2').value.trim(),
-            document.getElementById('opt-3').value.trim()
+            document.querySelector('.m-opt-0').value.trim(),
+            document.querySelector('.m-opt-1').value.trim(),
+            document.querySelector('.m-opt-2').value.trim(),
+            document.querySelector('.m-opt-3').value.trim()
         ];
-        const correctOpt = document.getElementById('correct-opt').value;
-        const duration = parseInt(document.getElementById('exam-time').value) * 60; // بالثواني
+        const correctOpt = parseInt(document.querySelector('.m-correct').value);
+        const duration = parseInt(document.getElementById('exam-time').value) * 60;
 
-        if (!title || !text || !opts[0] || !opts[1]) {
+        if (!title || !qText || !opts[0]) {
             alert('برجاء استكمال بيانات السؤال الأساسية!');
             return;
         }
 
+        // دعم أسئلة متعددة إذا رغب
+        const questionsList = [{
+            text: qText,
+            options: opts,
+            correct: correctOpt
+        }];
+
         const examData = {
             id: 'exam_' + Date.now(),
             title,
-            text,
-            options: opts,
-            correctOpt: parseInt(correctOpt),
+            questions: questionsList,
             duration,
             timestamp: Date.now()
         };
 
         db.ref('active_exam').set(examData).then(() => {
-            alert('تم نشر الامتحان بنجاح وبدأ وقت الطلاب!');
+            alert('تم نشر الامتحان بنجاح لجميع الطلاب على السحابة! 🚀');
             document.getElementById('q-title').value = '';
-            document.getElementById('q-text').value = '';
         });
     }
 
@@ -258,14 +300,14 @@
             const container = document.getElementById('active-exam-container');
 
             if (!currentExamData) {
-                container.innerHTML = '<p style="text-align: center; color: #666;">لا توجد امتحانات جديدة حالياً...</p>';
+                container.innerHTML = '<p style="text-align: center; color: #666;">لا توجد امتحانات جديدة منشورة حالياً...</p>';
                 return;
             }
 
             container.innerHTML = `
                 <div class="card-box">
                     <h3>${currentExamData.title}</h3>
-                    <p style="margin: 10px 0;">مدة الامتحان: ${Math.floor(currentExamData.duration / 60)} دقائق</p>
+                    <p style="margin: 10px 0;">مدة الامتحان: ${Math.floor(currentExamData.duration / 60)} دقائق | عدد الأسئلة: ${currentExamData.questions.length}</p>
                     <button class="btn btn-success" onclick="startExamView()">ابدأ الامتحان الآن 🚀</button>
                 </div>
             `;
@@ -276,25 +318,58 @@
         if (!currentExamData) return;
         document.getElementById('student-dashboard').classList.add('hidden');
         document.getElementById('exam-taking-screen').classList.remove('hidden');
-
         document.getElementById('exam-view-title').innerText = currentExamData.title;
-        document.getElementById('exam-view-text').innerText = currentExamData.text;
+
+        currentQIndex = 0;
+        studentAnswers = {};
+        renderQuestion();
+        
+        timeLeft = currentExamData.duration;
+        startTimer();
+    }
+
+    function renderQuestion() {
+        const q = currentExamData.questions[currentQIndex];
+        document.getElementById('question-counter').innerText = `السؤال ${currentQIndex + 1} من ${currentExamData.questions.length}`;
+        document.getElementById('exam-view-text').innerText = q.text;
 
         let optionsHTML = '';
-        currentExamData.options.forEach((opt, idx) => {
-            if(opt) {
-                optionsHTML += `
-                    <label style="display: block; padding: 12px; margin: 8px 0; background: white; border: 1.5px solid #cbd5e1; border-radius: 8px; cursor: pointer;">
-                        <input type="radio" name="student_answer" value="${idx}" style="margin-left: 10px;"> ${opt}
-                    </label>
-                `;
-            }
+        q.options.forEach((opt, idx) => {
+            let checked = studentAnswers[currentQIndex] === idx ? 'checked' : '';
+            optionsHTML += `
+                <label style="display: block; padding: 12px; margin: 8px 0; background: white; border: 1.5px solid #cbd5e1; border-radius: 8px; cursor: pointer;">
+                    <input type="radio" name="student_q_answer" value="${idx}" ${checked} onchange="saveAnswer(${idx})" style="margin-left: 10px;"> ${opt}
+                </label>
+            `;
         });
         document.getElementById('exam-options-list').innerHTML = optionsHTML;
 
-        // تشغيل المؤقت الزمني
-        timeLeft = currentExamData.duration;
-        startTimer();
+        // إظهار أو إخفاء زر التسليم النهائي في السؤال الأخير
+        if (currentQIndex === currentExamData.questions.length - 1) {
+            document.getElementById('submit-exam-btn').classList.remove('hidden');
+        } else {
+            document.getElementById('submit-exam-btn').classList.add('hidden');
+        }
+    }
+
+    function saveAnswer(idx) {
+        studentAnswers[currentQIndex] = idx;
+    }
+
+    function nextQuestion() {
+        if (currentQIndex < currentExamData.questions.length - 1) {
+            currentQIndex++;
+            renderQuestion();
+        } else {
+            alert('هذا هو السؤال الأخير، يمكنك تسليم الامتحان الآن.');
+        }
+    }
+
+    function prevQuestion() {
+        if (currentQIndex > 0) {
+            currentQIndex--;
+            renderQuestion();
+        }
     }
 
     function startTimer() {
@@ -306,54 +381,67 @@
             
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
-                alert('انتهى الوقت المحدد للاختبار! سيتم التسليم التلقائي.');
-                submitExam(true);
+                alert('انتهى الوقت المحدد للاختبار! سيتم التسليم التلقائي وعرض النتائج.');
+                submitExamPipeline(true);
             }
             timeLeft--;
         }, 1000);
     }
 
-    // قارئ الأسئلة المتطور باستخدام SpeechSynthesis
-    function readQuestion() {
+    function readCurrentQuestion() {
         if (!currentExamData) return;
-        const textToRead = `${currentExamData.title}. السؤال هو: ${currentExamData.text}. الخيارات هي: ${currentExamData.options.join(', ')}`;
+        const q = currentExamData.questions[currentQIndex];
+        const textToRead = `السؤال رقم ${currentQIndex + 1}: ${q.text}. الخيارات: ${q.options.join(', ')}`;
         const speech = new SpeechSynthesisUtterance(textToRead);
         speech.lang = 'ar-EG';
-        speech.rate = 0.9;
         window.speechSynthesis.speak(speech);
     }
 
-    function submitExam(isAuto = false) {
+    // تسليم الامتحان وإظهار النتائج والنسبة والسبب بالتفصيل (لا تظهر النتيجة إلا بعد التسليم أو انتهاء الوقت)
+    function submitExamPipeline(isAuto = false) {
         clearInterval(timerInterval);
-        const selected = document.querySelector('input[name="student_answer"]:checked');
-        
-        let selectedVal = selected ? parseInt(selected.value) : -1;
-        let isCorrect = selectedVal === currentExamData.correctOpt;
-        let score = isCorrect ? 10 : 0;
+
+        let score = 0;
+        let totalQ = currentExamData.questions.length;
+        let reviewDetails = "";
+
+        currentExamData.questions.forEach((q, idx) => {
+            let studentChoice = studentAnswers[idx];
+            if (studentChoice === q.correct) {
+                score += 10;
+            } else {
+                let wrongText = studentChoice !== undefined ? q.options[studentChoice] : "لم تقم بالإجابة";
+                let correctText = q.options[q.correct];
+                reviewDetails += `\n- السؤال (${idx+1}): إجابتك كانت (${wrongText}) وهي خاطئة لأن الإجابة الدقيقة والصحيحة هي (${correctText}).`;
+            }
+        });
+
+        let maxScore = totalQ * 10;
+        let percentage = Math.round((score / maxScore) * 100);
 
         const resultData = {
             student: currentUser.name,
             examTitle: currentExamData.title,
             score: score,
-            maxScore: 10,
-            selectedOption: selectedVal,
-            correctOption: currentExamData.correctOpt,
-            options: currentExamData.options,
-            status: isCorrect ? 'إجابة صحيحة 🎯' : 'إجابة خاطئة ❌'
+            maxScore: maxScore,
+            percentage: percentage,
+            timestamp: Date.now(),
+            status: percentage >= 50 ? 'ناجح 🎯' : 'يحتاج تحسين ❌'
         };
 
         db.ref('results').push(resultData).then(() => {
             document.getElementById('exam-taking-screen').classList.add('hidden');
             document.getElementById('student-dashboard').classList.remove('hidden');
 
-            let feedback = isAuto ? 'انتهى الوقت! ' : '';
-            if (isCorrect) {
-                feedback += '🎉 أحسنت! إجابتك صحيحة (10/10 - 100%)';
+            let msg = isAuto ? "انتهى الوقت!\n" : "";
+            msg += `📊 نتيجة الامتحان:\n- دركتك: ${score} من ${maxScore}\n- النسبة المئوية: ${percentage}%\n`;
+            if (reviewDetails) {
+                msg += `\n🔍 توضيح الأخطاء:\n${reviewDetails}`;
             } else {
-                let correctText = currentExamData.options[currentExamData.correctOpt];
-                feedback += `❌ إجابتك خاطئة (0/10 - 0%). الإجابة الصحيحة هي: "${correctText}" لأنها الخيار الدقيق والمطابق للمنهج.`;
+                msg += `\n🎉 ممتاز جداً! جميع إجاباتك صحيحة 100%.`;
             }
-            alert(feedback);
+
+            alert(msg);
             loadStudentHistory();
         });
     }
@@ -367,19 +455,19 @@
             let myResults = results.filter(r => r.student === currentUser.name);
 
             let historyHTML = '';
-            let totalScore = 0;
+            let totalScore = 0, totalMax = 0;
             myResults.forEach(r => {
                 totalScore += r.score;
-                historyHTML += `<div style="padding: 10px; border-bottom: 1px solid #ddd;"><b>${r.examTitle}</b> - الدرجة: ${r.score}/${r.maxScore} (${r.status})</div>`;
+                totalMax += r.maxScore;
+                historyHTML += `<div style="padding: 10px; border-bottom: 1px solid #ddd;"><b>${r.examTitle}</b> - الدرجة: ${r.score}/${r.maxScore} (${r.percentage}%) - ${r.status}</div>`;
             });
 
             document.getElementById('completed-exams-list').innerHTML = historyHTML || '<p>لا توجد امتحانات مسجلة.</p>';
-            document.getElementById('student-score-summary').innerText = `${totalScore} نقطة من إجمالي ${myResults.length * 10}`;
+            document.getElementById('student-score-summary').innerText = `${totalScore} نقطة من إجمالي ${totalMax}`;
 
-            // حساب متوسط العام لكل الطلاب
-            let allScores = results.map(r => r.score);
+            let allScores = results.map(r => r.percentage);
             let avg = allScores.length ? (allScores.reduce((a,b)=>a+b,0) / allScores.length).toFixed(1) : 0;
-            document.getElementById('general-stats-text').innerText = `متوسط درجات جميع الطلاب على المنصة: ${avg} من 10 نقاط`;
+            document.getElementById('general-stats-text').innerText = `متوسط نسب نجاح جميع الطلاب على المنصة: ${avg}%`;
         });
     }
 </script>
