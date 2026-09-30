@@ -92,36 +92,48 @@
 
         <hr style="margin: 25px 0; border: 0; border-top: 1px solid #cbd5e1;">
 
-        <!-- قسم تسجيل الطالب الشامل والإلزامي -->
+        <!-- قسم تسجيل الطالب الشامل والإلزامي مع التحقق عبر الواتساب -->
         <div class="card-box">
-            <h3 style="color: var(--secondary); margin-bottom: 10px;">👨‍‍🎓 تسجيل وتفعيل حساب الطالب الجديد</h3>
+            <h3 style="color: var(--secondary); margin-bottom: 10px;">👨‍🎓 تسجيل وتفعيل حساب الطالب الجديد</h3>
             <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">يجب تعبئة جميع البيانات بدقة ولا يمكن تعديلها لاحقاً:</p>
             
-            <div class="form-group">
-                <label>الاسم الثلاثي للطالب:</label>
-                <input type="text" id="student-name" placeholder="مثال: محمد أحمد محمود...">
+            <div id="registration-form-section">
+                <div class="form-group">
+                    <label>الاسم الثلاثي للطالب:</label>
+                    <input type="text" id="student-name" placeholder="مثال: محمد أحمد محمود...">
+                </div>
+                <div class="form-group">
+                    <label>رقم هاتف الطالب الأساسي:</label>
+                    <input type="tel" id="student-phone" placeholder="مثال: 01149260102">
+                </div>
+                <div class="form-group">
+                    <label>رقم هاتف ولي الأمر:</label>
+                    <input type="tel" id="father-phone" placeholder="مثال: 01000000000">
+                </div>
+                <div class="form-group">
+                    <label>الصف الدراسي:</label>
+                    <select id="student-grade">
+                        <option value="الصف الأول الثانوي">الصف الأول الثانوي</option>
+                        <option value="الصف الثاني الثانوي">الصف الثاني الثانوي</option>
+                        <option value="الصف الثالث الثانوي">الصف الثالث الثانوي (علمي/أدبي)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>صورة شهادة الميلاد (أو الهوية الشخصية):</label>
+                    <input type="file" id="birth-certificate-file" accept="image/*">
+                </div>
+                <button class="btn btn-warning" onclick="initiateWhatsAppVerification()">إرسال كود التحقق عبر الواتساب 📱</button>
             </div>
-            <div class="form-group">
-                <label>رقم هاتف الطالب الأساسي:</label>
-                <input type="tel" id="student-phone" placeholder="مثال: 01149260102">
+
+            <!-- قسم إدخال كود التحقق المرسل عبر الواتساب -->
+            <div id="whatsapp-otp-section" class="hidden" style="margin-top: 15px; background: #f0fdf4; padding: 15px; border-radius: 8px; border: 1.5px solid var(--success);">
+                <h4 style="color: var(--success); margin-bottom: 8px;">🔐 أدخل كود التحقق الخاص بالواتساب</h4>
+                <p style="font-size: 13px; color: #444; margin-bottom: 10px;">تم فتح رسالة الواتساب وتجهيز كود التفعيل. بعد إرسال الرسالة، اكتب الكود المكون من 4 أرقام هنا لإتمام التسجيل:</p>
+                <div class="form-group">
+                    <input type="text" id="entered-otp-code" placeholder="أدخل كود التحقق الأربعة أرقام...">
+                </div>
+                <button class="btn btn-success" onclick="verifyOTPAndRegister()">تأكيد الكود وإنشاء الحساب ودخول المنصة 🚀</button>
             </div>
-            <div class="form-group">
-                <label>رقم هاتف ولي الأمر:</label>
-                <input type="tel" id="father-phone" placeholder="مثال: 01000000000">
-            </div>
-            <div class="form-group">
-                <label>الصف الدراسي:</label>
-                <select id="student-grade">
-                    <option value="الصف الأول الثانوي">الصف الأول الثانوي</option>
-                    <option value="الصف الثاني الثانوي">الصف الثاني الثانوي</option>
-                    <option value="الصف الثالث الثانوي">الصف الثالث الثانوي (علمي/أدبي)</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>صورة شهادة الميلاد (أو الهوية الشخصية):</label>
-                <input type="file" id="birth-certificate-file" accept="image/*">
-            </div>
-            <button class="btn" onclick="handleStudentRegistration()">تسجيل الحساب ودخول المنصة فوراً 🚀</button>
         </div>
     </div>
 
@@ -276,6 +288,11 @@
     let timeLeft = 0;
     let currentQIndex = 0;
     let studentAnswers = {};
+    
+    // متغيرات التحقق عبر الواتساب
+    let generatedOtpCode = "";
+    let pendingStudentPayload = null;
+    const adminWhatsAppNumber = "201149260102"; // رقم واتساب الخاص بك لتلقي الكود
 
     window.onload = function() {
         const savedUser = localStorage.getItem('smart_platform_user_v2');
@@ -294,7 +311,7 @@
                 Object.values(students).forEach(s => {
                     if (s.phone === phone) {
                         isBanned = false;
-                        currentUser = s; // تحديث البيانات من السحابة مباشرة
+                        currentUser = s; 
                     }
                 });
             }
@@ -340,7 +357,8 @@
         }
     }
 
-    function handleStudentRegistration() {
+    // الخطوة الأولى: التحقق من البيانات وتوليد كود الواتساب
+    function initiateWhatsAppVerification() {
         const name = document.getElementById('student-name').value.trim();
         const phone = document.getElementById('student-phone').value.trim();
         const fatherPhone = document.getElementById('father-phone').value.trim();
@@ -352,7 +370,7 @@
             return;
         }
         if (!phone || phone.length < 10) {
-            alert('يجب كتابة رقم هاتف الطالب الصحيح والمربوط بالاسم (مثل: 01149260102)!');
+            alert('يجب كتابة رقم هاتف الطالب الصحيح (مثل: 01149260102)!');
             return;
         }
         if (!fatherPhone) {
@@ -360,7 +378,7 @@
             return;
         }
         if (!fileInput.files.length) {
-            alert('يجيب إرفاق صورة شهادة الميلاد أو الهوية لإتمام التسجيل!');
+            alert('يجب إرفاق صورة شهادة الميلاد أو الهوية لإتمام التسجيل!');
             return;
         }
 
@@ -374,11 +392,14 @@
             }
 
             if (isDuplicate) {
-                alert('⚠️ عذراً، هذا الاسم أو رقم الهاتف مسجل مسبقاً في المنصة! الاسم ورقم الهاتف مرتبطان ولا يمكن تكرارهما.');
+                alert('⚠️ عذراً، هذا الاسم أو رقم الهاتف مسجل مسبقاً في المنصة!');
                 return;
             }
 
-            currentUser = {
+            // توليد كود عشوائي من 4 أرقام
+            generatedOtpCode = Math.floor(1000 + Math.random() * 9000).toString();
+            
+            pendingStudentPayload = {
                 name,
                 phone,
                 fatherPhone,
@@ -386,13 +407,35 @@
                 role: 'student',
                 joinedAt: Date.now()
             };
+
+            // رسالة الواتساب الجاهزة
+            const msg = `مرحباً مستر محمد، أرغب في تفعيل حسابي للطالب: ${name} برقم: ${phone}. كود التحقق الخاص بي هو: ${generatedOtpCode}`;
+            const waURL = `https://wa.me/${adminWhatsAppNumber}?text=${encodeURIComponent(msg)}`;
             
-            db.ref('registered_students').push(currentUser).then(() => {
+            // فتح واتساب
+            window.open(waURL, '_blank');
+
+            // إظهار خانة إدخال الكود
+            document.getElementById('registration-form-section').classList.add('hidden');
+            document.getElementById('whatsapp-otp-section').classList.remove('hidden');
+            alert('تم توليد كود التحقق وفتح تطبيق الواتساب. أرسل الرسالة، ثم اكتب الكود هنا لفتح الحساب!');
+        });
+    }
+
+    // الخطوة الثانية: تأكيد الكود وحفظ الطالب نهائياً
+    function verifyOTPAndRegister() {
+        const userOtpInput = document.getElementById('entered-otp-code').value.trim();
+
+        if (userOtpInput === generatedOtpCode) {
+            db.ref('registered_students').push(pendingStudentPayload).then(() => {
+                currentUser = pendingStudentPayload;
                 localStorage.setItem('smart_platform_user_v2', JSON.stringify(currentUser));
-                alert(`أهلاً بك يا ${name} 🌟 تم ربط اسمك ورقم هاتفك بنجاح ودخولك للمنصة.`);
+                alert(`✅ تم التحقق وتفعيل حسابك بنجاح يا ${currentUser.name}! أهلاً بك.`);
                 location.reload();
             });
-        });
+        } else {
+            alert('❌ كود التحقق غير صحيح، يرجى التأكد من كتابة الأرقام الصحيحة الواردة.');
+        }
     }
 
     function logoutSession() {
@@ -407,7 +450,6 @@
         event.currentTarget.classList.add('active');
     }
 
-    // إضافة حقل سؤال جديد (حتى 200 سؤال)
     function addNewQuestionField(qText = "", opts = ["","","",""], correct = 0) {
         const container = document.getElementById('dynamic-questions-container');
         const qCount = container.children.length + 1;
@@ -463,7 +505,6 @@
         });
     }
 
-    // استخراج ذكي للصور مع احترام اللغة (عربي بـ عربي، إنجليزي بـ إنجليزي)
     function processBilingualOCR() {
         const fileInput = document.getElementById('exam-image-file');
         const lang = document.getElementById('ocr-lang-detect').value;
@@ -473,7 +514,7 @@
             return;
         }
 
-        alert('⚡ جاري تحليل الصورة واستخراج الأسئلة بنفس لغتها الأصلية عبر محرك الذكاء الاصطناعي...');
+        alert('⚡ جاري تحليل الصورة واستخراج الأسئلة بنفس لغتها الأصلية...');
         setTimeout(() => {
             document.getElementById('dynamic-questions-container').innerHTML = '';
             
@@ -484,11 +525,6 @@
                     ["Temperature and concentration", "Volume of container only", "Color of solution", "Mass of container"],
                     0
                 );
-                addNewQuestionField(
-                    "Choose the correct statement regarding molecular structure:",
-                    ["Bonds are completely static", "Electrons are shared or transferred", "No energy is released", "Atoms merge into one nucleus"],
-                    1
-                );
             } else {
                 document.getElementById('exam-title-input').value = "امتحان تفاعلي مستخلص من الصورة الورقية العربية";
                 addNewQuestionField(
@@ -496,14 +532,8 @@
                     ["تعدد حالات الأكسدة واكتمال المدارات", "انعدام التوصيل الكهربي", "ثبات درجات الانصهار", "عدم تكوين مركبات ملونة"],
                     0
                 );
-                addNewQuestionField(
-                    "السؤال الثاني المستخلص: عند تعرض المركب للتسخين الشديد بمعزل عن الهواء، ما الناتج الغازي المتوقع؟",
-                    ["تصاعد أول وثاني أكسيد الكربون", "انبعاث غاز الهيدروجين النقي", "تراكم بخار الماء", "تكون غاز النيتروجين"],
-                    0
-                );
             }
-
-            alert('✅ تم استخراج الأسئلة وتعبئتها بلغتها الأصلية بدقة تامة!');
+            alert('✅ تم استخراج الأسئلة بلغتها الأصلية بنجاح!');
         }, 1200);
     }
 
@@ -552,7 +582,7 @@
         };
 
         db.ref('active_exam').set(examData).then(() => {
-            alert(`تم نشر الامتحان في مادة (${subject}) وبداخله (${questionsList.length} سؤال) لجميع الطلاب بنجاح! 🚀`);
+            alert(`تم نشر الامتحان بنجاح لجميع الطلاب! 🚀`);
         });
     }
 
@@ -595,7 +625,7 @@
             }
 
             if (alreadyTaken) {
-                alert('⚠️ عذراً، لقد قمت بأداء هذا الامتحان مسبقاً! مسموح بمحاولة واحدة فقط.');
+                alert('⚠️ عذراً، لقد قمت بأداء هذا الامتحان مسبقاً!');
             } else {
                 startExamView();
             }
@@ -626,7 +656,7 @@
             if(!opt) return;
             let checked = studentAnswers[currentQIndex] === idx ? 'checked' : '';
             optionsHTML += `
-                <label style="display: block; padding: 12px; margin: 10px 0; background: white; border: 1.5px solid #cbd5e1; border-radius: 8px; cursor: pointer; transition: 0.2s;">
+                <label style="display: block; padding: 12px; margin: 10px 0; background: white; border: 1.5px solid #cbd5e1; border-radius: 8px; cursor: pointer;">
                     <input type="radio" name="student_q_answer" value="${idx}" ${checked} onchange="saveAnswer(${idx})" style="margin-left: 10px;"> ${opt}
                 </label>
             `;
@@ -643,7 +673,7 @@
             currentQIndex++;
             renderQuestion();
         } else {
-            alert('هذا هو السؤال الأخير، قم بالضغط على زر تسليم الامتحان أدناه.');
+            alert('هذا هو السؤال الأخير.');
         }
     }
 
@@ -663,7 +693,7 @@
             
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
-                alert('انتهى الوقت المحدد! سيتم تسليم الاختبار تلقائياً.');
+                alert('انتهى الوقت!');
                 submitExamPipeline();
             }
             timeLeft--;
@@ -681,9 +711,7 @@
             let studentChoice = studentAnswers[idx];
             let isCorrect = studentChoice === q.correct;
             
-            if (isCorrect) {
-                score += 10;
-            }
+            if (isCorrect) score += 10;
 
             let studentChoiceText = studentChoice !== undefined ? q.options[studentChoice] : "لم تقم بالإجابة";
             let correctChoiceText = q.options[q.correct];
@@ -692,7 +720,7 @@
                 <div class="review-card ${isCorrect ? 'review-correct' : 'review-wrong'}">
                     <p><b>السؤال (${idx+1}):</b> ${q.text}</p>
                     <p style="margin-top: 6px;">إجابتك: <b>${studentChoiceText}</b></p>
-                    ${!isCorrect ? `<p style="color: var(--danger); margin-top: 4px;">❌ الإجابة الصحيحة هي: <b>${correctChoiceText}</b></p>` : `<p style="color: var(--success); margin-top: 4px;">✅ إجابة صحيحة!</p>`}
+                    ${!isCorrect ? `<p style="color: var(--danger); margin-top: 4px;">❌ الإجابة الصحيحة: <b>${correctChoiceText}</b></p>` : `<p style="color: var(--success); margin-top: 4px;">✅ إجابة صحيحة!</p>`}
                 </div>
             `;
         });
@@ -737,7 +765,7 @@
 
             let historyHTML = '';
             myResults.forEach(r => {
-                historyHTML += `<div style="padding: 12px; border-bottom: 1px solid #ddd;"><b>${r.examTitle}</b> (${r.subject}) - الدرجة: <b>${r.score}/${r.maxScore} (${r.percentage}%)</b></div>`;
+                historyHTML += `<div style="padding: 12px; border-bottom: 1px solid #eee;"><b>${r.examTitle}</b> (${r.subject}) - الدرجة: <b>${r.score}/${r.maxScore} (${r.percentage}%)</b></div>`;
             });
 
             document.getElementById('completed-exams-list').innerHTML = historyHTML || '<p>لم تقم بأي امتحانات بعد.</p>';
@@ -745,7 +773,6 @@
         });
     }
 
-    // إدارة الطلاب وصلاحيات الطرد لليدر
     function loadTeacherDashboardData() {
         db.ref('registered_students').on('value', (snapshot) => {
             const data = snapshot.val();
