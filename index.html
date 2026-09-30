@@ -1,37 +1,44 @@
 from flask import Flask, render_template_string, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
-import os
+from datetime import datetime
 
 app = Flask(__name__)
-app.secret_key = 'super_secret_key_for_platform'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///platform.db'
+app.secret_key = 'fire_platform_secret_key_2026'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fire_platform.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# --- 1. جداول قاعدة البيانات ---
+# --- 1. جداول قاعدة البيانات المتقدمة ---
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(50), nullable=False)
     role = db.Column(db.String(20), nullable=False) # 'super_admin' or 'teacher'
     name = db.Column(db.String(100), nullable=False)
+    login_attempts = db.Column(db.Integer, default=0)
     students = db.relationship('Student', backref='teacher', lazy=True)
+    exams = db.relationship('Exam', backref='teacher', lazy=True)
 
 class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     code = db.Column(db.String(50), unique=True, nullable=False)
+    score = db.Column(db.Float, default=0.0)
     teacher_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-# إنشاء الجداول وإضافة الحسابات الافتراضية عند التشغيل لأول مرة
+class Exam(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    question_data = db.Column(db.Text, nullable=False) # محاكاة استخلاص الأسئلة من الصور أو النصوص
+    teacher_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+# إنشاء الجداول والحسابات الافتراضية
 with app.app_context():
     db.create_all()
     if not User.query.filter_by(username="super_admin").first():
-        # إنشاء حساب المشرف الأعلى
-        admin = User(username="super_admin", password="AdminRoot#2026", role="super_admin", name="المنسق العام (الادمن الأعلى)")
+        admin = User(username="super_admin", password="AdminRoot#2026", role="super_admin", name="المنسق والادمن الأعلى")
         db.session.add(admin)
         
-        # إنشاء حسابات المدرسين الخمسة
         teachers_data = [
             ("TCH-101", "Chem@2026_#1", "أستاذ الكيمياء"),
             ("TCH-102", "Phys@2026_#2", "أستاذ الفيزياء"),
@@ -44,42 +51,46 @@ with app.app_context():
             db.session.add(t)
         db.session.commit()
 
-# --- 2. قوالب صفحات الويب (HTML Templates مدمجة لسهولة التشغيل) ---
-HTML_TEMPLATE = """
+# --- 2. واجهات التصميم الاحترافية (HTML / Bootstrap RTL) ---
+BASE_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>المنصة التعليمية الشاملة</title>
+    <title>المنصة التعليمية النارية الشاملة</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/rtl.min.css">
     <style>
-        body { background-color: #f8f9fa; font-family: 'Tahoma', sans-serif; }
-        .card { border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        body { background: #0f172a; color: #f8fafc; font-family: 'Tahoma', sans-serif; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 15px; color: #fff; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); }
+        .table { color: #f8fafc; }
+        .table-bordered { border-color: #334155; }
+        .form-control { background: #0f172a; border-color: #334155; color: #fff; }
+        .form-control:focus { background: #0f172a; color: #fff; border-color: #3b82f6; box-shadow: none; }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-dark mb-4">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary mb-4">
         <div class="container">
-            <a class="navbar-brand" href="#">منصة إدارة المدارس والمدرسين</a>
+            <a class="navbar-brand fw-bold text-warning" href="#">🔥 المنصة التعليمية السحابية المتقدمة</a>
             {% if session.get('user_id') %}
-                <a href="/logout" class="btn btn-outline-light btn-sm">تسجيل الخروج</a>
+                <a href="/logout" class="btn btn-outline-danger btn-sm">تسجيل الخروج</a>
             {% endif %}
         </div>
     </nav>
-    <div class="container">
+    <div class="container mb-5">
         {% block content %}{% endblock %}
     </div>
 </body>
 </html>
 """
 
-LOGIN_PAGE = HTML_TEMPLATE.replace('{% block content %}{% endblock %}', """
+LOGIN_HTML = BASE_TEMPLATE.replace('{% block content %}{% endblock %}', """
 <div class="row justify-content-center mt-5">
     <div class="col-md-5">
-        <div class="card p-4">
-            <h3 class="text-center mb-4">تسجيل الدخول للنظام</h3>
+        <div class="card p-4 shadow-lg">
+            <h3 class="text-center mb-4 text-warning">تسجيل الدخول الآمن</h3>
             {% if error %}
-                <div class="alert alert-danger">{{ error }}</div>
+                <div class="alert alert-danger py-2">{{ error }}</div>
             {% endif %}
             <form method="POST">
                 <div class="mb-3">
@@ -87,48 +98,50 @@ LOGIN_PAGE = HTML_TEMPLATE.replace('{% block content %}{% endblock %}', """
                     <input type="text" name="username" class="form-control" required>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">كلمة المرور</label>
+                    <label class="form-label">كلمة المرور السرية</label>
                     <input type="password" name="password" class="form-control" required>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">دخول</button>
+                <button type="submit" class="btn btn-warning w-100 fw-bold text-dark">دخول النظام</button>
             </form>
         </div>
     </div>
 </div>
 """)
 
-SUPER_ADMIN_PAGE = HTML_TEMPLATE.replace('{% block content %}{% endblock %}', """
+SUPER_ADMIN_HTML = BASE_TEMPLATE.replace('{% block content %}{% endblock %}', """
 <div class="row">
-    <div class="col-12">
-        <div class="card p-4 mb-4 bg-primary text-white">
-            <h2>مرحباً بك يا مشرف عام المنصة (Super Admin)</h2>
-            <p class="mb-0">لديك صلاحية كاملة لمتابعة جميع المدرسين والطلاب المسجلين في النظام.</p>
+    <div class="col-12 mb-4">
+        <div class="card p-4 bg-gradient border-warning">
+            <h2 class="text-warning">لوحة تحكم المشرف الأعلى (Super Admin)</h2>
+            <p class="text-muted mb-0">تحكم كامل وصلاحيات مطلقة لمراقبة المدرسين، الطلاب، والامتحانات عبر السيرفر.</p>
         </div>
     </div>
     <div class="col-12">
-        <h3>قائمة المدرسين وإحصائياتهم:</h3>
+        <h4 class="mb-3">إحصائيات المدرسين والصفوف:</h4>
         <div class="table-responsive">
-            <table class="table table-striped table-bordered bg-white">
+            <table class="table table-striped table-bordered align-middle">
                 <thead class="table-dark">
                     <tr>
-                        <th>كود المدرس</th>
+                        <th>الكود</th>
                         <th>اسم المدرس / المادة</th>
                         <th>عدد الطلاب</th>
-                        <th>أسماء الطلاب وأكوادهم</th>
+                        <th>الامتحانات المرفوعة</th>
+                        <th>قائمة الطلاب وأكوادهم</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for t in teachers %}
                     <tr>
-                        <td><strong>{{ t.username }}</strong></td>
+                        <td class="fw-bold text-info">{{ t.username }}</td>
                         <td>{{ t.name }}</td>
-                        <td><span class="badge bg-success">{{ t.students|length }} طلاب</span></td>
+                        <td><span class="badge bg-primary">{{ t.students|length }} طلاب</span></td>
+                        <td><span class="badge bg-success">{{ t.exams|length }} امتحانات</span></td>
                         <td>
-                            <ul class="mb-0">
+                            <ul class="mb-0 small">
                                 {% for s in t.students %}
-                                    <li>{{ s.name }} (كود: {{ s.code }})</li>
+                                    <li>{{ s.name }} (كود: <code>{{ s.code }}</code> - درجات: {{ s.score }})</li>
                                 {% else %}
-                                    <span class="text-muted">لا يوجد طلاب مضافين بعد</span>
+                                    <span class="text-muted">لا يوجد طلاب</span>
                                 {% endfor %}
                             </ul>
                         </td>
@@ -141,61 +154,112 @@ SUPER_ADMIN_PAGE = HTML_TEMPLATE.replace('{% block content %}{% endblock %}', ""
 </div>
 """)
 
-TEACHER_PAGE = HTML_TEMPLATE.replace('{% block content %}{% endblock %}', """
+TEACHER_HTML = BASE_TEMPLATE.replace('{% block content %}{% endblock %}', """
 <div class="row">
-    <div class="col-12">
-        <div class="card p-4 mb-4 bg-success text-white">
-            <h2>لوحة تحكم الأستاذ: {{ teacher.name }}</h2>
-            <p class="mb-0">كود الدخول الخاص بك: <strong>{{ teacher.username }}</strong></p>
+    <div class="col-12 mb-4">
+        <div class="card p-4 border-info">
+            <h2>لوحة تحكم الأستاذ: <span class="text-info">{{ teacher.name }}</span></h2>
+            <p class="mb-0 text-muted">كود حسابك الخاص: <strong>{{ teacher.username }}</strong> | إدارة طلابك وامتحاناتك التفاعلية.</p>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card p-4">
-            <h4>إضافة طالب جديد</h4>
+    
+    <!-- إضافة طالب -->
+    <div class="col-md-4 mb-4">
+        <div class="card p-4 h-100">
+            <h5 class="text-warning mb-3">إضافة طالب جديد للصفحة</h5>
             <form method="POST" action="/add_student">
                 <div class="mb-3">
                     <label class="form-label">اسم الطالب</label>
                     <input type="text" name="student_name" class="form-control" required>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">كود الطالب (خاص به)</label>
+                    <label class="form-label">كود الطالب التعريفي</label>
                     <input type="text" name="student_code" class="form-control" required>
                 </div>
-                <button type="submit" class="btn btn-success w-100">إضافة الطالب للصفحة</button>
+                <button type="submit" class="btn btn-primary w-100">تسجيل الطالب</button>
             </form>
         </div>
     </div>
-    <div class="col-md-8">
+
+    <!-- إضافة امتحان / استخلاص أسئلة -->
+    <div class="col-md-4 mb-4">
+        <div class="card p-4 h-100">
+            <h5 class="text-success mb-3">رفع امتحان / استخلاص أسئلة</h5>
+            <form method="POST" action="/add_exam">
+                <div class="mb-3">
+                    <label class="form-label">عنوان الامتحان</label>
+                    <input type="text" name="exam_title" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">الأسئلة (أو محاكاة البيانات المستخلصة)</label>
+                    <textarea name="question_data" class="form-control" rows="3" placeholder="أدخل الأسئلة أو نص الامتحان..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-success w-100">نشر الامتحان</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- لوحة الشرف والدرجات -->
+    <div class="col-md-4 mb-4">
+        <div class="card p-4 h-100">
+            <h5 class="text-danger mb-3">🏆 لوحة الشرف للمتفوقين</h5>
+            <ul class="list-group list-group-flush bg-transparent">
+                {% for s in students|sort(attribute='score', reverse=True) %}
+                    <li class="list-group-item bg-transparent text-white d-flex justify-content-between align-items-center border-secondary">
+                        {{ s.name }}
+                        <span class="badge bg-warning text-dark">{{ s.score }} درجة</span>
+                    </li>
+                {% else %}
+                    <p class="text-muted small">لا توجد درجات مسجلة بعد.</p>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- جدول إدارة الطلاب -->
+    <div class="col-12">
         <div class="card p-4">
-            <h4>قائمة طلابك المسجلين ({{ students|length }})</h4>
-            <table class="table table-hover mt-3">
-                <thead>
-                    <tr>
-                        <th>مسلسل</th>
-                        <th>اسم الطالب</th>
-                        <th>كود الطالب</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for s in students %}
-                    <tr>
-                        <td>{{ loop.index }}</td>
-                        <td>{{ s.name }}</td>
-                        <td><code>{{ s.code }}</code></td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="3" class="text-center text-muted">لم تقم بإضافة أي طلاب حتى الآن.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <h4 class="mb-3">قائمة طلابك ({{ students|length }}) وتحديث درجاتهم</h4>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>اسم الطالب</th>
+                            <th>كود الطالب</th>
+                            <th>الدرجة الحالية</th>
+                            <th>تحديث الدرجة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in students %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ s.name }}</td>
+                            <td><code>{{ s.code }}</code></td>
+                            <td>{{ s.score }}</td>
+                            <td>
+                                <form method="POST" action="/update_score" class="d-flex gap-2">
+                                    <input type="hidden" name="student_id" value="{{ s.id }}">
+                                    <input type="number" step="0.5" name="new_score" class="form-control form-control-sm w-50" placeholder="الدرجة" required>
+                                    <button type="submit" class="btn btn-sm btn-outline-warning">حفظ</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">لم تقم بإضافة طلاب حتى الآن.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 """)
 
-# --- 3. المسارات (Routes) والتحكم في التطبيق ---
+# --- 3. مسارات وخوارزميات التشغيل (Routes) ---
 @app.route('/', methods=['GET', 'POST'])
 def login():
     error = None
@@ -211,15 +275,15 @@ def login():
             else:
                 return redirect(url_for('teacher_dashboard'))
         else:
-            error = 'اسم المستخدم أو كلمة المرور غير صحيحة!'
-    return render_template_string(LOGIN_PAGE, error=error)
+            error = 'بيانات الدخول غير صحيحة أو تم رفض صلاحية الهوية!'
+    return render_template_string(LOGIN_HTML, error=error)
 
 @app.route('/admin_dashboard')
 def super_admin_dashboard():
     if session.get('role') != 'super_admin':
         return redirect(url_for('login'))
     teachers = User.query.filter_by(role='teacher').all()
-    return render_template_string(SUPER_ADMIN_PAGE, teachers=teachers)
+    return render_template_string(SUPER_ADMIN_HTML, teachers=teachers)
 
 @app.route('/teacher_dashboard')
 def teacher_dashboard():
@@ -227,7 +291,7 @@ def teacher_dashboard():
         return redirect(url_for('login'))
     teacher = User.query.get(session['user_id'])
     students = Student.query.filter_by(teacher_id=teacher.id).all()
-    return render_template_string(TEACHER_PAGE, teacher=teacher, students=students)
+    return render_template_string(TEACHER_HTML, teacher=teacher, students=students)
 
 @app.route('/add_student', methods=['POST'])
 def add_student():
@@ -235,12 +299,32 @@ def add_student():
         return redirect(url_for('login'))
     name = request.form.get('student_name')
     code = request.form.get('student_code')
-    
-    # التأكد من عدم تكرار كود الطالب
-    existing = Student.query.filter_by(code=code).first()
-    if not existing:
+    if not Student.query.filter_by(code=code).first():
         new_student = Student(name=name, code=code, teacher_id=session['user_id'])
         db.session.add(new_student)
+        db.session.commit()
+    return redirect(url_for('teacher_dashboard'))
+
+@app.route('/add_exam', methods=['POST'])
+def add_exam():
+    if session.get('role') != 'teacher':
+        return redirect(url_for('login'))
+    title = request.form.get('exam_title')
+    q_data = request.form.get('question_data')
+    new_exam = Exam(title=title, question_data=q_data, teacher_id=session['user_id'])
+    db.session.add(new_exam)
+    db.session.commit()
+    return redirect(url_for('teacher_dashboard'))
+
+@app.route('/update_score', methods=['POST'])
+def update_score():
+    if session.get('role') != 'teacher':
+        return redirect(url_for('login'))
+    student_id = request.form.get('student_id')
+    new_score = float(request.form.get('new_score'))
+    student = Student.query.get(student_id)
+    if student and student.teacher_id == session['user_id']:
+        student.score = new_score
         db.session.commit()
     return redirect(url_for('teacher_dashboard'))
 
