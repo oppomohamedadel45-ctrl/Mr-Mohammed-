@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة المعلم الذكية - النظام الآمن والسحابي النهائي</title>
+    <title>منصة المعلم الذكية - النظام الآمن والسحابي</title>
     <!-- مكتبات Firebase السحابية -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -27,8 +27,6 @@
             color: var(--text); 
             min-height: 100vh; 
             padding: 20px;
-            user-select: none;
-            -webkit-user-select: none;
         }
 
         .container { max-width: 950px; margin: 0 auto; background: var(--card); padding: 30px; border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); border-top: 6px solid var(--accent); }
@@ -43,7 +41,7 @@
 
         .form-group { margin-bottom: 15px; text-align: right; }
         label { display: block; margin-bottom: 6px; font-weight: bold; color: var(--secondary); font-size: 14px; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 15px; outline: none; transition: 0.2s; background: #fff; user-select: text; -webkit-user-select: text; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 15px; outline: none; transition: 0.2s; background: #fff; }
         input:focus, textarea:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 8px rgba(37, 99, 235, 0.25); }
         
         .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; background: var(--primary); color: white; margin-top: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -71,111 +69,40 @@
         .review-wrong { background: #fef2f2; border-color: var(--danger); }
         
         .question-card-builder { background: #ffffff; border: 2px solid var(--accent); padding: 20px; border-radius: 12px; margin-bottom: 20px; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-
-        /* تصميم الكيبورد الافتراضي السري الآمن */
-        .secure-login-box {
-            background: #1e293b;
-            padding: 25px;
-            border-radius: 14px;
-            border: 2px solid #334155;
-            max-width: 400px;
-            margin: 0 auto;
-            text-align: center;
-        }
-        .display-box {
-            background: #0f172a;
-            border: 2px solid #475569;
-            border-radius: 8px;
-            padding: 12px;
-            font-size: 1.5rem;
-            letter-spacing: 5px;
-            color: #a855f7;
-            margin-bottom: 15px;
-            min-height: 48px;
-            text-align: center;
-        }
-        .keypad {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .key {
-            background: #334155;
-            border: none;
-            padding: 14px;
-            font-size: 1.2rem;
-            color: #fff;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: 0.2s;
-            font-weight: bold;
-        }
-        .key:hover { background: #475569; }
-        .key:active { background: #64748b; }
-        .warning-msg {
-            margin-top: 10px;
-            font-size: 0.85rem;
-            color: #ef4444;
-            display: none;
-        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- شاشة تسجيل الدخول الآمنة كلياً -->
+    <!-- شاشة تسجيل الدخول العادية والمباشرة -->
     <div id="login-screen">
         <img src="12810.jpg" alt="المعلم" class="profile-img">
         <h1 style="color: var(--primary);">منصة المعلم الذكية 🎓</h1>
-        <p style="text-align: center; color: #555; margin-bottom: 20px;">نظام سحابي مؤمن بالكامل ضد لقطات الشاشة والتسجيل</p>
+        <p style="text-align: center; color: #555; margin-bottom: 20px;">نظام سحابي متطور لتسجيل وإدارة الطلاب والامتحانات</p>
         
         <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center;">
-            <button class="btn" id="show-login-tab-btn" onclick="switchAuthMode('login')" style="width: auto; padding: 10px 20px; background: var(--primary);">دخول بكلمة المرور السرية 🔑</button>
+            <button class="btn" id="show-login-tab-btn" onclick="switchAuthMode('login')" style="width: auto; padding: 10px 20px; background: var(--primary);">تسجيل الدخول 🔑</button>
             <button class="btn" id="show-reg-tab-btn" onclick="switchAuthMode('register')" style="width: auto; padding: 10px 20px; background: #64748b;">حساب طالب جديد 📝</button>
         </div>
 
-        <!-- صندوق الدخول السري عبر لوحة المفاتيح الافتراضية -->
-        <div id="login-form-box" class="secure-login-box">
-            <h3 style="color: #38bdf8; margin-bottom: 10px;">👤 إدخال كود الدخول / الرقم السري</h3>
-            <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 15px;">استخدم لوحة المفاتيح أدناه للدخول الآمن</p>
-            
-            <div style="text-align: right; margin-bottom: 5px; font-size: 13px; color: #cbd5e1;">معرف الدخول (الكود أو الهاتف):</div>
-            <div id="login-id-display" class="display-box"></div>
-
-            <div style="text-align: right; margin-bottom: 5px; font-size: 13px; color: #cbd5e1;">الرقم السري الآمن:</div>
-            <div id="login-pass-display" class="display-box"></div>
-
-            <div class="form-group" style="margin-bottom: 10px; text-align: right;">
-                <label style="color: #cbd5e1; font-size: 12px;">اختر الحقل المراد إدخاله بالنقر عليه:</label>
-                <div class="flex-row">
-                    <button type="button" class="btn" id="focus-id-btn" onclick="setActiveField('id')" style="margin:0; background: var(--accent); font-size: 13px;">حقل المعرف/الهاتف</button>
-                    <button type="button" class="btn" id="focus-pass-btn" onclick="setActiveField('pass')" style="margin:0; background: #475569; font-size: 13px;">حقل الرقم السري</button>
-                </div>
+        <!-- نموذج تسجيل الدخول اليدوي (للطلاب أو الليدر) -->
+        <div id="login-form-box" class="card-box" style="text-align: right; max-width: 450px; margin: 0 auto;">
+            <h3 style="color: var(--secondary); margin-bottom: 15px; text-align: center;">👤 تسجيل الدخول بالرقم أو الكود</h3>
+            <div class="form-group">
+                <label>معرف الدخول (رقم الهاتف أو كود الليدر):</label>
+                <input type="text" id="login-id-input" placeholder="اكتب رقم الهاتف أو كود الليدر...">
             </div>
-
-            <div class="keypad" style="margin-top: 15px;">
-                <button class="key" onclick="appendSecureKey('1')">1</button>
-                <button class="key" onclick="appendSecureKey('2')">2</button>
-                <button class="key" onclick="appendSecureKey('3')">3</button>
-                <button class="key" onclick="appendSecureKey('4')">4</button>
-                <button class="key" onclick="appendSecureKey('5')">5</button>
-                <button class="key" onclick="appendSecureKey('6')">6</button>
-                <button class="key" onclick="appendSecureKey('7')">7</button>
-                <button class="key" onclick="appendSecureKey('8')">8</button>
-                <button class="key" onclick="appendSecureKey('9')">9</button>
-                <button class="key" onclick="clearSecureInput()" style="background: var(--danger);">مسح</button>
-                <button class="key" onclick="appendSecureKey('0')">0</button>
-                <button class="key" onclick="appendSecureKey('Mohammed 8888')" style="font-size: 11px; background: var(--warning);">كود الليدر</button>
+            <div class="form-group">
+                <label>الرقم السري:</label>
+                <input type="password" id="login-pass-input" placeholder="اكتب الرقم السري...">
             </div>
-
-            <button class="btn btn-success" onclick="handleSecureLogin()" style="width: 100%; margin-top: 5px;">دخول آمن للمنصة 🚀</button>
+            <button class="btn btn-success" onclick="handleManualLogin()">دخول للمنصة 🚀</button>
         </div>
 
         <!-- صندوق تسجيل طالب جديد -->
-        <div id="register-form-box" class="card-box hidden" style="text-align: right;">
-            <h3 style="color: var(--secondary); margin-bottom: 10px;">👨‍🎓 تسجيل طالب جديد (3 محاولات مسموحة)</h3>
-            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">أدخل بياناتك بحرية عبر لوحة المفاتيح وارفق صورة شهادة الميلاد للمراجعة:</p>
+        <div id="register-form-box" class="card-box hidden" style="text-align: right; max-width: 500px; margin: 0 auto;">
+            <h3 style="color: var(--secondary); margin-bottom: 10px; text-align: center;">👨‍🎓 تسجيل طالب جديد (3 محاولات مسموحة)</h3>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px; text-align: center;">أدخل بياناتك كاملة وارفق صورة شهادة الميلاد للمراجعة:</p>
             
             <div class="form-group"><label>الاسم الثلاثي للطالب:</label><input type="text" id="student-name" placeholder="مثال: محمد أحمد محمود..."></div>
             <div class="form-group"><label>رقم هاتف الطالب:</label><input type="tel" id="student-phone" placeholder="01149260102"></div>
@@ -205,7 +132,7 @@
     <!-- لوحة تحكم الليدر الشاملة -->
     <div id="teacher-dashboard" class="hidden">
         <img src="12810.jpg" alt="المعلم" class="profile-img">
-        <h1>لوحة تحكم الليدر الأمنية ⚙️🔒</h1>
+        <h1>لوحة تحكم الليدر ⚙️</h1>
         <p style="text-align:center; color: var(--success); font-weight:bold; margin-bottom:20px;">أهلاً بك يا مستر محمد. تحكم كامل بالمنصة السحابية.</p>
         
         <div class="card-box" style="border: 2px solid var(--warning); background: #fffbeb;">
@@ -312,7 +239,7 @@
 
             <div class="flex-row" style="margin-top: 25px;">
                 <button class="btn" style="background: #64748b;" onclick="prevQuestion()">⬅ السابق</button>
-                <button class="btn" onclick="nextQuestion()">التالي ➡️️</button>
+                <button class="btn" onclick="nextQuestion()">التالي ➡</button>
             </div>
             <button class="btn btn-success" id="submit-exam-btn" style="margin-top: 15px;" onclick="submitExamPipeline()">تسليم الامتحان ورصد النتيجة 📩</button>
         </div>
@@ -346,12 +273,8 @@
     let currentQIndex = 0;
     let studentAnswers = {};
 
-    let activeSecureField = 'id';
-    let secureIdValue = '';
-    let securePassValue = '';
-
     window.onload = function() {
-        const savedUser = localStorage.getItem('smart_platform_user_secure_v5');
+        const savedUser = localStorage.getItem('smart_platform_user_secure_v6');
         if (savedUser) {
             currentUser = JSON.parse(savedUser);
             if (currentUser.role === 'leader') {
@@ -365,64 +288,21 @@
                 checkStudentStatusOnStartup(currentUser.phone);
             }
         }
-        initSecurityGuards();
     };
 
-    function setActiveField(field) {
-        activeSecureField = field;
-        if(field === 'id') {
-            document.getElementById('focus-id-btn').style.background = 'var(--accent)';
-            document.getElementById('focus-pass-btn').style.background = '#475569';
-        } else {
-            document.getElementById('focus-pass-btn').style.background = 'var(--accent)';
-            document.getElementById('focus-id-btn').style.background = '#475569';
-        }
-    }
-
-    function appendSecureKey(val) {
-        if(val === 'Mohammed 8888') {
-            secureIdValue = 'Mohammed 8888';
-            securePassValue = '8888';
-            document.getElementById('login-id-display').innerText = '•••••••••••••';
-            document.getElementById('login-pass-display').innerText = '••••';
-            return;
-        }
-
-        if (activeSecureField === 'id') {
-            if(secureIdValue.length < 25) {
-                secureIdValue += val;
-                document.getElementById('login-id-display').innerText = "•".repeat(secureIdValue.length);
-            }
-        } else {
-            if(securePassValue.length < 15) {
-                securePassValue += val;
-                document.getElementById('login-pass-display').innerText = "•".repeat(securePassValue.length);
-            }
-        }
-    }
-
-    function clearSecureInput() {
-        if (activeSecureField === 'id') {
-            secureIdValue = '';
-            document.getElementById('login-id-display').innerText = '';
-        } else {
-            securePassValue = '';
-            document.getElementById('login-pass-display').innerText = '';
-        }
-    }
-
-    function handleSecureLogin() {
-        const phoneOrCode = secureIdValue.trim();
-        const password = securePassValue.trim();
+    function handleManualLogin() {
+        const phoneOrCode = document.getElementById('login-id-input').value.trim();
+        const password = document.getElementById('login-pass-input').value.trim();
 
         if (!phoneOrCode || !password) {
-            alert('يرجى إدخال الكود والرقم السري عبر لوحة المفاتيح الافتراضية!');
+            alert('يرجى إدخال معرف الدخول والرقم السري!');
             return;
         }
 
+        // تسجيل دخول الليدر (اكتب كود الليدر وكلمة السر يدوياً كما ترغب)
         if (phoneOrCode === 'Mohammed 8888' && password === '8888') {
             currentUser = { name: 'المعلم (الليدر)', role: 'leader' };
-            localStorage.setItem('smart_platform_user_secure_v5', JSON.stringify(currentUser));
+            localStorage.setItem('smart_platform_user_secure_v6', JSON.stringify(currentUser));
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('teacher-dashboard').classList.remove('hidden');
             loadTeacherDashboardData();
@@ -443,7 +323,7 @@
 
             if (foundStudent) {
                 currentUser = foundStudent;
-                localStorage.setItem('smart_platform_user_secure_v5', JSON.stringify(currentUser));
+                localStorage.setItem('smart_platform_user_secure_v6', JSON.stringify(currentUser));
                 enterStudentDashboard();
             } else {
                 db.ref('pending_students').once('value', (pSnap) => {
@@ -463,27 +343,6 @@
                 });
             }
         });
-    }
-
-    function initSecurityGuards() {
-        // تم إلغاء حظر الكيبورد العام ليتمكن الطلاب من الكتابة في خانات التسجيل بحرية تامة
-
-        // 1. منع النقر بزر الفأرة الأيمن
-        document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
-
-        // 2. منع لقطة الشاشة وتفريغ الحافظة وتغبيش الصفحة
-        document.addEventListener('keyup', function (e) {
-            if (e.key === 'PrintScreen' || e.keyCode === 44) {
-                navigator.clipboard.writeText('');
-                alert('⚠️ لقطات الشاشة وتسجيلها محظورة تماماً لأسباب أمنية!');
-                document.body.style.filter = 'blur(25px)';
-                setTimeout(() => { document.body.style.filter = 'none'; }, 2500);
-            }
-        });
-
-        // 3. تغبيش الشاشة عند مغادرة نافذة المنصة
-        window.addEventListener('blur', function() { document.body.style.filter = 'blur(20px)'; });
-        window.addEventListener('focus', function() { document.body.style.filter = 'none'; });
     }
 
     function switchAuthMode(mode) {
@@ -521,7 +380,7 @@
                         document.getElementById('login-screen').classList.add('hidden');
                         document.getElementById('pending-approval-screen').classList.remove('hidden');
                     } else {
-                        localStorage.removeItem('smart_platform_user_secure_v5');
+                        localStorage.removeItem('smart_platform_user_secure_v6');
                         location.reload();
                     }
                 });
@@ -582,7 +441,7 @@
     }
 
     function logoutSession() {
-        localStorage.removeItem('smart_platform_user_secure_v5');
+        localStorage.removeItem('smart_platform_user_secure_v6');
         location.reload();
     }
 
@@ -802,7 +661,7 @@
                 alreadyTaken = Object.values(data).some(r => r.studentPhone === currentUser.phone && r.examTitle === currentExamData.title);
             }
             if (alreadyTaken) {
-                alert('⚠️ عذراً، لقد قمت بأداء هذا الامتحان مسبقاً!');
+                alert('⚠️️ عذراً، لقد قمت بأداء هذا الامتحان مسبقاً!');
             } else {
                 startExamView();
             }
