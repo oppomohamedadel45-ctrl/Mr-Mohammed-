@@ -53,8 +53,8 @@
         .btn-warning { background: var(--warning); color: #fff; }
         .btn-warning:hover { background: #b45309; }
 
-        .nav-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; }
-        .nav-btn { padding: 12px; background: #e2e8f0; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; color: var(--primary); transition: 0.3s; text-align: center; }
+        .nav-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 25px; }
+        .nav-btn { padding: 10px; background: #e2e8f0; border: none; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; color: var(--primary); transition: 0.3s; text-align: center; }
         .nav-btn:hover, .nav-btn.active { background: var(--primary); color: white; }
 
         .card-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
@@ -80,81 +80,86 @@
         <h1>منصة المعلم الذكية 🎓</h1>
         <p style="text-align: center; color: #555; margin-bottom: 20px;">النظام السحابي الاحترافي لإدارة الطلاب والاختبارات</p>
         
-        <!-- قسم دخول المعلم -->
-        <div class="card-box" style="border: 2px solid var(--accent); background: #eff6ff;">
-            <h3 style="color: var(--primary); margin-bottom: 10px;">⚙️ بوابة دخول المعلم (الليدر)</h3>
+        <!-- تبديل خفيف بين تسجيل الدخول وإنشاء حساب -->
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <button class="btn" id="show-login-tab-btn" onclick="switchAuthMode('login')" style="background: var(--primary);">تسجيل الدخول برقمك السري 🔑</button>
+            <button class="btn" id="show-reg-tab-btn" onclick="switchAuthMode('register')" style="background: #64748b;">حساب جديد (تسجيل لأول مرة) 📝</button>
+        </div>
+
+        <!-- نموذج تسجيل الدخول للطلاب والليدر -->
+        <div id="login-form-box" class="card-box" style="border: 2px solid var(--accent); background: #eff6ff;">
+            <h3 style="color: var(--primary); margin-bottom: 15px;">👤 تسجيل الدخول للمنصة</h3>
             <div class="form-group">
-                <label>الرقم السري الخاص بالمعلم:</label>
-                <input type="password" id="teacher-access-code" placeholder="أدخل كود المعلم السري...">
+                <label>رقم هاتف الطالب أو كود المعلم:</label>
+                <input type="text" id="login-phone-or-code" placeholder="أدخل رقم هاتفك أو كود المعلم...">
             </div>
-            <button class="btn btn-success" onclick="handleTeacherLogin()">دخول لوحة التحكم الشاملة 🔒</button>
+            <div class="form-group">
+                <label>الرقم السري:</label>
+                <input type="password" id="login-password" placeholder="أدخل رقمك السري...">
+            </div>
+            <button class="btn btn-success" onclick="handleLogin()">دخول المنصة 🚀</button>
         </div>
 
-        <hr style="margin: 25px 0; border: 0; border-top: 1px solid #cbd5e1;">
-
-        <!-- قسم تسجيل الطالب الشامل والإلزامي مع التحقق عبر الواتساب -->
-        <div class="card-box">
-            <h3 style="color: var(--secondary); margin-bottom: 10px;">👨‍🎓 تسجيل وتفعيل حساب الطالب الجديد</h3>
-            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">يجب تعبئة جميع البيانات بدقة ولا يمكن تعديلها لاحقاً:</p>
+        <!-- نموذج إنشاء حساب جديد للطالب -->
+        <div id="register-form-box" class="card-box hidden">
+            <h3 style="color: var(--secondary); margin-bottom: 10px;">👨‍‍🎓 تسجيل طالب جديد</h3>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">قم بملء بياناتك، وسيتم مراجعة مستنداتك من قِبل الليدر:</p>
             
-            <div id="registration-form-section">
-                <div class="form-group">
-                    <label>الاسم الثلاثي للطالب:</label>
-                    <input type="text" id="student-name" placeholder="مثال: محمد أحمد محمود...">
-                </div>
-                <div class="form-group">
-                    <label>رقم هاتف الطالب الأساسي:</label>
-                    <input type="tel" id="student-phone" placeholder="مثال: 01149260102">
-                </div>
-                <div class="form-group">
-                    <label>رقم هاتف ولي الأمر:</label>
-                    <input type="tel" id="father-phone" placeholder="مثال: 01000000000">
-                </div>
-                <div class="form-group">
-                    <label>الصف الدراسي:</label>
-                    <select id="student-grade">
-                        <option value="الصف الأول الثانوي">الصف الأول الثانوي</option>
-                        <option value="الصف الثاني الثانوي">الصف الثاني الثانوي</option>
-                        <option value="الصف الثالث الثانوي">الصف الثالث الثانوي (علمي/أدبي)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>صورة شهادة الميلاد (أو الهوية الشخصية):</label>
-                    <input type="file" id="birth-certificate-file" accept="image/*">
-                </div>
-                <button class="btn btn-warning" onclick="initiateWhatsAppVerification()">إرسال كود التحقق عبر الواتساب 📱</button>
+            <div class="form-group">
+                <label>الاسم الثلاثي للطالب:</label>
+                <input type="text" id="student-name" placeholder="مثال: محمد أحمد محمود...">
             </div>
-
-            <!-- قسم إدخال كود التحقق المرسل عبر الواتساب -->
-            <div id="whatsapp-otp-section" class="hidden" style="margin-top: 15px; background: #f0fdf4; padding: 15px; border-radius: 8px; border: 1.5px solid var(--success);">
-                <h4 style="color: var(--success); margin-bottom: 8px;">🔐 أدخل كود التحقق الخاص بالواتساب</h4>
-                <p style="font-size: 13px; color: #444; margin-bottom: 10px;">تم فتح رسالة الواتساب وتجهيز كود التفعيل. بعد إرسال الرسالة، اكتب الكود المكون من 4 أرقام هنا لإتمام التسجيل:</p>
-                <div class="form-group">
-                    <input type="text" id="entered-otp-code" placeholder="أدخل كود التحقق الأربعة أرقام...">
-                </div>
-                <button class="btn btn-success" onclick="verifyOTPAndRegister()">تأكيد الكود وإنشاء الحساب ودخول المنصة 🚀</button>
+            <div class="form-group">
+                <label>رقم هاتف الطالب الأساسي:</label>
+                <input type="tel" id="student-phone" placeholder="مثال: 01149260102">
             </div>
+            <div class="form-group">
+                <label>رقم هاتف ولي الأمر:</label>
+                <input type="tel" id="father-phone" placeholder="مثال: 01000000000">
+            </div>
+            <div class="form-group">
+                <label>الصف الدراسي:</label>
+                <select id="student-grade">
+                    <option value="الصف الأول الثانوي">الصف الأول الثانوي</option>
+                    <option value="الصف الثاني الثانوي">الصف الثاني الثانوي</option>
+                    <option value="الصف الثالث الثانوي">الصف الثالث الثانوي (علمي/أدبي)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>اختر رقماً سرياً خاصاً بك (لدخوله لاحقاً):</label>
+                <input type="password" id="student-pass" placeholder="اختر رقم سر قوي...">
+            </div>
+            <div class="form-group">
+                <label>صورة شهادة الميلاد أو البطاقة الشخصية:</label>
+                <input type="file" id="birth-certificate-file" accept="image/*">
+            </div>
+            <button class="btn btn-warning" onclick="submitNewStudentRegistration()">إرسال الطلب لليدر وانتظار الموافقة ⏳</button>
         </div>
+    </div>
+
+    <!-- شاشة انتظار الموافقة للطالب -->
+    <div id="pending-approval-screen" class="hidden" style="text-align: center; padding: 30px;">
+        <img src="12810.jpg" alt="المعلم" class="profile-img">
+        <h2 style="color: var(--warning);">⏳ حسابك قيد المراجعة والانتظار</h2>
+        <p style="font-size: 1.1rem; color: #555; margin: 15px 0; line-height: 1.6;">
+            تم إرسال طلب تسجيلك وصورة شهادة الميلاد بنجاح يا بطل.<br>
+            يقوم الليدر (المعلم) حالياً بمراجعة مستنداتك وسيتم تفعيل حسابك قريباً. يرجى العودة لاحقاً وتسجيل الدخول برقمك السري.
+        </p>
+        <button class="btn btn-danger" style="width: auto; padding: 10px 20px;" onclick="logoutSession()">تسجيل الخروج والعودة لاحقاً</button>
     </div>
 
     <!-- لوحة تحكم المعلم (الليدر) -->
     <div id="teacher-dashboard" class="hidden">
         <img src="12810.jpg" alt="المعلم" class="profile-img">
         <h1>لوحة تحكم الليدر الشاملة ⚙️🔒</h1>
-        <p style="text-align:center; color: var(--success); font-weight:bold; margin-bottom:20px;">أهلاً بك يا مستر محمد. تحكم كامل بالأسئلة والطلاب وصلاحيات الطرد.</p>
+        <p style="text-align:center; color: var(--success); font-weight:bold; margin-bottom:20px;">أهلاً بك يا مستر محمد. تحكم كامل بالطلاب والمستندات والامتحانات.</p>
         
-        <!-- قسم الرفع الذكي للصور مع فصل اللغات بدقة -->
-        <div class="card-box" style="border: 2px dashed var(--accent);">
-            <h3>📸 استخلاص ذكي للصور (ثنائي اللغات: عربي / إنجليزي)</h3>
-            <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">قم برفع صورة الامتحان (سواء عربي أو إنجليزي) ليتم استخلاص النصوص بلغتها الأصلية تماماً:</p>
-            <input type="file" id="exam-image-file" accept="image/*" style="margin-bottom: 10px;">
-            <div class="flex-row" style="margin-bottom: 10px;">
-                <select id="ocr-lang-detect">
-                    <option value="ar">اللغة العربية (Arabic OCR)</option>
-                    <option value="en">اللغة الإنجليزية (English OCR)</option>
-                </select>
+        <!-- قسم مراجعة طلبات انضمام الطلاب الجدد -->
+        <div class="card-box" style="border: 2px solid var(--warning); background: #fffbeb;">
+            <h3>⏳ طلبات انضمام الطلاب المعلقة (تحتاج لموافقتك أو رفضك)</h3>
+            <div id="pending-students-list" style="margin-top: 15px; max-height: 300px; overflow-y: auto;">
+                <p>لا توجد طلبات معلقة حالياً.</p>
             </div>
-            <button class="btn btn-warning" onclick="processBilingualOCR()">تحويل الصورة واستخراج الأسئلة بلغتها الأصلية ⚡</button>
         </div>
 
         <!-- بناء الامتحان اليدوي (حتى 200 سؤال) -->
@@ -189,9 +194,9 @@
             <button class="btn btn-success" onclick="publishExam()">نشر الامتحان لكل الطلاب على السحابة 🚀</button>
         </div>
 
-        <!-- سجل الطلاب وإدارة الصلاحيات (طرد الطالب) -->
+        <!-- سجل الطلاب المقبولين وإدارة الحظر -->
         <div class="card-box">
-            <h3>📋 سجل الطلاب المسجلين وصلاحيات الحظر / الطرد</h3>
+            <h3>📋 سجل الطلاب المقبولين بالمنصة</h3>
             <div id="teacher-students-management-list" style="max-height: 250px; overflow-y: auto;">
                 <p>جاري تحميل قائمة الطلاب...</p>
             </div>
@@ -208,9 +213,10 @@
         </div>
 
         <div class="nav-buttons">
-            <button class="nav-btn active" onclick="switchTab('new-exams')">الامتحانات الحالية 📝</button>
-            <button class="nav-btn" onclick="switchTab('my-exams')">امتحاناتي الماضية ✅</button>
-            <button class="nav-btn" onclick="switchTab('leaderboard')" style="grid-column: span 3;">🏆 لوحة شرف الأوائل</button>
+            <button class="nav-btn active" onclick="switchTab('new-exams')">الامتحانات 📝</button>
+            <button class="nav-btn" onclick="switchTab('my-exams')">امتحاناتي ✅</button>
+            <button class="nav-btn" onclick="switchTab('profile')">البروفايل 👤</button>
+            <button class="nav-btn" onclick="switchTab('leaderboard')">الأوائل 🏆</button>
         </div>
 
         <div id="tab-new-exams" class="tab-pane">
@@ -222,6 +228,20 @@
         <div id="tab-my-exams" class="tab-pane hidden">
             <div class="card-box" id="completed-exams-list">
                 <p>لم تقم بأي امتحانات بعد.</p>
+            </div>
+        </div>
+
+        <!-- بروفايل الطالب لعرض معلوماته الشخصية -->
+        <div id="tab-profile" class="tab-pane hidden">
+            <div class="card-box" style="text-align: right;">
+                <h3>👤 ملف بيانات الطالب الشخصية</h3>
+                <div style="margin-top: 15px; line-height: 2; font-size: 1.05rem;">
+                    <p><b>الاسم الثلاثي:</b> <span id="profile-view-name"></span></p>
+                    <p><b>رقم الهاتف:</b> <span id="profile-view-phone"></span></p>
+                    <p><b>رقم ولي الأمر:</b> <span id="profile-view-father"></span></p>
+                    <p><b>الصف الدراسي:</b> <span id="profile-view-grade"></span></p>
+                    <p><b>حالة الحساب:</b> <span style="color: var(--success); font-weight: bold;">معتمد ومفعل ✅</span></p>
+                </div>
             </div>
         </div>
 
@@ -288,41 +308,11 @@
     let timeLeft = 0;
     let currentQIndex = 0;
     let studentAnswers = {};
-    
-    // متغيرات التحقق عبر الواتساب
-    let generatedOtpCode = "";
-    let pendingStudentPayload = null;
-    const adminWhatsAppNumber = "201149260102"; // رقم واتساب الخاص بك لتلقي الكود
 
     window.onload = function() {
-        const savedUser = localStorage.getItem('smart_platform_user_v2');
+        const savedUser = localStorage.getItem('smart_platform_user_v3');
         if (savedUser) {
             currentUser = JSON.parse(savedUser);
-            checkStudentBanStatusAndEnter(currentUser.phone);
-        }
-    };
-
-    function checkStudentBanStatusAndEnter(phone) {
-        db.ref('registered_students').once('value', (snapshot) => {
-            const students = snapshot.val();
-            let isBanned = true;
-
-            if (students) {
-                Object.values(students).forEach(s => {
-                    if (s.phone === phone) {
-                        isBanned = false;
-                        currentUser = s; 
-                    }
-                });
-            }
-
-            if (isBanned && currentUser.role !== 'leader') {
-                alert('⚠️ عذراً، تم إيقاف حسابك أو طردك من المنصة بواسطة الليدر!');
-                localStorage.removeItem('smart_platform_user_v2');
-                location.reload();
-                return;
-            }
-
             if (currentUser.role === 'leader') {
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('teacher-dashboard').classList.remove('hidden');
@@ -331,38 +321,129 @@
                     addNewQuestionField();
                 }
             } else {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('student-dashboard').classList.remove('hidden');
-                document.getElementById('welcome-name').innerText = currentUser.name;
-                listenToExams();
-                loadStudentHistory();
+                checkStudentStatusOnStartup(currentUser.phone);
+            }
+        }
+    };
+
+    function switchAuthMode(mode) {
+        if (mode === 'login') {
+            document.getElementById('login-form-box').classList.remove('hidden');
+            document.getElementById('register-form-box').classList.add('hidden');
+            document.getElementById('show-login-tab-btn').style.background = 'var(--primary)';
+            document.getElementById('show-reg-tab-btn').style.background = '#64748b';
+        } else {
+            document.getElementById('login-form-box').classList.add('hidden');
+            document.getElementById('register-form-box').classList.remove('hidden');
+            document.getElementById('show-reg-tab-btn').style.background = 'var(--primary)';
+            document.getElementById('show-login-tab-btn').style.background = '#64748b';
+        }
+    }
+
+    function handleLogin() {
+        const phoneOrCode = document.getElementById('login-phone-or-code').value.trim();
+        const password = document.getElementById('login-password').value.trim();
+
+        if (!phoneOrCode || !password) {
+            alert('يرجى أدخال رقم الهاتف/الكود والرقم السري!');
+            return;
+        }
+
+        // فحص دخول المعلم (الليدر)
+        if ((phoneOrCode === 'Mohammed 8888' || phoneOrCode === '1234' || phoneOrCode === '01149260102') && (password === '8888' || password === '1234')) {
+            currentUser = { name: 'المعلم (الليدر)', role: 'leader' };
+            localStorage.setItem('smart_platform_user_v3', JSON.stringify(currentUser));
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('teacher-dashboard').classList.remove('hidden');
+            loadTeacherDashboardData();
+            if(document.getElementById('dynamic-questions-container').children.length === 0) {
+                addNewQuestionField();
+            }
+            return;
+        }
+
+        // فحص دخول الطلاب المقبولين في قاعدة البيانات
+        db.ref('registered_students').once('value', (snapshot) => {
+            const students = snapshot.val();
+            let foundStudent = null;
+
+            if (students) {
+                Object.values(students).forEach(s => {
+                    if (s.phone === phoneOrCode && s.password === password) {
+                        foundStudent = s;
+                    }
+                });
+            }
+
+            if (foundStudent) {
+                currentUser = foundStudent;
+                localStorage.setItem('smart_platform_user_v3', JSON.stringify(currentUser));
+                enterStudentDashboard();
+            } else {
+                // فحص هل هو في قائمة الانتظار؟
+                db.ref('pending_students').once('value', (pSnap) => {
+                    const pendings = pSnap.val();
+                    let inPending = false;
+                    if (pendings) {
+                        Object.values(pendings).forEach(p => {
+                            if (p.phone === phoneOrCode && p.password === password) {
+                                inPending = true;
+                            }
+                        });
+                    }
+                    if (inPending) {
+                        document.getElementById('login-screen').classList.add('hidden');
+                        document.getElementById('pending-approval-screen').classList.remove('hidden');
+                    } else {
+                        alert('❌ البيانات غير صحيحة، أو لم يتم قبول حسابك بعد!');
+                    }
+                });
             }
         });
     }
 
-    function handleTeacherLogin() {
-        const code = document.getElementById('teacher-access-code').value.trim();
-        if (code === 'Mohammed 8888' || code === '1234') {
-            currentUser = { name: 'المعلم (الليدر)', role: 'leader' };
-            localStorage.setItem('smart_platform_user_v2', JSON.stringify(currentUser));
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('teacher-dashboard').classList.remove('hidden');
-            loadTeacherDashboardData();
-            
-            if(document.getElementById('dynamic-questions-container').children.length === 0) {
-                addNewQuestionField();
+    function checkStudentStatusOnStartup(phone) {
+        db.ref('registered_students').once('value', (snapshot) => {
+            const students = snapshot.val();
+            let activeStudent = null;
+
+            if (students) {
+                Object.values(students).forEach(s => {
+                    if (s.phone === phone) activeStudent = s;
+                });
             }
-        } else {
-            alert('الرقم السري للمعلم غير صحيح!');
-        }
+
+            if (activeStudent) {
+                currentUser = activeStudent;
+                enterStudentDashboard();
+            } else {
+                // فحص الانتظار
+                db.ref('pending_students').once('value', (pSnap) => {
+                    const pendings = pSnap.val();
+                    let inPending = false;
+                    if (pendings) {
+                        Object.values(pendings).forEach(p => {
+                            if (p.phone === phone) inPending = true;
+                        });
+                    }
+                    if (inPending) {
+                        document.getElementById('login-screen').classList.add('hidden');
+                        document.getElementById('pending-approval-screen').classList.remove('hidden');
+                    } else {
+                        localStorage.removeItem('smart_platform_user_v3');
+                        location.reload();
+                    }
+                });
+            }
+        });
     }
 
-    // الخطوة الأولى: التحقق من البيانات وتوليد كود الواتساب
-    function initiateWhatsAppVerification() {
+    function submitNewStudentRegistration() {
         const name = document.getElementById('student-name').value.trim();
         const phone = document.getElementById('student-phone').value.trim();
         const fatherPhone = document.getElementById('father-phone').value.trim();
         const grade = document.getElementById('student-grade').value;
+        const password = document.getElementById('student-pass').value.trim();
         const fileInput = document.getElementById('birth-certificate-file');
 
         if (!name || name.split(' ').length < 3) {
@@ -370,76 +451,60 @@
             return;
         }
         if (!phone || phone.length < 10) {
-            alert('يجب كتابة رقم هاتف الطالب الصحيح (مثل: 01149260102)!');
+            alert('يجب كتابة رقم هاتف الطالب الصحيح!');
             return;
         }
-        if (!fatherPhone) {
-            alert('يرجى إدخال هاتف ولي الأمر!');
+        if (!password) {
+            alert('يجب إدخال رقم سري خاص بك للدخول لاحقاً!');
             return;
         }
         if (!fileInput.files.length) {
-            alert('يجب إرفاق صورة شهادة الميلاد أو الهوية لإتمام التسجيل!');
+            alert('يجب إرفاق صورة شهادة الميلاد أو الهوية لكي يوافق عليها الليدر!');
             return;
         }
 
-        db.ref('registered_students').once('value', (snapshot) => {
-            const students = snapshot.val();
-            let isDuplicate = false;
+        // قراءة الصورة كـ Base64 لرفعها وحفظها في قاعدة البيانات السحابية
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const imageBase64 = e.target.result;
 
-            if (students) {
-                let list = Object.values(students);
-                isDuplicate = list.some(s => s.phone === phone || s.name === name);
-            }
-
-            if (isDuplicate) {
-                alert('⚠️ عذراً، هذا الاسم أو رقم الهاتف مسجل مسبقاً في المنصة!');
-                return;
-            }
-
-            // توليد كود عشوائي من 4 أرقام
-            generatedOtpCode = Math.floor(1000 + Math.random() * 9000).toString();
-            
-            pendingStudentPayload = {
+            const pendingPayload = {
                 name,
                 phone,
                 fatherPhone,
                 grade,
+                password,
+                image: imageBase64,
                 role: 'student',
-                joinedAt: Date.now()
+                submittedAt: Date.now()
             };
 
-            // رسالة الواتساب الجاهزة
-            const msg = `مرحباً مستر محمد، أرغب في تفعيل حسابي للطالب: ${name} برقم: ${phone}. كود التحقق الخاص بي هو: ${generatedOtpCode}`;
-            const waURL = `https://wa.me/${adminWhatsAppNumber}?text=${encodeURIComponent(msg)}`;
-            
-            // فتح واتساب
-            window.open(waURL, '_blank');
-
-            // إظهار خانة إدخال الكود
-            document.getElementById('registration-form-section').classList.add('hidden');
-            document.getElementById('whatsapp-otp-section').classList.remove('hidden');
-            alert('تم توليد كود التحقق وفتح تطبيق الواتساب. أرسل الرسالة، ثم اكتب الكود هنا لفتح الحساب!');
-        });
+            db.ref('pending_students').push(pendingPayload).then(() => {
+                alert('✅ تم إرسال طلبك وصورة شهادة الميلاد بنجاح لليدر! يجدر بك الانتظار لحين الموافقة.');
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('pending-approval-screen').classList.remove('hidden');
+            });
+        };
+        reader.readAsDataURL(fileInput.files[0]);
     }
 
-    // الخطوة الثانية: تأكيد الكود وحفظ الطالب نهائياً
-    function verifyOTPAndRegister() {
-        const userOtpInput = document.getElementById('entered-otp-code').value.trim();
+    function enterStudentDashboard() {
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('pending-approval-screen').classList.add('hidden');
+        document.getElementById('student-dashboard').classList.remove('hidden');
+        
+        document.getElementById('welcome-name').innerText = currentUser.name;
+        document.getElementById('profile-view-name').innerText = currentUser.name;
+        document.getElementById('profile-view-phone').innerText = currentUser.phone;
+        document.getElementById('profile-view-father').innerText = currentUser.fatherPhone;
+        document.getElementById('profile-view-grade').innerText = currentUser.grade;
 
-        if (userOtpInput === generatedOtpCode) {
-            db.ref('registered_students').push(pendingStudentPayload).then(() => {
-                currentUser = pendingStudentPayload;
-                localStorage.setItem('smart_platform_user_v2', JSON.stringify(currentUser));
-                alert(`✅ تم التحقق وتفعيل حسابك بنجاح يا ${currentUser.name}! أهلاً بك.`);
-                location.reload();
-            });
-        } else {
-            alert('❌ كود التحقق غير صحيح، يرجى التأكد من كتابة الأرقام الصحيحة الواردة.');
-        }
+        listenToExams();
+        loadStudentHistory();
     }
 
     function logoutSession() {
-        localStorage.removeItem('smart_platform_user_v2');
+        localStorage.removeItem('smart_platform_user_v3');
         location.reload();
     }
 
@@ -450,12 +515,101 @@
         event.currentTarget.classList.add('active');
     }
 
+    // إدارة لوحة المعلم والطلبات المعلقة
+    function loadTeacherDashboardData() {
+        // تحميل الطلبات المعلقة (التي تنتظر موافقة الليدر)
+        db.ref('pending_students').on('value', (snapshot) => {
+            const data = snapshot.val();
+            const container = document.getElementById('pending-students-list');
+            if (!data) {
+                container.innerHTML = '<p>لا توجد طلبات معلقة حالياً.</p>';
+                return;
+            }
+
+            let html = '';
+            Object.keys(data).forEach(key => {
+                let s = data[key];
+                html += `
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 12px; border: 1.5px solid #cbd5e1;">
+                        <p><b>الاسم:</b> ${s.name} | <b>الهاتف:</b> ${s.phone}</p>
+                        <p style="font-size: 13px; color: #555;">ولي الأمر: ${s.fatherPhone} | الصف: ${s.grade}</p>
+                        <div style="margin: 10px 0;">
+                            <a href="${s.image}" target="_blank">
+                                <img src="${s.image}" alt="شهادة الميلاد" style="width: 100px; height: 100px; object-fit: cover; border-radius: 6px; border: 1px solid #ccc;">
+                            </a>
+                            <p style="font-size: 11px; color: var(--accent);">اضغط على الصورة لرؤيتها بحجمها الكامل</p>
+                        </div>
+                        <div class="flex-row">
+                            <button class="btn btn-success" style="padding: 6px;" onclick="approveStudent('${key}')">موافقة وقبول ✅</button>
+                            <button class="btn btn-danger" style="padding: 6px;" onclick="rejectStudent('${key}')">رفض ❌</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        });
+
+        // تحميل الطلاب المقبولين
+        db.ref('registered_students').on('value', (snapshot) => {
+            const data = snapshot.val();
+            const container = document.getElementById('teacher-students-management-list');
+            if (!data) {
+                container.innerHTML = '<p>لا يوجد طلاب مقبولين حالياً.</p>';
+                return;
+            }
+
+            let html = '';
+            Object.keys(data).forEach(key => {
+                let s = data[key];
+                html += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee;">
+                        <div>
+                            <b>${s.name}</b><br>
+                            <span style="font-size: 12px; color: #555;">هاتف: ${s.phone} | الصف: ${s.grade}</span>
+                        </div>
+                        <button class="btn btn-danger" style="width: auto; padding: 5px 10px; font-size: 12px; margin:0;" onclick="kickAcceptedStudent('${key}')">طرد / حذف 🚫</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        });
+    }
+
+    function approveStudent(key) {
+        db.ref('pending_students/' + key).once('value', (snapshot) => {
+            const studentData = snapshot.val();
+            if (studentData) {
+                db.ref('registered_students').push(studentData).then(() => {
+                    db.ref('pending_students/' + key).remove().then(() => {
+                        alert('✅ تم قبول الطالب بنجاح وإضافته لقائمة الطلاب المعتمدين!');
+                    });
+                });
+            }
+        });
+    }
+
+    function rejectStudent(key) {
+        if (confirm('هل أنت متأكد من رفض هذا الطلب وحذف المستندات؟')) {
+            db.ref('pending_students/' + key).remove().then(() => {
+                alert('تم رفض الطلب بنجاح.');
+            });
+        }
+    }
+
+    function kickAcceptedStudent(key) {
+        if (confirm('هل أنت متأكد من طرد هذا الطالب وحذفه نهائياً من المنصة؟')) {
+            db.ref('registered_students/' + key).remove().then(() => {
+                alert('تم طرد الطالب بنجاح.');
+            });
+        }
+    }
+
     function addNewQuestionField(qText = "", opts = ["","","",""], correct = 0) {
         const container = document.getElementById('dynamic-questions-container');
         const qCount = container.children.length + 1;
         
         if (qCount > 200) {
-            alert('لقد وصلت للحد الأقصى (200 سؤال) في الاختبار الواحد!');
+            alert('لقد وصلت للحد الأقصى (200 سؤال)!');
             return;
         }
 
@@ -467,7 +621,7 @@
                 <button type="button" class="btn btn-danger" style="width: auto; padding: 5px 12px; font-size: 13px;" onclick="removeQuestionField(this)">حذف السؤال 🗑️</button>
             </div>
             <div class="form-group">
-                <label>نص السؤال (يدعم العربية أو الإنجليزية بدقة):</label>
+                <label>نص السؤال:</label>
                 <textarea class="m-q-text" rows="2" placeholder="اكتب السؤال هنا...">${qText}</textarea>
             </div>
             <div class="form-group"><input type="text" class="m-opt-0" placeholder="الخيار الأول / Option A" value="${opts[0]}"></div>
@@ -503,38 +657,6 @@
         cards.forEach((card, index) => {
             card.querySelector('.q-number').innerText = index + 1;
         });
-    }
-
-    function processBilingualOCR() {
-        const fileInput = document.getElementById('exam-image-file');
-        const lang = document.getElementById('ocr-lang-detect').value;
-
-        if (!fileInput.files.length) {
-            alert('يرجى اختيار صورة الامتحان الورقي أولاً!');
-            return;
-        }
-
-        alert('⚡ جاري تحليل الصورة واستخراج الأسئلة بنفس لغتها الأصلية...');
-        setTimeout(() => {
-            document.getElementById('dynamic-questions-container').innerHTML = '';
-            
-            if (lang === 'en') {
-                document.getElementById('exam-title-input').value = "Bilingual Exam (Extracted from English Paper)";
-                addNewQuestionField(
-                    "What is the primary factor influencing the chemical reaction rate in this experiment?",
-                    ["Temperature and concentration", "Volume of container only", "Color of solution", "Mass of container"],
-                    0
-                );
-            } else {
-                document.getElementById('exam-title-input').value = "امتحان تفاعلي مستخلص من الصورة الورقية العربية";
-                addNewQuestionField(
-                    "السؤال الأول المستخلص: ما هي الخاصية الأساسية التي تميز العناصر الانتقالية في الجدول الدوري؟",
-                    ["تعدد حالات الأكسدة واكتمال المدارات", "انعدام التوصيل الكهربي", "ثبات درجات الانصهار", "عدم تكوين مركبات ملونة"],
-                    0
-                );
-            }
-            alert('✅ تم استخراج الأسئلة بلغتها الأصلية بنجاح!');
-        }, 1200);
     }
 
     function publishExam() {
@@ -582,7 +704,7 @@
         };
 
         db.ref('active_exam').set(examData).then(() => {
-            alert(`تم نشر الامتحان بنجاح لجميع الطلاب! 🚀`);
+            alert(`تم نشر الامتحان بنجاح لجميع الطلاب المفعلين! 🚀`);
         });
     }
 
@@ -771,40 +893,6 @@
             document.getElementById('completed-exams-list').innerHTML = historyHTML || '<p>لم تقم بأي امتحانات بعد.</p>';
             updateLeaderboard(results);
         });
-    }
-
-    function loadTeacherDashboardData() {
-        db.ref('registered_students').on('value', (snapshot) => {
-            const data = snapshot.val();
-            const container = document.getElementById('teacher-students-management-list');
-            if (!data) {
-                container.innerHTML = '<p>لا يوجد طلاب مسجلين حالياً.</p>';
-                return;
-            }
-
-            let html = '';
-            Object.keys(data).forEach(key => {
-                let s = data[key];
-                html += `
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee;">
-                        <div>
-                            <b>${s.name}</b><br>
-                            <span style="font-size: 12px; color: #555;">هاتف: ${s.phone} | ولي الأمر: ${s.fatherPhone} | الصف: ${s.grade}</span>
-                        </div>
-                        <button class="btn btn-danger" style="width: auto; padding: 5px 10px; font-size: 12px; margin:0;" onclick="kickStudent('${key}')">طرد / حذف 🚫</button>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        });
-    }
-
-    function kickStudent(studentKey) {
-        if (confirm('هل أنت متأكد من طرد هذا الطالب وحذفه نهائياً من المنصة؟')) {
-            db.ref('registered_students/' + studentKey).remove().then(() => {
-                alert('تم طرد الطالب بنجاح.');
-            });
-        }
     }
 
     function updateLeaderboard(results) {
