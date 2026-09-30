@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة المعلم الذكية - النظام السحابي المتكامل</title>
+    <title>منصة المعلم الذكية - النظام السحابي الناري النهائي</title>
     <!-- مكتبات Firebase السحابية -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -80,27 +80,24 @@
         <h1>منصة المعلم الذكية 🎓</h1>
         <p style="text-align: center; color: #555; margin-bottom: 20px;">النظام السحابي الاحترافي لإدارة الطلاب والاختبارات</p>
         
-        <!-- تبديل خفيف بين تسجيل الدخول وإنشاء حساب -->
         <div style="display: flex; gap: 10px; margin-bottom: 20px;">
             <button class="btn" id="show-login-tab-btn" onclick="switchAuthMode('login')" style="background: var(--primary);">تسجيل الدخول برقمك السري 🔑</button>
             <button class="btn" id="show-reg-tab-btn" onclick="switchAuthMode('register')" style="background: #64748b;">حساب جديد (تسجيل لأول مرة) 📝</button>
         </div>
 
-        <!-- نموذج تسجيل الدخول للطلاب والليدر -->
         <div id="login-form-box" class="card-box" style="border: 2px solid var(--accent); background: #eff6ff;">
             <h3 style="color: var(--primary); margin-bottom: 15px;">👤 تسجيل الدخول للمنصة</h3>
             <div class="form-group">
                 <label>رقم هاتف الطالب أو كود المعلم:</label>
-                <input type="text" id="login-phone-or-code" placeholder="أدخل رقم هاتفك أو كود المعلم...">
+                <input type="text" id="login-phone-or-code" placeholder="أدخل رقم هاتفك أو كود المعلم (Mohammed 8888)...">
             </div>
             <div class="form-group">
                 <label>الرقم السري:</label>
-                <input type="password" id="login-password" placeholder="أدخل رقمك السري...">
+                <input type="password" id="login-password" placeholder="أدخل رقمك السري (8888)...">
             </div>
             <button class="btn btn-success" onclick="handleLogin()">دخول المنصة 🚀</button>
         </div>
 
-        <!-- نموذج إنشاء حساب جديد للطالب -->
         <div id="register-form-box" class="card-box hidden">
             <h3 style="color: var(--secondary); margin-bottom: 10px;">👨‍🎓 تسجيل طالب جديد (مسموح 3 محاولات لكل رقم)</h3>
             <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">قم بملء بياناتك وإرفاق صورة الهوية/الشهادة لمراجعتها من قِبل الليدر:</p>
@@ -143,7 +140,7 @@
         <h2 style="color: var(--warning);">⏳ حسابك قيد المراجعة والانتظار</h2>
         <p style="font-size: 1.1rem; color: #555; margin: 15px 0; line-height: 1.6;">
             تم إرسال طلب تسجيلك وصورة شهادة الميلاد بنجاح يا بطل.<br>
-            يقوم الليدر (المعلم) حالياً بمراجعة مستنداتك وسيتم تفعيل حسابك قريباً. يرجى العودة لاحقاً وتسجيل الدخول برقمك السري.
+            يقوم الليدر (المعلم) حالياً بمراجعة مستنداتك وسيتم تفعيل حسابك قريباً.
         </p>
         <button class="btn btn-danger" style="width: auto; padding: 10px 20px;" onclick="logoutSession()">تسجيل الخروج والعودة لاحقاً</button>
     </div>
@@ -151,22 +148,20 @@
     <!-- لوحة تحكم المعلم (الليدر) -->
     <div id="teacher-dashboard" class="hidden">
         <img src="12810.jpg" alt="المعلم" class="profile-img">
-        <h1>لوحة تحكم الليدر الشاملة ⚙️🔒</h1>
-        <p style="text-align:center; color: var(--success); font-weight:bold; margin-bottom:20px;">أهلاً بك يا مستر محمد. تحكم كامل بالطلاب والمستندات والامتحانات.</p>
+        <h1>لوحة تحكم الليدر الشاملة ⚙️🔒[span_2](start_span)[span_2](end_span)</h1>
+        <p style="text-align:center; color: var(--success); font-weight:bold; margin-bottom:20px;">أهلاً بك يا مستر محمد. تحكم كامل بالطلاب والمستندات والامتحانات[span_3](start_span)[span_3](end_span).</p>
         
-        <!-- قسم مراجعة طلبات انضمام الطلاب الجدد -->
         <div class="card-box" style="border: 2px solid var(--warning); background: #fffbeb;">
-            <h3>⏳ طلبات انضمام الطلاب المعلقة (تحتاج لموافقتك أو رفضك)</h3>
+            <h3>⏳ طلبات انضمام الطلاب المعلقة (تحتاج لموافقتك أو رفضك)[span_4](start_span)[span_4](end_span)</h3>
             <div id="pending-students-list" style="margin-top: 15px; max-height: 300px; overflow-y: auto;">
-                <p>لا توجد طلبات معلقة حالياً.</p>
+                <p>لا توجد طلبات معلقة حالياً[span_5](start_span)[span_5](end_span).</p>
             </div>
         </div>
 
-        <!-- بناء الامتحان اليدوي (حتى 200 سؤال) -->
         <div class="card-box">
-            <h3>✍️ بناء الامتحان الاحترافي (حتى 200 سؤال)</h3>
+            <h3>✍️ بناء الامتحان الاحترافي (حتى 200 سؤال مع صور توضيحية)[span_6](start_span)[span_6](end_span)</h3>
             <div class="form-group" style="margin-top: 15px;">
-                <label>اختر المادة الدراسية:</label>
+                <label>اختر المادة الدراسية[span_7](start_span)[span_7](end_span):</label>
                 <select id="exam-subject-select">
                     <option value="كيمياء - Chemistry">الكيمياء (Chemistry)</option>
                     <option value="فيزياء - Physics">الفيزياء (Physics)</option>
@@ -178,13 +173,13 @@
             </div>
 
             <div class="form-group">
-                <label>عنوان الامتحان أو الدرس:</label>
-                <input type="text" id="exam-title-input" placeholder="مثال: امتحان الباب الأول / Unit One Quiz...">
+                <label>عنوان الامتحان أو الدرس[span_8](start_span)[span_8](end_span):</label>
+                <input type="text" id="exam-title-input" placeholder="مثال: امتحان الباب الأول / Unit One Quiz...[span_9](start_span)"[span_9](end_span)>
             </div>
 
             <div id="dynamic-questions-container"></div>
 
-            <button class="btn btn-warning" style="margin-bottom: 20px;" onclick="addNewQuestionField()">➕ إضافة سؤال جديد (حتى 200 سؤال)</button>
+            <button class="btn btn-warning" style="margin-bottom: 20px;" onclick="addNewQuestionField()">➕ إضافة سؤال جديد (مع إمكانية إرفاق صورة)</button>
 
             <div class="form-group">
                 <label>وقت الامتحان بالدقائق:</label>
@@ -194,7 +189,6 @@
             <button class="btn btn-success" onclick="publishExam()">نشر الامتحان لكل الطلاب على السحابة 🚀</button>
         </div>
 
-        <!-- سجل الطلاب المقبولين وإدارة الحظر -->
         <div class="card-box">
             <h3>📋 سجل الطلاب المقبولين بالمنصة</h3>
             <div id="teacher-students-management-list" style="max-height: 250px; overflow-y: auto;">
@@ -231,7 +225,6 @@
             </div>
         </div>
 
-        <!-- بروفايل الطالب لعرض معلوماته الشخصية -->
         <div id="tab-profile" class="tab-pane hidden">
             <div class="card-box" style="text-align: right;">
                 <h3>👤 ملف بيانات الطالب الشخصية</h3>
@@ -255,7 +248,7 @@
         </div>
     </div>
 
-    <!-- شاشة الامتحان النشط للطالب -->
+    <!-- شاشة الامتحان النشط للطالب (تدعم عرض الصور المرفقة للأسئلة) -->
     <div id="exam-taking-screen" class="hidden">
         <div class="timer-box">الوقت المتبقي: <span id="timer-display">00:00</span></div>
         <div class="card-box">
@@ -266,8 +259,14 @@
             <div style="margin: 10px 0; font-weight: bold; color: var(--accent);">
                 <span id="question-counter">السؤال 1 من 1</span>
             </div>
+            
             <p id="exam-view-text" style="font-size: 1.2rem; margin: 15px 0; font-weight: bold; line-height: 1.6;"></p>
             
+            <!-- حاوية عرض صورة السؤال المرفقة -->
+            <div id="exam-question-img-container" style="text-align: center; margin: 15px 0; display: none;">
+                <img id="exam-question-img" src="" alt="صورة توضيحية للسؤال" style="max-width: 100%; max-height: 250px; border-radius: 8px; border: 2px solid #cbd5e1; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            </div>
+
             <div id="exam-options-list"></div>
 
             <div class="flex-row" style="margin-top: 25px;">
@@ -310,7 +309,7 @@
     let studentAnswers = {};
 
     window.onload = function() {
-        const savedUser = localStorage.getItem('smart_platform_user_v3');
+        const savedUser = localStorage.getItem('smart_platform_user_v4');
         if (savedUser) {
             currentUser = JSON.parse(savedUser);
             if (currentUser.role === 'leader') {
@@ -349,10 +348,10 @@
             return;
         }
 
-        // فحص دخول المعلم (الليدر) بالكود السري الجديد
-        if ((phoneOrCode === 'Mohammed 8888' || phoneOrCode === '1234' || phoneOrCode === '01149260102') && (password === '8888' || password === '1234')) {
+        // فحص دخول المعلم (الليدر) بكودك السري المعتمد
+        if ((phoneOrCode === 'Mohammed 8888' || phoneOrCode === '01149260102') && password === '8888') {
             currentUser = { name: 'المعلم (الليدر)', role: 'leader' };
-            localStorage.setItem('smart_platform_user_v3', JSON.stringify(currentUser));
+            localStorage.setItem('smart_platform_user_v4', JSON.stringify(currentUser));
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('teacher-dashboard').classList.remove('hidden');
             loadTeacherDashboardData();
@@ -362,7 +361,7 @@
             return;
         }
 
-        // فحص دخول الطلاب المقبولين في قاعدة البيانات
+        // فحص دخول الطلاب المقبولين
         db.ref('registered_students').once('value', (snapshot) => {
             const students = snapshot.val();
             let foundStudent = null;
@@ -377,10 +376,9 @@
 
             if (foundStudent) {
                 currentUser = foundStudent;
-                localStorage.setItem('smart_platform_user_v3', JSON.stringify(currentUser));
+                localStorage.setItem('smart_platform_user_v4', JSON.stringify(currentUser));
                 enterStudentDashboard();
             } else {
-                // فحص هل هو في قائمة الانتظار؟
                 db.ref('pending_students').once('value', (pSnap) => {
                     const pendings = pSnap.val();
                     let inPending = false;
@@ -417,7 +415,6 @@
                 currentUser = activeStudent;
                 enterStudentDashboard();
             } else {
-                // فحص الانتظار
                 db.ref('pending_students').once('value', (pSnap) => {
                     const pendings = pSnap.val();
                     let inPending = false;
@@ -430,7 +427,7 @@
                         document.getElementById('login-screen').classList.add('hidden');
                         document.getElementById('pending-approval-screen').classList.remove('hidden');
                     } else {
-                        localStorage.removeItem('smart_platform_user_v3');
+                        localStorage.removeItem('smart_platform_user_v4');
                         location.reload();
                     }
                 });
@@ -463,7 +460,6 @@
             return;
         }
 
-        // فحص عدد محاولات التسجيل لهذا الرقم (بحد أقصى 3 محاولات)
         db.ref('registration_attempts/' + phone).once('value', (attSnap) => {
             let currentAttempts = attSnap.val() || 0;
 
@@ -472,7 +468,6 @@
                 return;
             }
 
-            // قراءة الصورة كـ Base64 لرفعها وحفظها في قاعدة البيانات السحابية
             const reader = new FileReader();
             reader.onload = function(e) {
                 const imageBase64 = e.target.result;
@@ -488,7 +483,6 @@
                     submittedAt: Date.now()
                 };
 
-                // زيادة عداد المحاولات بواقع 1
                 db.ref('registration_attempts/' + phone).set(currentAttempts + 1).then(() => {
                     db.ref('pending_students').push(pendingPayload).then(() => {
                         alert(`✅ تم إرسال طلبك بنجاح لليدر! (هذه المحاولة رقم ${currentAttempts + 1} من أصل 3 مسموحة). يرجى الانتظار لحين الموافقة.`);
@@ -517,7 +511,7 @@
     }
 
     function logoutSession() {
-        localStorage.removeItem('smart_platform_user_v3');
+        localStorage.removeItem('smart_platform_user_v4');
         location.reload();
     }
 
@@ -528,9 +522,7 @@
         event.currentTarget.classList.add('active');
     }
 
-    // إدارة لوحة المعلم والطلبات المعلقة
     function loadTeacherDashboardData() {
-        // تحميل الطلبات المعلقة (التي تنتظر موافقة الليدر)
         db.ref('pending_students').on('value', (snapshot) => {
             const data = snapshot.val();
             const container = document.getElementById('pending-students-list');
@@ -562,7 +554,6 @@
             container.innerHTML = html;
         });
 
-        // تحميل الطلاب المقبولين
         db.ref('registered_students').on('value', (snapshot) => {
             const data = snapshot.val();
             const container = document.getElementById('teacher-students-management-list');
@@ -617,7 +608,7 @@
         }
     }
 
-    function addNewQuestionField(qText = "", opts = ["","","",""], correct = 0) {
+    function addNewQuestionField(qText = "", opts = ["","","",""], correct = 0, imgBase64 = "") {
         const container = document.getElementById('dynamic-questions-container');
         const qCount = container.children.length + 1;
         
@@ -637,6 +628,17 @@
                 <label>نص السؤال:</label>
                 <textarea class="m-q-text" rows="2" placeholder="اكتب السؤال هنا...">${qText}</textarea>
             </div>
+            
+            <!-- زر إرفاق صورة للسؤال -->
+            <div class="form-group" style="background: #f1f5f9; padding: 10px; border-radius: 8px;">
+                <label>📷 إرفاق صورة توضيحية لهذا السؤال (اختياري):</label>
+                <input type="file" class="m-q-img-file" accept="image/*" onchange="previewQuestionImage(this)">
+                <input type="hidden" class="m-q-img-data" value="${imgBase64}">
+                <div class="img-preview-box" style="margin-top: 8px; text-align: center;">
+                    ${imgBase64 ? `<img src="${imgBase64}" style="max-height: 100px; border-radius: 6px; border: 1px solid #ccc;">` : ''}
+                </div>
+            </div>
+
             <div class="form-group"><input type="text" class="m-opt-0" placeholder="الخيار الأول / Option A" value="${opts[0]}"></div>
             <div class="form-group"><input type="text" class="m-opt-1" placeholder="الخيار الثاني / Option B" value="${opts[1]}"></div>
             <div class="form-group"><input type="text" class="m-opt-2" placeholder="الخيار الثالث / Option C" value="${opts[2]}"></div>
@@ -653,6 +655,19 @@
         `;
         container.appendChild(qCard);
         updateQuestionNumbers();
+    }
+
+    function previewQuestionImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Str = e.target.result;
+                const card = input.closest('.question-card-builder');
+                card.querySelector('.m-q-img-data').value = base64Str;
+                card.querySelector('.img-preview-box').innerHTML = `<img src="${base64Str}" style="max-height: 100px; border-radius: 6px; border: 1px solid #ccc;">`;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
     }
 
     function removeQuestionField(btn) {
@@ -688,6 +703,7 @@
 
         questionCards.forEach((card, idx) => {
             let qText = card.querySelector('.m-q-text').value.trim();
+            let qImg = card.querySelector('.m-q-img-data').value;
             let opts = [
                 card.querySelector('.m-opt-0').value.trim(),
                 card.querySelector('.m-opt-1').value.trim(),
@@ -702,7 +718,7 @@
                 return;
             }
 
-            questionsList.push({ text: qText, options: opts, correct: correct });
+            questionsList.push({ text: qText, image: qImg, options: opts, correct: correct });
         });
 
         if (!isValid) return;
@@ -717,7 +733,7 @@
         };
 
         db.ref('active_exam').set(examData).then(() => {
-            alert(`تم نشر الامتحان بنجاح لجميع الطلاب المفعلين! 🚀`);
+            alert(`تم نشر الامتحان بنجاح لجميع الطلاب المفعلين (مع دعم الصور المرفقة)! 🚀`);
         });
     }
 
@@ -785,6 +801,17 @@
         const q = currentExamData.questions[currentQIndex];
         document.getElementById('question-counter').innerText = `السؤال ${currentQIndex + 1} من ${currentExamData.questions.length}`;
         document.getElementById('exam-view-text').innerText = q.text;
+
+        // عرض أو إخفاء صورة السؤال المرفقة
+        const imgContainer = document.getElementById('exam-question-img-container');
+        const imgElement = document.getElementById('exam-question-img');
+        if (q.image && q.image.trim() !== "") {
+            imgElement.src = q.image;
+            imgContainer.style.display = 'block';
+        } else {
+            imgContainer.style.display = 'none';
+            imgElement.src = '';
+        }
 
         let optionsHTML = '';
         q.options.forEach((opt, idx) => {
@@ -854,6 +881,7 @@
             reviewHTML += `
                 <div class="review-card ${isCorrect ? 'review-correct' : 'review-wrong'}">
                     <p><b>السؤال (${idx+1}):</b> ${q.text}</p>
+                    ${q.image ? `<div style="margin: 8px 0;"><img src="${q.image}" style="max-height: 80px; border-radius: 4px;"></div>` : ''}
                     <p style="margin-top: 6px;">إجابتك: <b>${studentChoiceText}</b></p>
                     ${!isCorrect ? `<p style="color: var(--danger); margin-top: 4px;">❌ الإجابة الصحيحة: <b>${correctChoiceText}</b></p>` : `<p style="color: var(--success); margin-top: 4px;">✅ إجابة صحيحة!</p>`}
                 </div>
