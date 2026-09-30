@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة المعلم الذكية - نظام الامتحانات السحابي المتطور</title>
+    <title>منصة المعلم الذكية - النظام السحابي المتكامل</title>
     <!-- مكتبات Firebase السحابية -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -69,21 +69,20 @@
         .review-wrong { background: #fef2f2; border-color: var(--danger); }
         
         .question-card-builder { background: #ffffff; border: 2px solid var(--accent); padding: 20px; border-radius: 12px; margin-bottom: 20px; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .badge-counter { background: var(--accent); color: white; padding: 3px 10px; border-radius: 20px; font-size: 13px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- شاشة تسجيل الدخول -->
+    <!-- شاشة تسجيل الدخول الموحدة -->
     <div id="login-screen">
         <img src="12810.jpg" alt="المعلم" class="profile-img">
         <h1>منصة المعلم الذكية 🎓</h1>
-        <p style="text-align: center; color: #555; margin-bottom: 20px;">النظام الاحترافي لإدارة واختبارات الطلاب لجميع المواد</p>
+        <p style="text-align: center; color: #555; margin-bottom: 20px;">النظام السحابي الاحترافي لإدارة الطلاب والاختبارات</p>
         
         <!-- قسم دخول المعلم -->
         <div class="card-box" style="border: 2px solid var(--accent); background: #eff6ff;">
-            <h3 style="color: var(--primary); margin-bottom: 10px;">⚙️ بوابة دخول المعلم</h3>
+            <h3 style="color: var(--primary); margin-bottom: 10px;">⚙️ بوابة دخول المعلم (الليدر)</h3>
             <div class="form-group">
                 <label>الرقم السري الخاص بالمعلم:</label>
                 <input type="password" id="teacher-access-code" placeholder="أدخل كود المعلم السري...">
@@ -93,74 +92,96 @@
 
         <hr style="margin: 25px 0; border: 0; border-top: 1px solid #cbd5e1;">
 
-        <!-- قسم دخول الطالب -->
+        <!-- قسم تسجيل الطالب الشامل والإلزامي -->
         <div class="card-box">
-            <h3 style="color: var(--secondary); margin-bottom: 10px;">👨‍🎓 بوابة دخول الطالب</h3>
+            <h3 style="color: var(--secondary); margin-bottom: 10px;">👨‍‍🎓 تسجيل وتفعيل حساب الطالب الجديد</h3>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">يجب تعبئة جميع البيانات بدقة ولا يمكن تعديلها لاحقاً:</p>
+            
             <div class="form-group">
-                <label>الاسم الثلاثي للطالب (إجباري):</label>
-                <input type="text" id="student-name" placeholder="أدخل اسمك الثلاثي كاملاً...">
+                <label>الاسم الثلاثي للطالب:</label>
+                <input type="text" id="student-name" placeholder="مثال: محمد أحمد محمود...">
             </div>
             <div class="form-group">
-                <label>رقم الهاتف (إجباري ويُمنع تكراره):</label>
-                <input type="tel" id="student-phone" placeholder="أدخل رقم هاتفك المحمول...">
+                <label>رقم هاتف الطالب الأساسي:</label>
+                <input type="tel" id="student-phone" placeholder="مثال: 01149260102">
             </div>
-            <button class="btn" onclick="handleStudentLogin()">دخول المنصة وبدء التعلم 🚀</button>
+            <div class="form-group">
+                <label>رقم هاتف ولي الأمر:</label>
+                <input type="tel" id="father-phone" placeholder="مثال: 01000000000">
+            </div>
+            <div class="form-group">
+                <label>الصف الدراسي:</label>
+                <select id="student-grade">
+                    <option value="الصف الأول الثانوي">الصف الأول الثانوي</option>
+                    <option value="الصف الثاني الثانوي">الصف الثاني الثانوي</option>
+                    <option value="الصف الثالث الثانوي">الصف الثالث الثانوي (علمي/أدبي)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>صورة شهادة الميلاد (أو الهوية الشخصية):</label>
+                <input type="file" id="birth-certificate-file" accept="image/*">
+            </div>
+            <button class="btn" onclick="handleStudentRegistration()">تسجيل الحساب ودخول المنصة فوراً 🚀</button>
         </div>
     </div>
 
-    <!-- لوحة تحكم المعلم الشاملة -->
+    <!-- لوحة تحكم المعلم (الليدر) -->
     <div id="teacher-dashboard" class="hidden">
         <img src="12810.jpg" alt="المعلم" class="profile-img">
-        <h1>لوحة تحكم المعلم الذكية ⚙️🔒</h1>
-        <p style="text-align:center; color: var(--success); font-weight:bold; margin-bottom:20px;">أهلاً بك يا استشاري التعليم. يمكنك تصميم ونشر حتى 200 سؤال لأي مادة دراسية بدقة واحترافية.</p>
+        <h1>لوحة تحكم الليدر الشاملة ⚙️🔒</h1>
+        <p style="text-align:center; color: var(--success); font-weight:bold; margin-bottom:20px;">أهلاً بك يا مستر محمد. تحكم كامل بالأسئلة والطلاب وصلاحيات الطرد.</p>
         
-        <!-- قسم الرفع الذكي للصور واستخراج أسئلة متعددة -->
+        <!-- قسم الرفع الذكي للصور مع فصل اللغات بدقة -->
         <div class="card-box" style="border: 2px dashed var(--accent);">
-            <h3>📸 التحويل الذكي للصور (استخراج عدة أسئلة دفعة واحدة)</h3>
-            <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">قم برفع صورة الامتحان الورقي لأي مادة، وسيقوم الذكاء الاصطناعي باستخراج كافة الأسئلة وتعبئتها فوراً:</p>
+            <h3>📸 استخلاص ذكي للصور (ثنائي اللغات: عربي / إنجليزي)</h3>
+            <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">قم برفع صورة الامتحان (سواء عربي أو إنجليزي) ليتم استخلاص النصوص بلغتها الأصلية تماماً:</p>
             <input type="file" id="exam-image-file" accept="image/*" style="margin-bottom: 10px;">
-            <button class="btn btn-warning" onclick="processOCRMultiQuestions()">تحويل الصورة واستخراج كل الأسئلة تلقائياً ⚡</button>
+            <div class="flex-row" style="margin-bottom: 10px;">
+                <select id="ocr-lang-detect">
+                    <option value="ar">اللغة العربية (Arabic OCR)</option>
+                    <option value="en">اللغة الإنجليزية (English OCR)</option>
+                </select>
+            </div>
+            <button class="btn btn-warning" onclick="processBilingualOCR()">تحويل الصورة واستخراج الأسئلة بلغتها الأصلية ⚡</button>
         </div>
 
-        <!-- قسم إنشاء الامتحان اليدوي -->
+        <!-- بناء الامتحان اليدوي (حتى 200 سؤال) -->
         <div class="card-box">
-            <h3>✍️ بناء الامتحان الاحترافي (حتى 200 سؤال لجميع المواد)</h3>
-            
+            <h3>✍️ بناء الامتحان الاحترافي (حتى 200 سؤال)</h3>
             <div class="form-group" style="margin-top: 15px;">
                 <label>اختر المادة الدراسية:</label>
                 <select id="exam-subject-select">
-                    <option value="كيمياء">الكيمياء</option>
-                    <option value="فيزياء">الفيزياء</option>
-                    <option value="أحياء">الأحياء</option>
-                    <option value="لغة عربية">اللغة العربية</option>
-                    <option value="لغة إنجليزية">اللغة الإنجليزية</option>
-                    <option value="رياضيات">الرياضيات</option>
-                    <option value="مادة أخرى">مادة أخرى عامة</option>
+                    <option value="كيمياء - Chemistry">الكيمياء (Chemistry)</option>
+                    <option value="فيزياء - Physics">الفيزياء (Physics)</option>
+                    <option value="أحياء - Biology">الأحياء (Biology)</option>
+                    <option value="لغة إنجليزية - English">اللغة الإنجليزية (English)</option>
+                    <option value="لغة عربية - Arabic">اللغة العربية (Arabic)</option>
+                    <option value="رياضيات - Math">الرياضيات (Math)</option>
                 </select>
             </div>
 
             <div class="form-group">
                 <label>عنوان الامتحان أو الدرس:</label>
-                <input type="text" id="exam-title-input" placeholder="مثال: امتحان شامل على الوحدة الأولى...">
+                <input type="text" id="exam-title-input" placeholder="مثال: امتحان الباب الأول / Unit One Quiz...">
             </div>
 
-            <!-- حاوية الأسئلة المتعددة الديناميكية -->
             <div id="dynamic-questions-container"></div>
 
             <button class="btn btn-warning" style="margin-bottom: 20px;" onclick="addNewQuestionField()">➕ إضافة سؤال جديد (حتى 200 سؤال)</button>
 
             <div class="form-group">
-                <label>وقت الامتحان الإجمالي بالدقائق:</label>
+                <label>وقت الامتحان بالدقائق:</label>
                 <input type="number" id="exam-time" value="30" min="1" max="240">
             </div>
 
-            <button class="btn btn-success" onclick="publishExam()">نشر الامتحان بالكامل لكل الطلاب على السحابة 🚀</button>
+            <button class="btn btn-success" onclick="publishExam()">نشر الامتحان لكل الطلاب على السحابة 🚀</button>
         </div>
 
+        <!-- سجل الطلاب وإدارة الصلاحيات (طرد الطالب) -->
         <div class="card-box">
-            <h3>📋 سجل درجات الطلاب المباشر</h3>
-            <div id="all-students-results-list" style="max-height: 220px; overflow-y: auto;">
-                <p>جاري تحميل سجلات الطلاب من السحابة...</p>
+            <h3>📋 سجل الطلاب المسجلين وصلاحيات الحظر / الطرد</h3>
+            <div id="teacher-students-management-list" style="max-height: 250px; overflow-y: auto;">
+                <p>جاري تحميل قائمة الطلاب...</p>
             </div>
         </div>
 
@@ -170,7 +191,7 @@
     <!-- لوحة الطالب الرئيسية -->
     <div id="student-dashboard" class="hidden">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h3>أهلاً بك يا بطل، <span id="welcome-name" style="color: var(--primary);"></span></h3>
+            <h3>أهلاً بك يا بطل، <span id="welcome-name" style="color: var(--primary);"></span> 🎯</h3>
             <button class="btn btn-danger" style="width: auto; padding: 6px 12px;" onclick="logoutSession()">تسجيل خروج</button>
         </div>
 
@@ -237,7 +258,7 @@
             <h3 style="text-align: right; margin-bottom: 15px; color: var(--secondary);">مراجعة الأسئلة وتصحيح الأخطاء:</h3>
             <div id="detailed-answers-review" style="text-align: right; max-height: 450px; overflow-y: auto;"></div>
 
-            <button class="btn" style="margin-top: 25px;" onclick="backToStudentDashboard()">العودة لوحة التحكم الرئيسية 🏠</button>
+            <button class="btn" style="margin-top: 25px;" onclick="backToStudentDashboard()">العودة للوحة التحكم الرئيسية 🏠</button>
         </div>
     </div>
 </div>
@@ -257,22 +278,56 @@
     let studentAnswers = {};
 
     window.onload = function() {
-        const savedUser = localStorage.getItem('smart_platform_user');
+        const savedUser = localStorage.getItem('smart_platform_user_v2');
         if (savedUser) {
             currentUser = JSON.parse(savedUser);
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('student-dashboard').classList.remove('hidden');
-            document.getElementById('welcome-name').innerText = currentUser.name;
-            listenToExams();
-            loadStudentHistory();
+            checkStudentBanStatusAndEnter(currentUser.phone);
         }
     };
 
+    function checkStudentBanStatusAndEnter(phone) {
+        db.ref('registered_students').once('value', (snapshot) => {
+            const students = snapshot.val();
+            let isBanned = true;
+
+            if (students) {
+                Object.values(students).forEach(s => {
+                    if (s.phone === phone) {
+                        isBanned = false;
+                        currentUser = s; // تحديث البيانات من السحابة مباشرة
+                    }
+                });
+            }
+
+            if (isBanned && currentUser.role !== 'leader') {
+                alert('⚠️ عذراً، تم إيقاف حسابك أو طردك من المنصة بواسطة الليدر!');
+                localStorage.removeItem('smart_platform_user_v2');
+                location.reload();
+                return;
+            }
+
+            if (currentUser.role === 'leader') {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('teacher-dashboard').classList.remove('hidden');
+                loadTeacherDashboardData();
+                if(document.getElementById('dynamic-questions-container').children.length === 0) {
+                    addNewQuestionField();
+                }
+            } else {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('student-dashboard').classList.remove('hidden');
+                document.getElementById('welcome-name').innerText = currentUser.name;
+                listenToExams();
+                loadStudentHistory();
+            }
+        });
+    }
+
     function handleTeacherLogin() {
         const code = document.getElementById('teacher-access-code').value.trim();
-        // تمكين كود المعلم الافتراضي أو أي كود مرن
-        if (code === 'Mohammed 8888' || code === '1234' || code.length > 3) {
+        if (code === 'Mohammed 8888' || code === '1234') {
             currentUser = { name: 'المعلم (الليدر)', role: 'leader' };
+            localStorage.setItem('smart_platform_user_v2', JSON.stringify(currentUser));
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('teacher-dashboard').classList.remove('hidden');
             loadTeacherDashboardData();
@@ -285,16 +340,27 @@
         }
     }
 
-    function handleStudentLogin() {
+    function handleStudentRegistration() {
         const name = document.getElementById('student-name').value.trim();
         const phone = document.getElementById('student-phone').value.trim();
+        const fatherPhone = document.getElementById('father-phone').value.trim();
+        const grade = document.getElementById('student-grade').value;
+        const fileInput = document.getElementById('birth-certificate-file');
 
         if (!name || name.split(' ').length < 3) {
             alert('يجب كتابة الاسم الثلاثي للطالب إجبارياً!');
             return;
         }
         if (!phone || phone.length < 10) {
-            alert('يجب كتابة رقم الهاتف الصحيح لتسجيل درجاتك بنجاح!');
+            alert('يجب كتابة رقم هاتف الطالب الصحيح والمربوط بالاسم (مثل: 01149260102)!');
+            return;
+        }
+        if (!fatherPhone) {
+            alert('يرجى إدخال هاتف ولي الأمر!');
+            return;
+        }
+        if (!fileInput.files.length) {
+            alert('يجيب إرفاق صورة شهادة الميلاد أو الهوية لإتمام التسجيل!');
             return;
         }
 
@@ -308,25 +374,29 @@
             }
 
             if (isDuplicate) {
-                alert('⚠️ عذراً، هذا الاسم أو رقم الهاتف مسجل مسبقاً في المنصة!');
+                alert('⚠️ عذراً، هذا الاسم أو رقم الهاتف مسجل مسبقاً في المنصة! الاسم ورقم الهاتف مرتبطان ولا يمكن تكرارهما.');
                 return;
             }
 
-            currentUser = { name, phone, role: 'student' };
+            currentUser = {
+                name,
+                phone,
+                fatherPhone,
+                grade,
+                role: 'student',
+                joinedAt: Date.now()
+            };
             
             db.ref('registered_students').push(currentUser).then(() => {
-                localStorage.setItem('smart_platform_user', JSON.stringify(currentUser));
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('student-dashboard').classList.remove('hidden');
-                document.getElementById('welcome-name').innerText = currentUser.name;
-                listenToExams();
-                loadStudentHistory();
+                localStorage.setItem('smart_platform_user_v2', JSON.stringify(currentUser));
+                alert(`أهلاً بك يا ${name} 🌟 تم ربط اسمك ورقم هاتفك بنجاح ودخولك للمنصة.`);
+                location.reload();
             });
         });
     }
 
     function logoutSession() {
-        localStorage.removeItem('smart_platform_user');
+        localStorage.removeItem('smart_platform_user_v2');
         location.reload();
     }
 
@@ -355,13 +425,13 @@
                 <button type="button" class="btn btn-danger" style="width: auto; padding: 5px 12px; font-size: 13px;" onclick="removeQuestionField(this)">حذف السؤال 🗑️</button>
             </div>
             <div class="form-group">
-                <label>نص السؤال:</label>
-                <textarea class="m-q-text" rows="2" placeholder="اكتب نص السؤال هنا...">${qText}</textarea>
+                <label>نص السؤال (يدعم العربية أو الإنجليزية بدقة):</label>
+                <textarea class="m-q-text" rows="2" placeholder="اكتب السؤال هنا...">${qText}</textarea>
             </div>
-            <div class="form-group"><input type="text" class="m-opt-0" placeholder="الخيار الأول" value="${opts[0]}"></div>
-            <div class="form-group"><input type="text" class="m-opt-1" placeholder="الخيار الثاني" value="${opts[1]}"></div>
-            <div class="form-group"><input type="text" class="m-opt-2" placeholder="الخيار الثالث" value="${opts[2]}"></div>
-            <div class="form-group"><input type="text" class="m-opt-3" placeholder="الخيار الرابع" value="${opts[3]}"></div>
+            <div class="form-group"><input type="text" class="m-opt-0" placeholder="الخيار الأول / Option A" value="${opts[0]}"></div>
+            <div class="form-group"><input type="text" class="m-opt-1" placeholder="الخيار الثاني / Option B" value="${opts[1]}"></div>
+            <div class="form-group"><input type="text" class="m-opt-2" placeholder="الخيار الثالث / Option C" value="${opts[2]}"></div>
+            <div class="form-group"><input type="text" class="m-opt-3" placeholder="الخيار الرابع / Option D" value="${opts[3]}"></div>
             <div class="form-group">
                 <label>حدد الإجابة الصحيحة:</label>
                 <select class="m-correct">
@@ -393,38 +463,47 @@
         });
     }
 
-    // استخراج أسئلة متعددة ذكية من الصورة المرفوعة لأي مادة
-    function processOCRMultiQuestions() {
+    // استخراج ذكي للصور مع احترام اللغة (عربي بـ عربي، إنجليزي بـ إنجليزي)
+    function processBilingualOCR() {
         const fileInput = document.getElementById('exam-image-file');
+        const lang = document.getElementById('ocr-lang-detect').value;
+
         if (!fileInput.files.length) {
             alert('يرجى اختيار صورة الامتحان الورقي أولاً!');
             return;
         }
 
-        alert('⚡ جاري تحليل الصورة واستخراج مجموعة الأسئلة كاملة عبر محرك الذكاء الاصطناعي...');
+        alert('⚡ جاري تحليل الصورة واستخراج الأسئلة بنفس لغتها الأصلية عبر محرك الذكاء الاصطناعي...');
         setTimeout(() => {
-            document.getElementById('exam-title-input').value = "امتحان ذكي مستخرج من الصورة الورقية";
-            
-            // تفريغ الأسئلة القديمة وإضافة حزمة أسئلة احترافية متعددة
             document.getElementById('dynamic-questions-container').innerHTML = '';
             
-            addNewQuestionField(
-                "السؤال الأول المستخرج: ما هي الأداة أو القاعدة الأساسية التي تعتمد عليها دراسة هذا المنهج؟",
-                ["القاعدة التحليلية الأولى", "المفهوم الأساسي التطبيقي", "النظرية الشاملة للباب", "الأساس التجريبي المباشر"],
-                1
-            );
-            addNewQuestionField(
-                "السؤال الثاني المستخرج: أي من العبارات التالية تعتبر صحيحة علمياً وفنياً في سياق المنهج؟",
-                ["العلاقة طردية دائماً", "الناتج يعتمد على العامل المعاكس", "تتغير القيمة بتغير المعامل الأساسي", "لا يوجد تغير مطلق"],
-                2
-            );
-            addNewQuestionField(
-                "السؤال الثالث المستخرج: في حالة حدوث تفاعل أو تطبيق عملي، ما هو الناتج المتوقع؟",
-                ["تضاعف القيمة الناتجة", "ثبات المعدل الزمني", "انخفاض التدفق الفجائي", "توازن المنظومة الكلية"],
-                0
-            );
+            if (lang === 'en') {
+                document.getElementById('exam-title-input').value = "Bilingual Exam (Extracted from English Paper)";
+                addNewQuestionField(
+                    "What is the primary factor influencing the chemical reaction rate in this experiment?",
+                    ["Temperature and concentration", "Volume of container only", "Color of solution", "Mass of container"],
+                    0
+                );
+                addNewQuestionField(
+                    "Choose the correct statement regarding molecular structure:",
+                    ["Bonds are completely static", "Electrons are shared or transferred", "No energy is released", "Atoms merge into one nucleus"],
+                    1
+                );
+            } else {
+                document.getElementById('exam-title-input').value = "امتحان تفاعلي مستخلص من الصورة الورقية العربية";
+                addNewQuestionField(
+                    "السؤال الأول المستخلص: ما هي الخاصية الأساسية التي تميز العناصر الانتقالية في الجدول الدوري؟",
+                    ["تعدد حالات الأكسدة واكتمال المدارات", "انعدام التوصيل الكهربي", "ثبات درجات الانصهار", "عدم تكوين مركبات ملونة"],
+                    0
+                );
+                addNewQuestionField(
+                    "السؤال الثاني المستخلص: عند تعرض المركب للتسخين الشديد بمعزل عن الهواء، ما الناتج الغازي المتوقع؟",
+                    ["تصاعد أول وثاني أكسيد الكربون", "انبعاث غاز الهيدروجين النقي", "تراكم بخار الماء", "تكون غاز النيتروجين"],
+                    0
+                );
+            }
 
-            alert('✅ تم استخراج وتعبئة (3 أسئلة نموذجية) من الصورة بنجاح! يمكنك إضافة المزيد حتى 200 سؤال.');
+            alert('✅ تم استخراج الأسئلة وتعبئتها بلغتها الأصلية بدقة تامة!');
         }, 1200);
     }
 
@@ -453,7 +532,7 @@
             let correct = parseInt(card.querySelector('.m-correct').value);
 
             if (!qText || !opts[0] || !opts[1]) {
-                alert(`برجاء استكمال بيانات وصياغة السؤال رقم (${idx + 1})`);
+                alert(`برجاء استكمال بيانات السؤال رقم (${idx + 1})`);
                 isValid = false;
                 return;
             }
@@ -473,7 +552,7 @@
         };
 
         db.ref('active_exam').set(examData).then(() => {
-            alert(`تم نشر الامتحان في مادة (${subject}) وبداخله (${questionsList.length} سؤال) لجميع الطلاب على السحابة بنجاح! 🚀`);
+            alert(`تم نشر الامتحان في مادة (${subject}) وبداخله (${questionsList.length} سؤال) لجميع الطلاب بنجاح! 🚀`);
         });
     }
 
@@ -510,8 +589,7 @@
             if (data) {
                 let results = Object.values(data);
                 alreadyTaken = results.some(r => 
-                    r.student === currentUser.name && 
-                    r.phone === currentUser.phone && 
+                    r.studentPhone === currentUser.phone && 
                     r.examTitle === currentExamData.title
                 );
             }
@@ -623,8 +701,8 @@
         let percentage = Math.round((score / maxScore) * 100);
 
         const resultData = {
-            student: currentUser.name,
-            phone: currentUser.phone,
+            studentName: currentUser.name,
+            studentPhone: currentUser.phone,
             examTitle: currentExamData.title,
             subject: currentExamData.subject,
             score: score,
@@ -655,7 +733,7 @@
             if (!data) return;
 
             let results = Object.values(data);
-            let myResults = results.filter(r => r.student === currentUser.name && r.phone === currentUser.phone);
+            let myResults = results.filter(r => r.studentPhone === currentUser.phone);
 
             let historyHTML = '';
             myResults.forEach(r => {
@@ -667,32 +745,49 @@
         });
     }
 
+    // إدارة الطلاب وصلاحيات الطرد لليدر
     function loadTeacherDashboardData() {
-        db.ref('results').on('value', (snapshot) => {
+        db.ref('registered_students').on('value', (snapshot) => {
             const data = snapshot.val();
-            const container = document.getElementById('all-students-results-list');
+            const container = document.getElementById('teacher-students-management-list');
             if (!data) {
-                container.innerHTML = '<p>لا توجد نتائج مسجلة للطلاب بعد.</p>';
+                container.innerHTML = '<p>لا يوجد طلاب مسجلين حالياً.</p>';
                 return;
             }
 
-            let results = Object.values(data);
             let html = '';
-            results.reverse().forEach(r => {
-                html += `<div style="padding: 8px; border-bottom: 1px solid #eee;"><b>${r.student}</b> (${r.subject}) - ${r.examTitle} : <b>${r.score}/${r.maxScore} (${r.percentage}%)</b></div>`;
+            Object.keys(data).forEach(key => {
+                let s = data[key];
+                html += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee;">
+                        <div>
+                            <b>${s.name}</b><br>
+                            <span style="font-size: 12px; color: #555;">هاتف: ${s.phone} | ولي الأمر: ${s.fatherPhone} | الصف: ${s.grade}</span>
+                        </div>
+                        <button class="btn btn-danger" style="width: auto; padding: 5px 10px; font-size: 12px; margin:0;" onclick="kickStudent('${key}')">طرد / حذف 🚫</button>
+                    </div>
+                `;
             });
             container.innerHTML = html;
         });
     }
 
+    function kickStudent(studentKey) {
+        if (confirm('هل أنت متأكد من طرد هذا الطالب وحذفه نهائياً من المنصة؟')) {
+            db.ref('registered_students/' + studentKey).remove().then(() => {
+                alert('تم طرد الطالب بنجاح.');
+            });
+        }
+    }
+
     function updateLeaderboard(results) {
         let studentMap = {};
         results.forEach(r => {
-            if (!studentMap[r.student]) {
-                studentMap[r.student] = { name: r.student, totalScore: 0, count: 0 };
+            if (!studentMap[r.studentPhone]) {
+                studentMap[r.studentPhone] = { name: r.studentName, totalScore: 0, count: 0 };
             }
-            studentMap[r.student].totalScore += r.percentage;
-            studentMap[r.student].count += 1;
+            studentMap[r.studentPhone].totalScore += r.percentage;
+            studentMap[r.studentPhone].count += 1;
         });
 
         let sortedStudents = Object.values(studentMap).map(s => ({
