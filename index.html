@@ -27,7 +27,6 @@
             color: var(--text); 
             min-height: 100vh; 
             padding: 20px;
-            /* لمسات خلفية كيميائية خفيفة وأشكال ذرية */
             background-image: radial-gradient(#3282b8 0.75px, transparent 0.75px), radial-gradient(#0f4c81 0.75px, #f0f4f8 0.75px);
             background-size: 30px 30px;
             background-position: 0 0, 15px 15px;
@@ -63,8 +62,11 @@
         
         .hidden { display: none !important; }
         .flex-row { display: flex; gap: 10px; }
-        
         .leaderboard-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; }
+        
+        .review-card { padding: 15px; border-radius: 8px; margin-bottom: 12px; border: 1.5px solid #cbd5e1; }
+        .review-correct { background: #e8f5e9; border-color: var(--success); }
+        .review-wrong { background: #ffebee; border-color: var(--danger); }
     </style>
 </head>
 <body>
@@ -74,27 +76,36 @@
     <div id="login-screen">
         <img src="12810.jpg" alt="مستر محمد" class="profile-img">
         <h1>منصة مستر محمد للكيمياء ⚗️</h1>
-        <p style="text-align: center; color: #555; margin-bottom: 20px;">سجل بياناتك لدخول عالم التميز الكيميائي</p>
+        <p style="text-align: center; color: #555; margin-bottom: 20px;">أهلاً بك. أدخل بياناتك أو كود المعلم</p>
         
-        <div class="form-group">
-            <label>الاسم الثلاثي للطالب (إجباري):</label>
-            <input type="text" id="student-name" placeholder="أدخل اسمك الثلاثي كاملاً...">
+        <!-- قسم دخول المعلم -->
+        <div class="card-box" style="border: 2px solid var(--accent); background: #f0f8ff;">
+            <h3 style="color: var(--primary); margin-bottom: 10px;">⚙️ دخول المعلم (الليدر مستر محمد)</h3>
+            <div class="form-group">
+                <label>الرقم السري الخاص بالمعلم:</label>
+                <input type="password" id="teacher-access-code" placeholder="أدخل كود المعلم السري...">
+            </div>
+            <button class="btn btn-success" onclick="handleTeacherLogin()">دخول لوحة تحكم المعلم 🔒</button>
         </div>
 
-        <div class="form-group">
-            <label>رقم الهاتف (إجباري):</label>
-            <input type="tel" id="student-phone" placeholder="أدخل رقم هاتفك...">
-        </div>
-        
-        <div class="form-group">
-            <label>كود الدخول (لليدر مستر محمد فقط - اتركه فارغاً للطالب):</label>
-            <input type="password" id="access-code" placeholder="أدخل الرقم السري لليدر...">
-        </div>
+        <hr style="margin: 25px 0; border: 0; border-top: 1px solid #cbd5e1;">
 
-        <button class="btn" onclick="handleLogin()">دخول المنصة 🚀</button>
+        <!-- قسم دخول الطالب -->
+        <div class="card-box">
+            <h3 style="color: var(--secondary); margin-bottom: 10px;">👨‍🎓 دخول الطالب</h3>
+            <div class="form-group">
+                <label>الاسم الثلاثي للطالب (إجباري):</label>
+                <input type="text" id="student-name" placeholder="أدخل اسمك الثلاثي كاملاً...">
+            </div>
+            <div class="form-group">
+                <label>رقم الهاتف (إجباري ويُمنع تكراره):</label>
+                <input type="tel" id="student-phone" placeholder="أدخل رقم هاتفك المحمول...">
+            </div>
+            <button class="btn" onclick="handleStudentLogin()">دخول المنصة وتثبيت الحساب 🚀</button>
+        </div>
     </div>
 
-    <!-- لوحة تحكم الليدر المحمية حصرياً (مستر محمد) -->
+    <!-- لوحة تحكم الليدر المحمية (مستر محمد) -->
     <div id="teacher-dashboard" class="hidden">
         <img src="12810.jpg" alt="مستر محمد" class="profile-img">
         <h1>لوحة تحكم الليدر المحمية (مستر محمد) ⚙️🔒</h1>
@@ -149,14 +160,14 @@
             </div>
         </div>
 
-        <button class="btn btn-danger" onclick="location.reload()">تسجيل الخروج الآمن</button>
+        <button class="btn btn-danger" onclick="logoutSession()">تسجيل الخروج الآمن</button>
     </div>
 
     <!-- لوحة الطالب الرئيسية -->
     <div id="student-dashboard" class="hidden">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h3>أهلاً بك يا كيميائي، <span id="welcome-name" style="color: var(--primary);"></span></h3>
-            <button class="btn btn-danger" style="width: auto; padding: 6px 12px;" onclick="location.reload()">خروج</button>
+            <button class="btn btn-danger" style="width: auto; padding: 6px 12px;" onclick="logoutSession()">تسجيل خروج</button>
         </div>
 
         <div class="nav-buttons">
@@ -196,7 +207,7 @@
         </div>
     </div>
 
-    <!-- شاشة الامتحان النشط للطالب مع أزرار التنقل -->
+    <!-- شاشة الامتحان النشط للطالب -->
     <div id="exam-taking-screen" class="hidden">
         <div class="timer-box">الوقت المتبقي: <span id="timer-display">00:00</span></div>
         <div class="card-box">
@@ -209,16 +220,31 @@
             <div id="exam-options-list"></div>
 
             <div class="flex-row" style="margin-top: 20px;">
-                <button class="btn" style="background: #6c757d;" onclick="prevQuestion()">⬅️️ السؤال السابق</button>
+                <button class="btn" style="background: #6c757d;" onclick="prevQuestion()">⬅ السؤال السابق</button>
                 <button class="btn" onclick="nextQuestion()">السؤال التالي ➡️</button>
             </div>
             <button class="btn btn-success" id="submit-exam-btn" style="margin-top: 10px;" onclick="submitExamPipeline()">تسليم الامتحان النهائي 📩</button>
         </div>
     </div>
+
+    <!-- صفحة عرض نتيجة الطالب المستقلة (تقرير الأخطاء والإجابات) -->
+    <div id="exam-result-screen" class="hidden">
+        <div class="card-box" style="text-align: center; border: 2px solid var(--primary);">
+            <h2 style="color: var(--primary); margin-bottom: 10px;">🎉 تقرير نتيجتك في الاختبار</h2>
+            <p id="res-exam-title" style="font-size: 1.2rem; font-weight: bold; margin-bottom: 15px;"></p>
+            <div style="font-size: 1.6rem; font-weight: bold; color: var(--success); background: #e8f5e9; padding: 15px; border-radius: 8px; margin-bottom: 20px;" id="res-score-box">
+                الدرجة: 0 / 0 (0%)
+            </div>
+            
+            <h3 style="text-align: right; margin-bottom: 15px; color: var(--secondary);">تفاصيل إجاباتك ومراجعة الأسئلة:</h3>
+            <div id="detailed-answers-review" style="text-align: right; max-height: 450px; overflow-y: auto;"></div>
+
+            <button class="btn" style="margin-top: 25px;" onclick="backToStudentDashboard()">العودة لوحة التحكم الرئيسية 🏠</button>
+        </div>
+    </div>
 </div>
 
 <script>
-    // ربط قاعدة البيانات السحابية المباشرة
     const firebaseConfig = {
         databaseURL: "https://mr-mohammed-default-rtdb.firebaseio.com"
     };
@@ -232,21 +258,35 @@
     let currentQIndex = 0;
     let studentAnswers = {};
 
-    function handleLogin() {
-        const name = document.getElementById('student-name').value.trim();
-        const phone = document.getElementById('student-phone').value.trim();
-        const code = document.getElementById('access-code').value.trim();
+    // التحقق عند فتح الصفحة إذا كان هناك طالب مسجل مسبقاً عبر التخزين المحلي
+    window.onload = function() {
+        const savedUser = localStorage.getItem('mr_mohammed_student');
+        if (savedUser) {
+            currentUser = JSON.parse(savedUser);
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('student-dashboard').classList.remove('hidden');
+            document.getElementById('welcome-name').innerText = currentUser.name;
+            listenToExams();
+            loadStudentHistory();
+        }
+    };
 
-        // التحقق من كود الليدر السري
+    function handleTeacherLogin() {
+        const code = document.getElementById('teacher-access-code').value.trim();
         if (code === 'Mohammed 8888') {
             currentUser = { name: 'مستر محمد (الليدر)', role: 'leader' };
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('teacher-dashboard').classList.remove('hidden');
             loadTeacherDashboardData();
-            return;
+        } else {
+            alert('الرقم السري للمعلم غير صحيح!');
         }
+    }
 
-        // التحقق من بيانات الطالب الإجبارية
+    function handleStudentLogin() {
+        const name = document.getElementById('student-name').value.trim();
+        const phone = document.getElementById('student-phone').value.trim();
+
         if (!name || name.split(' ').length < 3) {
             alert('يجب كتابة الاسم الثلاثي للطالب إجبارياً!');
             return;
@@ -256,12 +296,38 @@
             return;
         }
 
-        currentUser = { name, phone, role: 'student' };
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('student-dashboard').classList.remove('hidden');
-        document.getElementById('welcome-name').innerText = currentUser.name;
-        listenToExams();
-        loadStudentHistory();
+        // فحص سحابي لمنع استخدام نفس رقم الهاتف أو نفس الاسم المسجل مسبقاً من قِبل طالب آخر
+        db.ref('registered_students').once('value', (snapshot) => {
+            const students = snapshot.val();
+            let isDuplicate = false;
+
+            if (students) {
+                let list = Object.values(students);
+                isDuplicate = list.some(s => s.phone === phone || s.name === name);
+            }
+
+            if (isDuplicate) {
+                alert('⚠️ عذراً، هذا الاسم أو رقم الهاتف مسجل مسبقاً في المنصة! لا يمكن استخدام نفس البيانات لشخصين.');
+                return;
+            }
+
+            currentUser = { name, phone, role: 'student' };
+            
+            // حفظ الحساب سحابياً ومحلياً لضمان بقاء تسجيل الدخول وعدم تكراره
+            db.ref('registered_students').push(currentUser).then(() => {
+                localStorage.setItem('mr_mohammed_student', JSON.stringify(currentUser));
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('student-dashboard').classList.remove('hidden');
+                document.getElementById('welcome-name').innerText = currentUser.name;
+                listenToExams();
+                loadStudentHistory();
+            });
+        });
+    }
+
+    function logoutSession() {
+        localStorage.removeItem('mr_mohammed_student');
+        location.reload();
     }
 
     function switchTab(tabId) {
@@ -285,6 +351,7 @@
             document.querySelector('.m-opt-1').value = "أكسيد الحديد المغناطيسي";
             document.querySelector('.m-opt-2').value = "أكسيد الحديد III";
             document.querySelector('.m-opt-3').value = "سيدريت";
+            document.querySelector('.m-correct').value = "1";
             alert('تم استخلاص وتعبئة أسئلة الامتحان بنجاح!');
         }, 1500);
     }
@@ -334,14 +401,38 @@
                 <div class="card-box">
                     <h3>${currentExamData.title}</h3>
                     <p style="margin: 10px 0;">مدة الاختبار: ${Math.floor(currentExamData.duration / 60)} دقائق | الأسئلة: ${currentExamData.questions.length}</p>
-                    <button class="btn btn-success" onclick="startExamView()">ابدأ الامتحان الآن 🚀</button>
+                    <button class="btn btn-success" onclick="checkAndStartExam()">ابدأ الامتحان الآن 🚀</button>
                 </div>
             `;
         });
     }
 
-    function startExamView() {
+    // التحقق السحابي لمنع الطالب من دخول الامتحان أكثر من مرة واحدة نهائياً
+    function checkAndStartExam() {
         if (!currentExamData) return;
+
+        db.ref('results').once('value', (snapshot) => {
+            const data = snapshot.val();
+            let alreadyTaken = false;
+
+            if (data) {
+                let results = Object.values(data);
+                alreadyTaken = results.some(r => 
+                    r.student === currentUser.name && 
+                    r.phone === currentUser.phone && 
+                    r.examTitle === currentExamData.title
+                );
+            }
+
+            if (alreadyTaken) {
+                alert('⚠️ عذراً يا كيميائي، لقد قمت بأداء هذا الامتحان مسبقاً! مسموح لك بمحاولة واحدة فقط ولا يمكنك دخوله مجدداً.');
+            } else {
+                startExamView();
+            }
+        });
+    }
+
+    function startExamView() {
         document.getElementById('student-dashboard').classList.add('hidden');
         document.getElementById('exam-taking-screen').classList.remove('hidden');
         document.getElementById('exam-view-title').innerText = currentExamData.title;
@@ -400,30 +491,38 @@
             
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
-                alert('انتهى الوقت المحدد! تسليم تلقائي للاختبار.');
+                alert('انتهى الوقت المحدد! سيتم تسليم الاختبار تلقائياً.');
                 submitExamPipeline(true);
             }
             timeLeft--;
         }, 1000);
     }
 
-    // تسليم الامتحان وإظهار الدرجة وتوضيح الخطأ والصواب بعد التسليم فقط
     function submitExamPipeline(isAuto = false) {
         clearInterval(timerInterval);
 
         let score = 0;
         let totalQ = currentExamData.questions.length;
-        let reviewDetails = "";
+        let reviewHTML = "";
 
         currentExamData.questions.forEach((q, idx) => {
             let studentChoice = studentAnswers[idx];
-            if (studentChoice === q.correct) {
+            let isCorrect = studentChoice === q.correct;
+            
+            if (isCorrect) {
                 score += 10;
-            } else {
-                let wrongText = studentChoice !== undefined ? q.options[studentChoice] : "لم تجب";
-                let correctText = q.options[q.correct];
-                reviewDetails += `\n- السؤال (${idx+1}): إجابتك (${wrongText}) خاطئة؛ لأن الإجابة العلمية الصحيحة هي (${correctText}).`;
             }
+
+            let wrongText = studentChoice !== undefined ? q.options[studentChoice] : "لم تقم بالإجابة";
+            let correctText = q.options[q.correct];
+
+            reviewHTML += `
+                <div class="review-card ${isCorrect ? 'review-correct' : 'review-wrong'}">
+                    <p><b>السؤال (${idx+1}):</b> ${q.text}</p>
+                    <p style="margin-top: 5px;">إجابتك: <b>${wrongText}</b></p>
+                    ${!isCorrect ? `<p style="color: var(--danger); margin-top: 3px;">❌ خطأ! الإجابة الصحيحة هي: <b>${correctText}</b></p>` : `<p style="color: var(--success); margin-top: 3px;">✅ إجابة صحيحة!</p>`}
+                </div>
+            `;
         });
 
         let maxScore = totalQ * 10;
@@ -439,21 +538,22 @@
             timestamp: Date.now()
         };
 
+        // حفظ النتيجة في السحابة لمنع دخوله مرة أخرى
         db.ref('results').push(resultData).then(() => {
+            // الانتقال لصفحة النتيجة المخصصة بدلاً من رسالة الـ Alert
             document.getElementById('exam-taking-screen').classList.add('hidden');
-            document.getElementById('student-dashboard').classList.remove('hidden');
+            document.getElementById('exam-result-screen').classList.remove('hidden');
 
-            let msg = isAuto ? "انتهى الوقت المحدد!\n" : "";
-            msg += `📊 النتيجة النهائية:\n- الدرجة: ${score} من ${maxScore} (${percentage}%)\n`;
-            if (reviewDetails) {
-                msg += `\n🔍 توضيح الأخطاء الكيميائية:\n${reviewDetails}`;
-            } else {
-                msg += `\n🎉 ممتاز جداً! إجاباتك صحيحة بالكامل.`;
-            }
-
-            alert(msg);
-            loadStudentHistory();
+            document.getElementById('res-exam-title').innerText = currentExamData.title;
+            document.getElementById('res-score-box').innerText = `الدرجة النهائية: ${score} من ${maxScore} (${percentage}%)`;
+            document.getElementById('detailed-answers-review').innerHTML = reviewHTML;
         });
+    }
+
+    function backToStudentDashboard() {
+        document.getElementById('exam-result-screen').classList.add('hidden');
+        document.getElementById('student-dashboard').classList.remove('hidden');
+        loadStudentHistory();
     }
 
     function loadStudentHistory() {
@@ -472,13 +572,12 @@
                 historyHTML += `<div style="padding: 10px; border-bottom: 1px solid #ddd;"><b>${r.examTitle}</b> - الدرجة: ${r.score}/${r.maxScore} (${r.percentage}%)</div>`;
             });
 
-            document.getElementById('completed-exams-list').innerHTML = historyHTML || '<p>لا توجد امتحانات سابقة.</p>';
+            document.getElementById('completed-exams-list').innerHTML = historyHTML || '<p>لم تقم بأي امتحانات بعد.</p>';
             document.getElementById('student-score-summary').innerText = `إجمالي النقاط: ${totalScore} نقطة`;
 
             let avg = myResults.length ? (myResults.reduce((a,b)=>a+b.percentage,0) / myResults.length).toFixed(1) : 0;
             document.getElementById('student-avg-summary').innerText = `متوسط نسبتك: ${avg}%`;
 
-            // تحديث لوحة الشرف العامة
             updateLeaderboard(results);
         });
     }
@@ -502,7 +601,6 @@
     }
 
     function updateLeaderboard(results) {
-        // تجميع درجات كل طالب
         let studentMap = {};
         results.forEach(r => {
             if (!studentMap[r.student]) {
@@ -521,7 +619,7 @@
         sortedStudents.slice(0, 5).forEach((st, idx) => {
             lbHTML += `<div class="leaderboard-item"><span>${idx+1}. ${st.name}</span> <span style="color: var(--success);">${st.avg}%</span></div>`;
         });
-        document.getElementById('leaderboard-list').innerHTML = lbHTML || '<p>لا توجد بيانات كافية للوحة الشرف بعد.</p>';
+        document.getElementById('leaderboard-list').innerHTML = lbHTML || '<p>لا توجد بيانات كافية لوحة الشرف بعد.</p>';
     }
 </script>
 
