@@ -43,7 +43,7 @@
 
         .form-group { margin-bottom: 15px; text-align: right; }
         label { display: block; margin-bottom: 6px; font-weight: bold; color: var(--secondary); font-size: 14px; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 15px; outline: none; transition: 0.2s; background: #fff; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 15px; outline: none; transition: 0.2s; background: #fff; user-select: text; -webkit-user-select: text; }
         input:focus, textarea:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 8px rgba(37, 99, 235, 0.25); }
         
         .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; background: var(--primary); color: white; margin-top: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -124,7 +124,7 @@
 <body>
 
 <div class="container">
-    <!-- شاشة تسجيل الدخول الآمنة كلياً (بواسطة الكيبورد الافتراضي المشفر) -->
+    <!-- شاشة تسجيل الدخول الآمنة كلياً -->
     <div id="login-screen">
         <img src="12810.jpg" alt="المعلم" class="profile-img">
         <h1 style="color: var(--primary);">منصة المعلم الذكية 🎓</h1>
@@ -138,7 +138,7 @@
         <!-- صندوق الدخول السري عبر لوحة المفاتيح الافتراضية -->
         <div id="login-form-box" class="secure-login-box">
             <h3 style="color: #38bdf8; margin-bottom: 10px;">👤 إدخال كود الدخول / الرقم السري</h3>
-            <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 15px;">استخدم لوحة المفاتيح أدناه (الكيبورد الخارجي معطل تماماً)</p>
+            <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 15px;">استخدم لوحة المفاتيح أدناه للدخول الآمن</p>
             
             <div style="text-align: right; margin-bottom: 5px; font-size: 13px; color: #cbd5e1;">معرف الدخول (الكود أو الهاتف):</div>
             <div id="login-id-display" class="display-box"></div>
@@ -154,7 +154,6 @@
                 </div>
             </div>
 
-            <!-- الكيبورد الافتراضي المصمم خصيصاً لمنع كشف الرموز -->
             <div class="keypad" style="margin-top: 15px;">
                 <button class="key" onclick="appendSecureKey('1')">1</button>
                 <button class="key" onclick="appendSecureKey('2')">2</button>
@@ -171,13 +170,12 @@
             </div>
 
             <button class="btn btn-success" onclick="handleSecureLogin()" style="width: 100%; margin-top: 5px;">دخول آمن للمنصة 🚀</button>
-            <div id="warning" class="warning-msg">⚠️ محاولة استخدام الكيبورد الخارجي أو لقطة الشاشة محظورة أمنياً!</div>
         </div>
 
         <!-- صندوق تسجيل طالب جديد -->
         <div id="register-form-box" class="card-box hidden" style="text-align: right;">
-            <h3 style="color: var(--secondary); margin-bottom: 10px;">👨‍شاهق: تسجيل طالب جديد (3 محاولات مسموحة)</h3>
-            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">أدخل بياناتك وارفق صورة شهادة الميلاد للمراجعة:</p>
+            <h3 style="color: var(--secondary); margin-bottom: 10px;">👨‍🎓 تسجيل طالب جديد (3 محاولات مسموحة)</h3>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">أدخل بياناتك بحرية عبر لوحة المفاتيح وارفق صورة شهادة الميلاد للمراجعة:</p>
             
             <div class="form-group"><label>الاسم الثلاثي للطالب:</label><input type="text" id="student-name" placeholder="مثال: محمد أحمد محمود..."></div>
             <div class="form-group"><label>رقم هاتف الطالب:</label><input type="tel" id="student-phone" placeholder="01149260102"></div>
@@ -294,7 +292,7 @@
         </div>
     </div>
 
-    <!-- شاشة أداء الامتحان (مع دعم عرض الصور المرفقة للأسئلة) -->
+    <!-- شاشة أداء الامتحان -->
     <div id="exam-taking-screen" class="hidden">
         <div class="timer-box">الوقت المتبقي: <span id="timer-display">00:00</span></div>
         <div class="card-box">
@@ -306,7 +304,6 @@
             
             <p id="exam-view-text" style="font-size: 1.2rem; margin: 15px 0; font-weight: bold; line-height: 1.6;"></p>
             
-            <!-- عرض الصورة المرفقة للسؤال إن وجدت -->
             <div id="exam-question-img-container" style="text-align: center; margin: 15px 0; display: none;">
                 <img id="exam-question-img" src="" alt="صورة توضيحية للسؤال" style="max-width: 100%; max-height: 250px; border-radius: 8px; border: 2px solid #cbd5e1;">
             </div>
@@ -315,7 +312,7 @@
 
             <div class="flex-row" style="margin-top: 25px;">
                 <button class="btn" style="background: #64748b;" onclick="prevQuestion()">⬅ السابق</button>
-                <button class="btn" onclick="nextQuestion()">التالي ➡️</button>
+                <button class="btn" onclick="nextQuestion()">التالي ➡️️</button>
             </div>
             <button class="btn btn-success" id="submit-exam-btn" style="margin-top: 15px;" onclick="submitExamPipeline()">تسليم الامتحان ورصد النتيجة 📩</button>
         </div>
@@ -349,8 +346,7 @@
     let currentQIndex = 0;
     let studentAnswers = {};
 
-    // متغيرات نظام الحماية والكيبورد السري
-    let activeSecureField = 'id'; // 'id' أو 'pass'
+    let activeSecureField = 'id';
     let secureIdValue = '';
     let securePassValue = '';
 
@@ -372,7 +368,6 @@
         initSecurityGuards();
     };
 
-    // دوظائف الكيبورد الافتراضي السري الآمن
     function setActiveField(field) {
         activeSecureField = field;
         if(field === 'id') {
@@ -425,7 +420,6 @@
             return;
         }
 
-        // فحص دخول المعلم (الليدر) بكودك السري المعتمد
         if (phoneOrCode === 'Mohammed 8888' && password === '8888') {
             currentUser = { name: 'المعلم (الليدر)', role: 'leader' };
             localStorage.setItem('smart_platform_user_secure_v5', JSON.stringify(currentUser));
@@ -438,7 +432,6 @@
             return;
         }
 
-        // فحص دخول الطلاب
         db.ref('registered_students').once('value', (snapshot) => {
             const students = snapshot.val();
             let foundStudent = null;
@@ -472,22 +465,13 @@
         });
     }
 
-    // نظام الحماية الشامل ضد لقطات الشاشة والكيبورد الخارجي
     function initSecurityGuards() {
-        // 1. منع الكيبورد الخارجي تماماً
-        window.addEventListener('keydown', function(e) {
-            e.preventDefault();
-            const warn = document.getElementById('warning');
-            if(warn) {
-                warn.style.display = "block";
-                setTimeout(() => { warn.style.display = "none"; }, 3000);
-            }
-        });
+        // تم إلغاء حظر الكيبورد العام ليتمكن الطلاب من الكتابة في خانات التسجيل بحرية تامة
 
-        // 2. منع النقر بزر الفأرة الأيمن
+        // 1. منع النقر بزر الفأرة الأيمن
         document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
 
-        // 3. منع لقطة الشاشة وتفريغ الحافظة وتغبيش الصفحة
+        // 2. منع لقطة الشاشة وتفريغ الحافظة وتغبيش الصفحة
         document.addEventListener('keyup', function (e) {
             if (e.key === 'PrintScreen' || e.keyCode === 44) {
                 navigator.clipboard.writeText('');
@@ -497,7 +481,7 @@
             }
         });
 
-        // 4. تغبيش الشاشة عند مغادرة نافذة المنصة
+        // 3. تغبيش الشاشة عند مغادرة نافذة المنصة
         window.addEventListener('blur', function() { document.body.style.filter = 'blur(20px)'; });
         window.addEventListener('focus', function() { document.body.style.filter = 'none'; });
     }
@@ -691,7 +675,6 @@
             </div>
             <div class="form-group"><label>نص السؤال:</label><textarea class="m-q-text" rows="2" placeholder="اكتب السؤال هنا...">${qText}</textarea></div>
             
-            <!-- إرفاق صورة للسؤال -->
             <div class="form-group" style="background: #f1f5f9; padding: 10px; border-radius: 8px;">
                 <label>📷 إرفاق صورة توضيحية لهذا السؤال (اختياري):</label>
                 <input type="file" class="m-q-img-file" accept="image/*" onchange="previewQImg(this)">
@@ -845,7 +828,6 @@
         document.getElementById('question-counter').innerText = `السؤال ${currentQIndex + 1} من ${currentExamData.questions.length}`;
         document.getElementById('exam-view-text').innerText = q.text;
 
-        // عرض أو إخفاء صورة السؤال المرفقة
         const imgContainer = document.getElementById('exam-question-img-container');
         const imgElement = document.getElementById('exam-question-img');
         if (q.image && q.image.trim() !== "") {
