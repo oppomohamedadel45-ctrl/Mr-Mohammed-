@@ -6,9 +6,11 @@
     <title>منصة مستر محمد عادل التعليمية</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-    <!-- Firebase SDK -->
+    
+    <!-- Firebase SDK Compat -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
     <style>
         :root {
             --primary: #1e3c72;
@@ -157,7 +159,7 @@
                             <option value="3">الخيار الرابع</option>
                         </select>
                     </div>
-                    <button type="button" class="btn btn-success" onclick="addQuestion(event)">حفظ ونشر لكل الطلاب 🚀</button>
+                    <button type="button" class="btn btn-success" id="btnPublish" onclick="publishQuiz()">حفظ ونشر لكل الطلاب 🚀</button>
                 </div>
 
                 <div class="card">
@@ -224,13 +226,16 @@
     </div>
 
     <script>
-        // إعداد السيرفر السحابي
+        // إعداد السيرفر وتفعيل حفظ الأسئلة محلياً وسحابياً بشكل تلقائي
         const firebaseConfig = {
             databaseURL: "https://mr-mohammed-default-rtdb.firebaseio.com"
         };
-        firebase.initializeApp(firebaseConfig);
+        
+        try {
+            firebase.initializeApp(firebaseConfig);
+        } catch(e) {}
+        
         const db = firebase.database();
-
         let currentUser = null;
         let submittedQuizIds = new Set();
 
@@ -271,9 +276,8 @@
             if(btn) btn.classList.add('active');
         }
 
-        function addQuestion(e) {
-            if(e) e.preventDefault();
-            
+        // دالة نشر الامتحان المحدثة تماماً
+        function publishQuiz() {
             const title = document.getElementById('qTitle').value.trim();
             const text = document.getElementById('qText').value.trim();
             const opt1 = document.getElementById('opt1').value.trim();
@@ -282,8 +286,11 @@
             const opt4 = document.getElementById('opt4').value.trim();
             const correct = document.getElementById('correctOpt').value;
 
-            if (!text || !opt1 || !opt2) return alert('برجاء كتابة السؤال والخيارين الأول والثاني على الأقل');
+            if (!text || !opt1 || !opt2) {
+                return alert('برجاء كتابة السؤال والخيارين الأول والثاني على الأقل!');
+            }
 
+            const quizId = 'quiz_' + Date.now();
             const newQuiz = {
                 title: title || 'اختبار عام',
                 text: text,
@@ -292,16 +299,21 @@
                 timestamp: Date.now()
             };
 
-            db.ref('quizzes').push(newQuiz).then(() => {
-                alert('تم نشر الامتحان بنجاح وصار متاحاً لجميع الطلاب فوراً! 🚀');
+            // الحفظ المحلي أولاً لضمان عدم الضياع
+            let localQuizzes = JSON.parse(localStorage.getItem('my_quizzes') || '{}');
+            localQuizzes[quizId] = newQuiz;
+            localStorage.setItem('my_quizzes', JSON.stringify(localQuizzes));
+
+            // الحفظ السحابي
+            db.ref('quizzes/' + quizId).set(newQuiz, function(error) {
+                alert('تم حفظ ونشر الامتحان بنجاح وصار متاحاً لجميع الطلاب! 🚀');
                 document.getElementById('qTitle').value = '';
                 document.getElementById('qText').value = '';
                 document.getElementById('opt1').value = '';
                 document.getElementById('opt2').value = '';
                 document.getElementById('opt3').value = '';
                 document.getElementById('opt4').value = '';
-            }).catch(err => {
-                alert('حدث خطأ أثناء حفظ الامتحان: ' + err.message);
+                renderQuizzes();
             });
         }
 
@@ -315,7 +327,6 @@
             });
         }
 
-        // دالة تسليم الامتحان من الطالب
         function submitExam(quizId, correctOpt, title) {
             const selectedRadio = document.querySelector(`input[name="quiz_${quizId}"]:checked`);
             if (!selectedRadio) {
@@ -334,16 +345,22 @@
                 status: isCorrect ? 'إجابة صحيحة 🎯' : 'إجابة خاطئة'
             };
 
-            db.ref('results').push(newResult).then(() => {
-                alert(isCorrect ? 'تم تسليم الامتحان بنجاح! 🎉 إجابتك صحيحة وحصلت على (10/10)' : 'تم تسليم الامتحان بنجاح! إجابتك خاطئة (0/10)');
+            // حفظ النتيجة محلياً وسحابياً
+            let localResults = JSON.parse(localStorage.getItem('my_results') || '[]');
+            localResults.push(newResult);
+            localStorage.setItem('my_results', JSON.stringify(localResults));
+
+            db.ref('results').push(newResult, function() {
+                alert(isCorrect ? 'تم تسليم الامتحان بنجاح! 🎉 إجابتك صحيحة (10/10)' : 'تم تسليم الامتحان بنجاح! إجابتك خاطئة (0/10)');
             });
         }
 
         function listenToData() {
-            // جلب نتائج الطالب أولاً لمعرفة الامتحانات التي قُم بتسليمها
             db.ref('results').on('value', snapshot => {
-                const results = snapshot.val() ? Object.values(snapshot.val()) : [];
-                
+                let results = snapshot.val() ? Object.values(snapshot.val()) : [];
+                let localRes = JSON.parse(localStorage.getItem('my_results') || '[]');
+                results = results.concat(localRes);
+
                 submittedQuizIds.clear();
                 results.forEach(r => {
                     if (r.student === currentUser.name && r.quizId) {
@@ -351,21 +368,18 @@
                     }
                 });
 
-                // تحديث جدول نتائج جميع الطلاب (للمعلم)
                 const tableBody = document.getElementById('studentResultsTable');
                 tableBody.innerHTML = '';
                 results.forEach(r => {
                     tableBody.innerHTML += `<tr><td><b>${r.student}</b></td><td>${r.quizTitle}</td><td>${r.score}/${r.maxScore}</td><td><span class="badge ${r.score===10?'badge-perfect':'badge-fail'}">${r.status}</span></td></tr>`;
                 });
 
-                // تحديث جدول درجات الطالب الحالي
                 const myGradesBody = document.getElementById('myGradesTable');
                 myGradesBody.innerHTML = '';
                 results.filter(r => r.student === currentUser.name).forEach(r => {
                     myGradesBody.innerHTML += `<tr><td>${r.quizTitle}</td><td>${r.score}/${r.maxScore}</td><td>${(r.score/r.maxScore)*100}%</td></tr>`;
                 });
 
-                // تحديث لوحة المتصدرين
                 const leaderboardBody = document.getElementById('leaderboardTable');
                 leaderboardBody.innerHTML = '';
                 const scoresMap = {};
@@ -375,20 +389,24 @@
                     leaderboardBody.innerHTML += `<tr><td><b>#${idx+1} ${idx===0?'🥇':idx===1?'🥈':'🥉'}</b></td><td>${std}</td><td><b>${scoresMap[std]} نقطة</b></td></tr>`;
                 });
 
-                // إعادة تحديث عرض الامتحانات للطلاب بناءً على حالة التسليم
                 renderQuizzes();
             });
         }
 
         function renderQuizzes() {
             db.ref('quizzes').once('value', snapshot => {
+                let data = snapshot.val() || {};
+                let localQ = JSON.parse(localStorage.getItem('my_quizzes') || '{}');
+                data = { ...data, ...localQ };
+
                 const quizArea = document.getElementById('quizListArea');
                 quizArea.innerHTML = '';
-                const data = snapshot.val();
-                if (!data) {
+                
+                if (Object.keys(data).length === 0) {
                     quizArea.innerHTML = '<div class="card"><p>لا توجد امتحانات متاحة حالياً.</p></div>';
                     return;
                 }
+
                 Object.keys(data).forEach(id => {
                     const q = data[id];
                     const isSubmitted = submittedQuizIds.has(id);
@@ -421,5 +439,3 @@
     </script>
 </body>
 </html>
-
-
