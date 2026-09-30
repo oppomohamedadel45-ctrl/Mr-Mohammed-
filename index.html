@@ -3,102 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة مستر محمد عادل التعليمية</title>
-    <!-- مكتبات Firebase المباشرة -->
+    <title>منصة مستر محمد - كيمياء الثانوية العامة</title>
+    <!-- مكتبات Firebase السحابية -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     
     <style>
         :root {
-            --primary: #1e3c72;
-            --secondary: #2a5298;
-            --bg: #f4f6f9;
+            --primary: #0f4c81;
+            --secondary: #1b262c;
+            --accent: #3282b8;
+            --bg: #f0f4f8;
             --card: #ffffff;
-            --text: #2d3748;
-            --success: #28a745;
-            --danger: #dc3545;
-            --warning: #ffc107;
+            --text: #1b262c;
+            --success: #2e7d32;
+            --danger: #c62828;
+            --warning: #ff8f00;
         }
 
-        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-        body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding: 20px; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+        body { 
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%); 
+            color: var(--text); 
+            min-height: 100vh; 
+            padding: 20px;
+            /* لمسات خلفية كيميائية خفيفة وأشكال ذرية */
+            background-image: radial-gradient(#3282b8 0.75px, transparent 0.75px), radial-gradient(#0f4c81 0.75px, #f0f4f8 0.75px);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+        }
 
-        .container { max-width: 850px; margin: 0 auto; background: var(--card); padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+        .container { max-width: 900px; margin: 0 auto; background: var(--card); padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 5px solid var(--primary); }
         
         .profile-img {
             width: 130px; height: 130px; border-radius: 50%; object-fit: cover;
-            border: 4px solid var(--primary); margin: 0 auto 15px auto; display: block;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            border: 4px solid var(--accent); margin: 0 auto 15px auto; display: block;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
         h1, h2 { text-align: center; color: var(--primary); margin-bottom: 15px; }
 
-        .form-group { margin-bottom: 15px; text-align: right; }
-        label { display: block; margin-bottom: 6px; font-weight: bold; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 15px; outline: none; }
+        .form-group { margin-bottom: 18px; text-align: right; }
+        label { display: block; margin-bottom: 6px; font-weight: bold; color: var(--secondary); }
+        input, select, textarea { width: 100%; padding: 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 15px; outline: none; transition: 0.2s; }
+        input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 5px rgba(50, 130, 184, 0.3); }
         
         .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; background: var(--primary); color: white; margin-top: 10px; }
-        .btn:hover { background: var(--secondary); }
+        .btn:hover { background: var(--accent); }
         .btn-success { background: var(--success); }
         .btn-danger { background: var(--danger); }
-        .btn-warning { background: var(--warning); color: #000; }
+        .btn-warning { background: var(--warning); color: #fff; }
 
-        .nav-buttons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 25px; }
-        .nav-btn { padding: 15px; background: #eef2f7; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; color: var(--primary); transition: 0.3s; }
+        .nav-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; }
+        .nav-btn { padding: 12px; background: #e2e8f0; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; color: var(--primary); transition: 0.3s; text-align: center; }
         .nav-btn:hover, .nav-btn.active { background: var(--primary); color: white; }
 
         .card-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; margin-bottom: 15px; }
-        .timer-box { font-size: 1.2rem; font-weight: bold; color: var(--danger); text-align: center; margin-bottom: 15px; background: #fff5f5; padding: 10px; border-radius: 8px; }
+        .timer-box { font-size: 1.3rem; font-weight: bold; color: var(--danger); text-align: center; margin-bottom: 15px; background: #ffebee; padding: 12px; border-radius: 8px; border: 1px solid #ffcdd2; }
         
         .hidden { display: none !important; }
         .flex-row { display: flex; gap: 10px; }
+        
+        .leaderboard-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- شاشة تسجيل الدخول العامة -->
+    <!-- شاشة تسجيل الدخول -->
     <div id="login-screen">
-        <img src="12810.jpg" alt="صورة الليدر" class="profile-img">
-        <h1>منصة مستر محمد عادل التعليمية</h1>
-        <p style="text-align: center; color: #666; margin-bottom: 20px;">تسجيل الدخول للطالب أو الليدر</p>
+        <img src="12810.jpg" alt="مستر محمد" class="profile-img">
+        <h1>منصة مستر محمد للكيمياء ⚗️</h1>
+        <p style="text-align: center; color: #555; margin-bottom: 20px;">سجل بياناتك لدخول عالم التميز الكيميائي</p>
         
         <div class="form-group">
-            <label>الاسم الثلاثي للطالب (إجباري إذا كنت طالباً):</label>
+            <label>الاسم الثلاثي للطالب (إجباري):</label>
             <input type="text" id="student-name" placeholder="أدخل اسمك الثلاثي كاملاً...">
+        </div>
+
+        <div class="form-group">
+            <label>رقم الهاتف (إجباري):</label>
+            <input type="tel" id="student-phone" placeholder="أدخل رقم هاتفك...">
         </div>
         
         <div class="form-group">
-            <label>كود الليدر (إذا كنت مستر محمد فقط):</label>
+            <label>كود الدخول (لليدر مستر محمد فقط - اتركه فارغاً للطالب):</label>
             <input type="password" id="access-code" placeholder="أدخل الرقم السري لليدر...">
         </div>
 
         <button class="btn" onclick="handleLogin()">دخول المنصة 🚀</button>
     </div>
 
-    <!-- صفحة الليدر المحمية حصرياً -->
+    <!-- لوحة تحكم الليدر المحمية حصرياً (مستر محمد) -->
     <div id="teacher-dashboard" class="hidden">
-        <img src="12810.jpg" alt="صورة الليدر" class="profile-img">
+        <img src="12810.jpg" alt="مستر محمد" class="profile-img">
         <h1>لوحة تحكم الليدر المحمية (مستر محمد) ⚙️🔒</h1>
-        <p style="text-align:center; color: #137333; font-weight:bold; margin-bottom:15px;">أهلاً بك يا ليدر. أنت وحدك من تمتلك صلاحية رفع ونشر الامتحانات.</p>
+        <p style="text-align:center; color: var(--success); font-weight:bold; margin-bottom:15px;">أهلاً بك يا مستر محمد. السحابة جاهزة لنشر الامتحانات ومتابعة الطلاب.</p>
         
-        <div class="card-box" style="border: 2px dashed var(--primary);">
-            <h3>📸 رفـع امتحان ورقي (تحويل ذكي للأسئلة)</h3>
-            <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">قم برفع صورة الامتحان الورقي، وستقوم المنصة بتحويله فوراً إلى نظام اختبار تفاعلي للطلاب.</p>
+        <div class="card-box" style="border: 2px dashed var(--accent);">
+            <h3>📸 رفع امتحان ورقي (تحويل ذكي للصور)</h3>
+            <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">قم برفع صورة الامتحان الورقي الكيميائي لتحويله تلقائياً لأسئلة تفاعلية:</p>
             <input type="file" id="exam-image-file" accept="image/*" style="margin-bottom: 10px;">
-            <button class="btn btn-warning" onclick="processUploadedExamImage()">تحويل الصورة لامتحان الكتروني ⚡</button>
+            <button class="btn btn-warning" onclick="processOCRImage()">تحويل الصورة لأسئلة ⚡</button>
         </div>
 
         <div class="card-box">
-            <h3>✍️ أو كتابة امتحان تفاعلي جديد يدوياً</h3>
+            <h3>✍️ إنشاء أو كتابة امتحان جديد يدوياً</h3>
             <div class="form-group" style="margin-top: 10px;">
-                <label>عنوان الامتحان:</label>
-                <input type="text" id="q-title" placeholder="مثال: امتحان الكيمياء العضوية...">
+                <label>عنوان الامتحان أو الدرس:</label>
+                <input type="text" id="q-title" placeholder="مثال: امتحان الباب الأول (الحديد ومشتتقاته)...">
             </div>
-            <div id="manual-questions-container">
+            
+            <div id="questions-builder-area">
                 <div class="form-group">
-                    <label>السؤال الأول:</label>
-                    <textarea class="m-q-text" rows="2" placeholder="اكتب السؤال..."></textarea>
+                    <label>نص السؤال:</label>
+                    <textarea class="m-q-text" rows="2" placeholder="اكتب السؤال الكيميائي هنا..."></textarea>
                 </div>
                 <div class="form-group"><input type="text" class="m-opt-0" placeholder="الخيار الأول"></div>
                 <div class="form-group"><input type="text" class="m-opt-1" placeholder="الخيار الثاني"></div>
@@ -116,27 +135,35 @@
             </div>
 
             <div class="form-group">
-                <label>وقت الامتحان الإجمالي (بالدقائق):</label>
+                <label>وقت الامتحان بالدقائق:</label>
                 <input type="number" id="exam-time" value="10" min="1" max="120">
             </div>
 
             <button class="btn btn-success" onclick="publishExam()">نشر الامتحان لكل الطلاب فوراً 🚀</button>
         </div>
+
+        <div class="card-box">
+            <h3>📋 سجل درجات كل الطلاب المباشر</h3>
+            <div id="all-students-results-list" style="max-height: 200px; overflow-y: auto;">
+                <p>جاري تحميل سجلات الطلاب من السحابة...</p>
+            </div>
+        </div>
+
         <button class="btn btn-danger" onclick="location.reload()">تسجيل الخروج الآمن</button>
     </div>
 
     <!-- لوحة الطالب الرئيسية -->
     <div id="student-dashboard" class="hidden">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h3>أهلاً بك، <span id="welcome-name" style="color: var(--primary);"></span></h3>
-            <button class="btn btn-danger" style="width: auto; padding: 8px 15px;" onclick="location.reload()">خروج</button>
+            <h3>أهلاً بك يا كيميائي، <span id="welcome-name" style="color: var(--primary);"></span></h3>
+            <button class="btn btn-danger" style="width: auto; padding: 6px 12px;" onclick="location.reload()">خروج</button>
         </div>
 
         <div class="nav-buttons">
-            <button class="nav-btn active" onclick="switchTab('new-exams')">الامتحانات الجديدة 📝</button>
-            <button class="nav-btn" onclick="switchTab('my-exams')">امتحاناتي التي تمت ✅</button>
-            <button class="nav-btn" onclick="switchTab('my-level')">مستوايا 📊</button>
-            <button class="nav-btn" onclick="switchTab('stats')">مؤشر متوسط الامتحانات 📈</button>
+            <button class="nav-btn active" onclick="switchTab('new-exams')">الامتحانات الحالية 📝</button>
+            <button class="nav-btn" onclick="switchTab('my-exams')">امتحاناتي الماضية ✅</button>
+            <button class="nav-btn" onclick="switchTab('my-level')">مستواي ومتوسطي 📊</button>
+            <button class="nav-btn" onclick="switchTab('leaderboard')" style="grid-column: span 3;">🏆 لوحة شرف الطلاب المتفوقين</button>
         </div>
 
         <div id="tab-new-exams" class="tab-pane">
@@ -153,43 +180,45 @@
 
         <div id="tab-my-level" class="tab-pane hidden">
             <div class="card-box" style="text-align: center;">
-                <h3>إحصائيات مستواك الشخصي</h3>
-                <p style="font-size: 1.5rem; margin-top: 15px; font-weight: bold; color: var(--primary);" id="student-score-summary">0 / 0</p>
+                <h3>📊 إحصائيات مستواك ودرجاتك</h3>
+                <p style="font-size: 1.3rem; margin-top: 15px; font-weight: bold; color: var(--primary);" id="student-score-summary">إجمالي النقاط: 0</p>
+                <p style="font-size: 1.1rem; margin-top: 10px;" id="student-avg-summary">متوسط أداؤك: 0%</p>
             </div>
         </div>
 
-        <div id="tab-stats" class="tab-pane hidden">
-            <div class="card-box" style="text-align: center;">
-                <h3>مؤشر أداء وسرعة الإنجاز العام</h3>
-                <p style="font-size: 1.2rem; margin-top: 15px;" id="general-stats-text">جاري احتساب المتوسطات...</p>
+        <div id="tab-leaderboard" class="tab-pane hidden">
+            <div class="card-box">
+                <h3>🏆 لوحة شرف الطلاب الأوائل</h3>
+                <div id="leaderboard-list" style="margin-top: 15px;">
+                    <p style="text-align: center;">جاري تحميل لوحة الشرف...</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- شاشة الامتحان النشط للطالب مع أزرار التنقل (السابق / التالي) -->
+    <!-- شاشة الامتحان النشط للطالب مع أزرار التنقل -->
     <div id="exam-taking-screen" class="hidden">
         <div class="timer-box">الوقت المتبقي: <span id="timer-display">00:00</span></div>
         <div class="card-box">
             <h2 id="exam-view-title">عنوان الامتحان</h2>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: bold; color: var(--secondary);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: bold; color: var(--accent);">
                 <span id="question-counter">السؤال 1 من 1</span>
             </div>
             <p id="exam-view-text" style="font-size: 1.2rem; margin: 15px 0; font-weight: bold;"></p>
             
-            <button class="btn" style="background: #4a5568; margin-bottom: 15px;" onclick="readCurrentQuestion()">🔊 استماع للسؤال (قارئ متطور)</button>
-
             <div id="exam-options-list"></div>
 
             <div class="flex-row" style="margin-top: 20px;">
-                <button class="btn" style="background: #6c757d;" onclick="prevQuestion()">⬅️ السؤال السابق</button>
+                <button class="btn" style="background: #6c757d;" onclick="prevQuestion()">⬅️️ السؤال السابق</button>
                 <button class="btn" onclick="nextQuestion()">السؤال التالي ➡️</button>
             </div>
-            <button class="btn btn-success hidden" id="submit-exam-btn" style="margin-top: 10px;" onclick="submitExamPipeline()">تسليم الامتحان النهائي 📩</button>
+            <button class="btn btn-success" id="submit-exam-btn" style="margin-top: 10px;" onclick="submitExamPipeline()">تسليم الامتحان النهائي 📩</button>
         </div>
     </div>
 </div>
 
 <script>
+    // ربط قاعدة البيانات السحابية المباشرة
     const firebaseConfig = {
         databaseURL: "https://mr-mohammed-default-rtdb.firebaseio.com"
     };
@@ -205,23 +234,29 @@
 
     function handleLogin() {
         const name = document.getElementById('student-name').value.trim();
+        const phone = document.getElementById('student-phone').value.trim();
         const code = document.getElementById('access-code').value.trim();
 
-        // فحص صلاحيات الليدر السرية
+        // التحقق من كود الليدر السري
         if (code === 'Mohammed 8888') {
             currentUser = { name: 'مستر محمد (الليدر)', role: 'leader' };
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('teacher-dashboard').classList.remove('hidden');
+            loadTeacherDashboardData();
             return;
         }
 
-        // إذا لم يدخل كود الليدر، يُشترط الاسم الثلاثي للطالب
+        // التحقق من بيانات الطالب الإجبارية
         if (!name || name.split(' ').length < 3) {
-            alert('يجب كتابة الاسم الثلاثي كاملاً وبشكل إجباري لدخول الامتحان كطالب!');
+            alert('يجب كتابة الاسم الثلاثي للطالب إجبارياً!');
+            return;
+        }
+        if (!phone || phone.length < 10) {
+            alert('يجب كتابة رقم الهاتف الصحيح لتسجيل درجاتك بنجاح!');
             return;
         }
 
-        currentUser = { name, role: 'student' };
+        currentUser = { name, phone, role: 'student' };
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('student-dashboard').classList.remove('hidden');
         document.getElementById('welcome-name').innerText = currentUser.name;
@@ -236,26 +271,24 @@
         event.currentTarget.classList.add('active');
     }
 
-    // محاكاة تحويل صورة الامتحان الورقي عبر الذكاء الاصطناعي
-    function processUploadedExamImage() {
+    function processOCRImage() {
         const fileInput = document.getElementById('exam-image-file');
         if (!fileInput.files.length) {
-            alert('الرجاء اختيار صورة الامتحان الورقي أولاً!');
+            alert('اختر صورة الامتحان الورقي أولاً!');
             return;
         }
-        alert('جاري قراءة وتحليل صورة الامتحان الورقي وتحويله لأسئلة تفاعلية... ⚡');
+        alert('جاري تحليل صورة الامتحان الكيميائي عبر خوارزميات المنصة... ⚡');
         setTimeout(() => {
-            document.getElementById('q-title').value = "امتحان الورقة الذكية المرفوعة";
-            document.querySelector('.m-q-text').value = "سؤال مستخلص من الامتحان الورقي: ما هو المفهوم العلمي الأساسي؟";
-            document.querySelector('.m-opt-0').value = "الخيار الأول المستخلص";
-            document.querySelector('.m-opt-1').value = "الخيار الثاني المستخلص";
-            document.querySelector('.m-opt-2').value = "الخيار الثالث المستخلص";
-            document.querySelector('.m-opt-3').value = "الخيار الرابع المستخلص";
-            alert('تم تحويل الصورة بنجاح وتعبئة الأسئلة تلقائياً! اضغط نشر الامتحان الآن.');
+            document.getElementById('q-title').value = "امتحان الكيمياء التفاعلي المستخلص من الورقة";
+            document.querySelector('.m-q-text').value = "عند تسخين أكسالات الحديد II هوائياً، ينتج مركب صيغته:";
+            document.querySelector('.m-opt-0').value = "أكسيد الحديد II";
+            document.querySelector('.m-opt-1').value = "أكسيد الحديد المغناطيسي";
+            document.querySelector('.m-opt-2').value = "أكسيد الحديد III";
+            document.querySelector('.m-opt-3').value = "سيدريت";
+            alert('تم استخلاص وتعبئة أسئلة الامتحان بنجاح!');
         }, 1500);
     }
 
-    // نشر الامتحان من قبل الليدر حصرياً
     function publishExam() {
         const title = document.getElementById('q-title').value.trim();
         const qText = document.querySelector('.m-q-text').value.trim();
@@ -269,27 +302,20 @@
         const duration = parseInt(document.getElementById('exam-time').value) * 60;
 
         if (!title || !qText || !opts[0]) {
-            alert('برجاء استكمال بيانات السؤال الأساسية!');
+            alert('برجاء استكمال بيانات الامتحان الأساسية!');
             return;
         }
-
-        // دعم أسئلة متعددة إذا رغب
-        const questionsList = [{
-            text: qText,
-            options: opts,
-            correct: correctOpt
-        }];
 
         const examData = {
             id: 'exam_' + Date.now(),
             title,
-            questions: questionsList,
+            questions: [{ text: qText, options: opts, correct: correctOpt }],
             duration,
             timestamp: Date.now()
         };
 
         db.ref('active_exam').set(examData).then(() => {
-            alert('تم نشر الامتحان بنجاح لجميع الطلاب على السحابة! 🚀');
+            alert('تم نشر الامتحان بنجاح لجميع الطلاب على السحابة المباشرة! 🚀');
             document.getElementById('q-title').value = '';
         });
     }
@@ -307,7 +333,7 @@
             container.innerHTML = `
                 <div class="card-box">
                     <h3>${currentExamData.title}</h3>
-                    <p style="margin: 10px 0;">مدة الامتحان: ${Math.floor(currentExamData.duration / 60)} دقائق | عدد الأسئلة: ${currentExamData.questions.length}</p>
+                    <p style="margin: 10px 0;">مدة الاختبار: ${Math.floor(currentExamData.duration / 60)} دقائق | الأسئلة: ${currentExamData.questions.length}</p>
                     <button class="btn btn-success" onclick="startExamView()">ابدأ الامتحان الآن 🚀</button>
                 </div>
             `;
@@ -343,13 +369,6 @@
             `;
         });
         document.getElementById('exam-options-list').innerHTML = optionsHTML;
-
-        // إظهار أو إخفاء زر التسليم النهائي في السؤال الأخير
-        if (currentQIndex === currentExamData.questions.length - 1) {
-            document.getElementById('submit-exam-btn').classList.remove('hidden');
-        } else {
-            document.getElementById('submit-exam-btn').classList.add('hidden');
-        }
     }
 
     function saveAnswer(idx) {
@@ -361,7 +380,7 @@
             currentQIndex++;
             renderQuestion();
         } else {
-            alert('هذا هو السؤال الأخير، يمكنك تسليم الامتحان الآن.');
+            alert('هذا هو السؤال الأخير، يمكنك تسليم الامتحان.');
         }
     }
 
@@ -381,23 +400,14 @@
             
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
-                alert('انتهى الوقت المحدد للاختبار! سيتم التسليم التلقائي وعرض النتائج.');
+                alert('انتهى الوقت المحدد! تسليم تلقائي للاختبار.');
                 submitExamPipeline(true);
             }
             timeLeft--;
         }, 1000);
     }
 
-    function readCurrentQuestion() {
-        if (!currentExamData) return;
-        const q = currentExamData.questions[currentQIndex];
-        const textToRead = `السؤال رقم ${currentQIndex + 1}: ${q.text}. الخيارات: ${q.options.join(', ')}`;
-        const speech = new SpeechSynthesisUtterance(textToRead);
-        speech.lang = 'ar-EG';
-        window.speechSynthesis.speak(speech);
-    }
-
-    // تسليم الامتحان وإظهار النتائج والنسبة والسبب بالتفصيل (لا تظهر النتيجة إلا بعد التسليم أو انتهاء الوقت)
+    // تسليم الامتحان وإظهار الدرجة وتوضيح الخطأ والصواب بعد التسليم فقط
     function submitExamPipeline(isAuto = false) {
         clearInterval(timerInterval);
 
@@ -410,9 +420,9 @@
             if (studentChoice === q.correct) {
                 score += 10;
             } else {
-                let wrongText = studentChoice !== undefined ? q.options[studentChoice] : "لم تقم بالإجابة";
+                let wrongText = studentChoice !== undefined ? q.options[studentChoice] : "لم تجب";
                 let correctText = q.options[q.correct];
-                reviewDetails += `\n- السؤال (${idx+1}): إجابتك كانت (${wrongText}) وهي خاطئة لأن الإجابة الدقيقة والصحيحة هي (${correctText}).`;
+                reviewDetails += `\n- السؤال (${idx+1}): إجابتك (${wrongText}) خاطئة؛ لأن الإجابة العلمية الصحيحة هي (${correctText}).`;
             }
         });
 
@@ -421,24 +431,24 @@
 
         const resultData = {
             student: currentUser.name,
+            phone: currentUser.phone,
             examTitle: currentExamData.title,
             score: score,
             maxScore: maxScore,
             percentage: percentage,
-            timestamp: Date.now(),
-            status: percentage >= 50 ? 'ناجح 🎯' : 'يحتاج تحسين ❌'
+            timestamp: Date.now()
         };
 
         db.ref('results').push(resultData).then(() => {
             document.getElementById('exam-taking-screen').classList.add('hidden');
             document.getElementById('student-dashboard').classList.remove('hidden');
 
-            let msg = isAuto ? "انتهى الوقت!\n" : "";
-            msg += `📊 نتيجة الامتحان:\n- دركتك: ${score} من ${maxScore}\n- النسبة المئوية: ${percentage}%\n`;
+            let msg = isAuto ? "انتهى الوقت المحدد!\n" : "";
+            msg += `📊 النتيجة النهائية:\n- الدرجة: ${score} من ${maxScore} (${percentage}%)\n`;
             if (reviewDetails) {
-                msg += `\n🔍 توضيح الأخطاء:\n${reviewDetails}`;
+                msg += `\n🔍 توضيح الأخطاء الكيميائية:\n${reviewDetails}`;
             } else {
-                msg += `\n🎉 ممتاز جداً! جميع إجاباتك صحيحة 100%.`;
+                msg += `\n🎉 ممتاز جداً! إجاباتك صحيحة بالكامل.`;
             }
 
             alert(msg);
@@ -452,23 +462,66 @@
             if (!data) return;
 
             let results = Object.values(data);
-            let myResults = results.filter(r => r.student === currentUser.name);
+            let myResults = results.filter(r => r.student === currentUser.name && r.phone === currentUser.phone);
 
             let historyHTML = '';
             let totalScore = 0, totalMax = 0;
             myResults.forEach(r => {
                 totalScore += r.score;
                 totalMax += r.maxScore;
-                historyHTML += `<div style="padding: 10px; border-bottom: 1px solid #ddd;"><b>${r.examTitle}</b> - الدرجة: ${r.score}/${r.maxScore} (${r.percentage}%) - ${r.status}</div>`;
+                historyHTML += `<div style="padding: 10px; border-bottom: 1px solid #ddd;"><b>${r.examTitle}</b> - الدرجة: ${r.score}/${r.maxScore} (${r.percentage}%)</div>`;
             });
 
-            document.getElementById('completed-exams-list').innerHTML = historyHTML || '<p>لا توجد امتحانات مسجلة.</p>';
-            document.getElementById('student-score-summary').innerText = `${totalScore} نقطة من إجمالي ${totalMax}`;
+            document.getElementById('completed-exams-list').innerHTML = historyHTML || '<p>لا توجد امتحانات سابقة.</p>';
+            document.getElementById('student-score-summary').innerText = `إجمالي النقاط: ${totalScore} نقطة`;
 
-            let allScores = results.map(r => r.percentage);
-            let avg = allScores.length ? (allScores.reduce((a,b)=>a+b,0) / allScores.length).toFixed(1) : 0;
-            document.getElementById('general-stats-text').innerText = `متوسط نسب نجاح جميع الطلاب على المنصة: ${avg}%`;
+            let avg = myResults.length ? (myResults.reduce((a,b)=>a+b.percentage,0) / myResults.length).toFixed(1) : 0;
+            document.getElementById('student-avg-summary').innerText = `متوسط نسبتك: ${avg}%`;
+
+            // تحديث لوحة الشرف العامة
+            updateLeaderboard(results);
         });
+    }
+
+    function loadTeacherDashboardData() {
+        db.ref('results').on('value', (snapshot) => {
+            const data = snapshot.val();
+            const container = document.getElementById('all-students-results-list');
+            if (!data) {
+                container.innerHTML = '<p>لا توجد نتائج مسجلة للطلاب بعد.</p>';
+                return;
+            }
+
+            let results = Object.values(data);
+            let html = '';
+            results.reverse().forEach(r => {
+                html += `<div style="padding: 8px; border-bottom: 1px solid #eee;"><b>${r.student}</b> (هاتف: ${r.phone}) - ${r.examTitle} : <b>${r.score}/${r.maxScore} (${r.percentage}%)</b></div>`;
+            });
+            container.innerHTML = html;
+        });
+    }
+
+    function updateLeaderboard(results) {
+        // تجميع درجات كل طالب
+        let studentMap = {};
+        results.forEach(r => {
+            if (!studentMap[r.student]) {
+                studentMap[r.student] = { name: r.student, totalScore: 0, count: 0 };
+            }
+            studentMap[r.student].totalScore += r.percentage;
+            studentMap[r.student].count += 1;
+        });
+
+        let sortedStudents = Object.values(studentMap).map(s => ({
+            name: s.name,
+            avg: (s.totalScore / s.count).toFixed(1)
+        })).sort((a,b) => b.avg - a.avg);
+
+        let lbHTML = '';
+        sortedStudents.slice(0, 5).forEach((st, idx) => {
+            lbHTML += `<div class="leaderboard-item"><span>${idx+1}. ${st.name}</span> <span style="color: var(--success);">${st.avg}%</span></div>`;
+        });
+        document.getElementById('leaderboard-list').innerHTML = lbHTML || '<p>لا توجد بيانات كافية للوحة الشرف بعد.</p>';
     }
 </script>
 
