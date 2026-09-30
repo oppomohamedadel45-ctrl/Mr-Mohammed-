@@ -102,8 +102,8 @@
 
         <!-- نموذج إنشاء حساب جديد للطالب -->
         <div id="register-form-box" class="card-box hidden">
-            <h3 style="color: var(--secondary); margin-bottom: 10px;">👨‍‍🎓 تسجيل طالب جديد</h3>
-            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">قم بملء بياناتك، وسيتم مراجعة مستنداتك من قِبل الليدر:</p>
+            <h3 style="color: var(--secondary); margin-bottom: 10px;">👨‍🎓 تسجيل طالب جديد (مسموح 3 محاولات لكل رقم)</h3>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">قم بملء بياناتك وإرفاق صورة الهوية/الشهادة لمراجعتها من قِبل الليدر:</p>
             
             <div class="form-group">
                 <label>الاسم الثلاثي للطالب:</label>
@@ -463,29 +463,42 @@
             return;
         }
 
-        // قراءة الصورة كـ Base64 لرفعها وحفظها في قاعدة البيانات السحابية
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const imageBase64 = e.target.result;
+        // فحص عدد محاولات التسجيل لهذا الرقم (بحد أقصى 3 محاولات)
+        db.ref('registration_attempts/' + phone).once('value', (attSnap) => {
+            let currentAttempts = attSnap.val() || 0;
 
-            const pendingPayload = {
-                name,
-                phone,
-                fatherPhone,
-                grade,
-                password,
-                image: imageBase64,
-                role: 'student',
-                submittedAt: Date.now()
+            if (currentAttempts >= 3) {
+                alert('❌ لقد تجاوزت الحد الأقصى المسموح به لعدد محاولات التسجيل (3 محاولات) لهذا الرقم!');
+                return;
+            }
+
+            // قراءة الصورة كـ Base64 لرفعها وحفظها في قاعدة البيانات السحابية
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageBase64 = e.target.result;
+
+                const pendingPayload = {
+                    name,
+                    phone,
+                    fatherPhone,
+                    grade,
+                    password,
+                    image: imageBase64,
+                    role: 'student',
+                    submittedAt: Date.now()
+                };
+
+                // زيادة عداد المحاولات بواقع 1
+                db.ref('registration_attempts/' + phone).set(currentAttempts + 1).then(() => {
+                    db.ref('pending_students').push(pendingPayload).then(() => {
+                        alert(`✅ تم إرسال طلبك بنجاح لليدر! (هذه المحاولة رقم ${currentAttempts + 1} من أصل 3 مسموحة). يرجى الانتظار لحين الموافقة.`);
+                        document.getElementById('login-screen').classList.add('hidden');
+                        document.getElementById('pending-approval-screen').classList.remove('hidden');
+                    });
+                });
             };
-
-            db.ref('pending_students').push(pendingPayload).then(() => {
-                alert('✅ تم إرسال طلبك وصورة شهادة الميلاد بنجاح لليدر! يجدر بك الانتظار لحين الموافقة.');
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('pending-approval-screen').classList.remove('hidden');
-            });
-        };
-        reader.readAsDataURL(fileInput.files[0]);
+            reader.readAsDataURL(fileInput.files[0]);
+        });
     }
 
     function enterStudentDashboard() {
