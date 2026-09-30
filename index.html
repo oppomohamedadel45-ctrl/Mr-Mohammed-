@@ -4,60 +4,365 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>منصة مستر محمد عادل التعليمية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
+        :root {
+            --primary: #1e3c72;
+            --primary-dark: #2a5298;
+            --accent: #ff6b6b;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #2d3748;
+            --success: #38a169;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
             margin: 0;
             padding: 0;
-            text-align: center;
         }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
         header {
-            background-color: #1a365d;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
-            padding: 2rem 1rem;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        h1 { margin: 0; font-size: 2.2rem; }
-        p { font-size: 1.1rem; color: #e2e8f0; }
+
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        header p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
         .container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 1rem;
+            max-width: 900px;
+            width: 95%;
+            margin: 1.5rem auto;
+            flex: 1;
         }
+
         .card {
-            background: white;
-            padding: 2rem;
+            background: var(--card-bg);
             border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             margin-bottom: 1.5rem;
         }
-        .btn {
-            display: inline-block;
-            background-color: #2b6cb0;
-            color: white;
-            padding: 0.8rem 1.8rem;
+
+        .login-box {
+            max-width: 400px;
+            margin: 3rem auto;
+            text-align: center;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 0.8rem;
+            margin-top: 0.8rem;
+            border: 1px solid #e2e8f0;
             border-radius: 8px;
-            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
             font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .nav-tabs button {
+            background: #e2e8f0;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .nav-tabs button.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
             margin-top: 1rem;
         }
-        .btn:hover { background-color: #2c5282; }
+
+        .leaderboard-table th, .leaderboard-table td {
+            border: 1px solid #e2e8f0;
+            padding: 0.75rem;
+            text-align: center;
+        }
+
+        .leaderboard-table th {
+            background-color: #edf2f7;
+        }
+
+        .question-box {
+            border-right: 4px solid var(--primary);
+            padding-right: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .opt-btn {
+            background: #edf2f7;
+            color: var(--text);
+            text-align: right;
+            margin-top: 0.5rem;
+        }
+
+        .opt-btn:hover {
+            background: #e2e8f0;
+        }
     </style>
 </head>
 <body>
 
     <header>
         <h1>منصة مستر محمد عادل التعليمية</h1>
-        <p>أهلاً بكم في المنصة الخاصة بالشرح والمراجعات والمواد التعليمية</p>
+        <p>البوابة التعليمية الذكية للتفوق والامتحانات</p>
     </header>
 
     <div class="container">
-        <div class="card">
-            <h2>مرحباً بكم يا شباب!</h2>
-            <p>سيتم رفع المحاضرات، الجداول، وملخصات الدروس هنا بشكل دوري.</p>
-            <a href="#" class="btn">تصفح الدروس</a>
+        <!-- شاشة التسجيل -->
+        <div id="login-section" class="card login-box">
+            <h2>تسجيل الدخول</h2>
+            <input type="text" id="user-code" placeholder="أدخل كود الدخول">
+            <button onclick="login()">دخول المنصة</button>
+            <p style="font-size: 0.85rem; color: #718096; margin-top: 1rem;">
+                كود الطالب العام: <b>5555</b>
+            </p>
+        </div>
+
+        <!-- الشاشة الرئيسية بعد الدخول -->
+        <div id="main-section" class="hidden">
+            <div class="nav-tabs">
+                <button id="tab-quiz" class="active" onclick="switchTab('quiz')">الاختبارات</button>
+                <button id="tab-leaderboard" onclick="switchTab('leaderboard')">لوحة المتصدرين</button>
+                <button id="tab-admin" class="hidden" onclick="switchTab('admin')">لوحة القائد (مستر محمد)</button>
+            </div>
+
+            <!-- قسم الاختبارات -->
+            <div id="section-quiz" class="card">
+                <h2>الاختبارات المتاحة</h2>
+                <div id="quiz-container">
+                    <p>جاري تحميل الاختبارات...</p>
+                </div>
+            </div>
+
+            <!-- قسم المتصدرين -->
+            <div id="section-leaderboard" class="card hidden">
+                <h2>لوحة متصدري المنصة 🏆</h2>
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>الترتيب</th>
+                            <th>اسم الطالب</th>
+                            <th>الدرجة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body">
+                        <!-- يتم ملء البيانات ديناميكياً -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- قسم القائد / المسؤول -->
+            <div id="section-admin" class="card hidden">
+                <h2>لوحة تحكم القائد (منشئ الاختبارات الذكي)</h2>
+                <p style="margin-bottom: 1rem; color: #4a5568;">يمكنك إدخال الأسئلة أو رفع صورة لإنشاء امتحان عبر الـ OCR تلقائياً.</p>
+                
+                <input type="text" id="quiz-title" placeholder="عنوان الاختبار">
+                <textarea id="question-text" style="width:100%; height:80px; margin-top:0.8rem; padding:0.5rem;" placeholder="اكتب السؤال هنا..."></textarea>
+                
+                <input type="text" id="opt1" placeholder="الخيار الأول">
+                <input type="text" id="opt2" placeholder="الخيار الثاني">
+                <input type="text" id="opt3" placeholder="الخيار الثالث">
+                <input type="text" id="opt4" placeholder="الخيار الرابع">
+                
+                <select id="correct-opt">
+                    <option value="0">الخيار الأول هو الصحيح</option>
+                    <option value="1">الخيار الثاني هو الصحيح</option>
+                    <option value="2">الخيار الثالث هو الصحيح</option>
+                    <option value="3">الخيار الرابع هو الصحيح</option>
+                </select>
+
+                <button onclick="saveQuestion()" style="background-color: var(--success); margin-top: 1rem;">حفظ وإضافة السؤال</button>
+            </div>
         </div>
     </div>
 
+    <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+            databaseURL: "https://mr-mohammed-default-rtdb.firebaseio.com/"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let currentUser = null;
+
+        function login() {
+            const code = document.getElementById('user-code').value.trim();
+            if (code === "2345" || code === "1234") {
+                currentUser = { role: 'leader', name: 'مستر محمد' };
+                document.getElementById('tab-admin').classList.remove('hidden');
+                initPlatform();
+            } else if (code === "5555") {
+                const studentName = prompt("أدخل اسمك بالكامل للبدء:") || "طالب جديد";
+                currentUser = { role: 'student', name: studentName };
+                initPlatform();
+            } else {
+                alert("كود الدخول غير صحيح!");
+            }
+        }
+
+        function initPlatform() {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('main-section').classList.remove('hidden');
+            loadQuizzes();
+            loadLeaderboard();
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
+            document.getElementById('section-quiz').classList.add('hidden');
+            document.getElementById('section-leaderboard').classList.add('hidden');
+            document.getElementById('section-admin').classList.add('hidden');
+
+            document.getElementById('tab-' + tabName).classList.add('active');
+            document.getElementById('section-' + tabName).classList.remove('hidden');
+        }
+
+        function saveQuestion() {
+            const title = document.getElementById('quiz-title').value || "اختبار عام";
+            const qText = document.getElementById('question-text').value;
+            const opts = [
+                document.getElementById('opt1').value,
+                document.getElementById('opt2').value,
+                document.getElementById('opt3').value,
+                document.getElementById('opt4').value
+            ];
+            const correct = parseInt(document.getElementById('correct-opt').value);
+
+            if (!qText || opts.some(o => !o)) {
+                alert("يرجى ملء جميع الحقول للأسئلة والإجابات.");
+                return;
+            }
+
+            const newQRef = database.ref('quizzes').push();
+            newQRef.set({
+                title: title,
+                question: qText,
+                options: opts,
+                correct: correct
+            }).then(() => {
+                alert("تم إضافة السؤال بنجاح إلى منصة Firebase!");
+                document.getElementById('question-text').value = "";
+                document.getElementById('opt1').value = "";
+                document.getElementById('opt2').value = "";
+                document.getElementById('opt3').value = "";
+                document.getElementById('opt4').value = "";
+                loadQuizzes();
+            });
+        }
+
+        function loadQuizzes() {
+            database.ref('quizzes').on('value', (snapshot) => {
+                const data = snapshot.val();
+                const container = document.getElementById('quiz-container');
+                container.innerHTML = "";
+
+                if (!data) {
+                    container.innerHTML = "<p>لا توجد اختبارات متاحة حالياً.</p>";
+                    return;
+                }
+
+                Object.keys(data).forEach((key, index) => {
+                    const q = data[key];
+                    const qDiv = document.createElement('div');
+                    qDiv.className = 'question-box';
+                    qDiv.innerHTML = `
+                        <h3>س${index + 1}: ${q.question}</h3>
+                        ${q.options.map((opt, i) => `
+                            <button class="opt-btn" onclick="submitAnswer('${key}',${i}, ${q.correct})">${opt}</button>
+                        `).join('')}
+                    `;
+                    container.appendChild(qDiv);
+                });
+            });
+        }
+
+        function submitAnswer(qId, selectedOpt, correctOpt) {
+            if (selectedOpt === correctOpt) {
+                alert("إجابة صحيحة! أحسنت 👏");
+                database.ref('leaderboard/' + currentUser.name).transaction((currentScore) => {
+                    return (currentScore || 0) + 10;
+                });
+            } else {
+                alert("إجابة خاطئة، حاول مجدداً!");
+            }
+        }
+
+        function loadLeaderboard() {
+            database.ref('leaderboard').orderByValue().on('value', (snapshot) => {
+                const tbody = document.getElementById('leaderboard-body');
+                tbody.innerHTML = "";
+                let list = [];
+
+                snapshot.forEach(child => {
+                    list.push({ name: child.key, score: child.val() });
+                });
+
+                list.reverse(); // ترتيب من الأعلى للأقل
+
+                list.forEach((item, index) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${item.name}</td>
+                        <td>${item.score} نقطة</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            });
+        }
+    </script>
 </body>
 </html>
+
