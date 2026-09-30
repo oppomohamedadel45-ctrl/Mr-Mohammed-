@@ -349,7 +349,7 @@
             return;
         }
 
-        // فحص دخول المعلم (الليدر)
+        // فحص دخول المعلم (الليدر) بالكود السري الجديد
         if ((phoneOrCode === 'Mohammed 8888' || phoneOrCode === '1234' || phoneOrCode === '01149260102') && (password === '8888' || password === '1234')) {
             currentUser = { name: 'المعلم (الليدر)', role: 'leader' };
             localStorage.setItem('smart_platform_user_v3', JSON.stringify(currentUser));
