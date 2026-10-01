@@ -47,8 +47,8 @@
         .btn-warning { background: var(--warning); color: #fff; }
         .btn-warning:hover { background: #b45309; }
 
-        .nav-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 25px; }
-        .nav-btn { padding: 10px; background: #e2e8f0; border: none; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; color: var(--primary); transition: 0.3s; text-align: center; }
+        .nav-buttons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 25px; }
+        .nav-btn { padding: 10px; background: #e2e8f0; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; color: var(--primary); transition: 0.3s; text-align: center; }
         .nav-btn:hover, .nav-btn.active { background: var(--primary); color: white; }
 
         .card-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
@@ -56,12 +56,11 @@
         
         .hidden { display: none !important; }
         .flex-row { display: flex; gap: 10px; }
-        .leaderboard-item { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #e2e8f0; font-weight: bold; }
         
-        .review-card { padding: 15px; border-radius: 8px; margin-bottom: 12px; border: 1.5px solid #cbd5e1; }
-        .review-correct { background: #f0fdf4; border-color: var(--success); }
-        .review-wrong { background: #fef2f2; border-color: var(--danger); }
-        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 12px; text-align: center; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
+        th { background: var(--primary); color: white; }
+
         .question-card-builder { background: #ffffff; border: 2px solid var(--accent); padding: 20px; border-radius: 12px; margin-bottom: 20px; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     </style>
 </head>
@@ -119,7 +118,7 @@
 
     <!-- لوحة تحكم المدرس المستقل -->
     <div id="teacher-dashboard" class="hidden">
-        <h1 id="teacher-dash-title">لوحة تحكم المعلم ⚙️</h1>
+        <h1 id="teacher-dash-title">لوحة تحكم المعلم ⚙️️</h1>
         <p style="text-align:center; color: var(--success); font-weight:bold; margin-bottom:20px;" id="teacher-welcome-msg">أهلاً بك.</p>
         
         <div class="card-box" style="border: 2px solid var(--warning); background: #fffbeb;">
@@ -129,7 +128,7 @@
 
         <div class="card-box" style="border: 2px solid var(--accent); background: #f0fdf4;">
             <h3>📝 تصحيح الامتحانات المقالية (إجابات الصور)</h3>
-            <div id="pending-essays-list" style="margin-top: 15px; max-height: 300px; overflow-y: auto;"><p>لا توجد إجابات مقالية تنتظر التصحيح.</p></div>
+            <div id="pending-essays-list" style="margin-top: 15px; max-height: 350px; overflow-y: auto;"><p>لا توجد إجابات مقالية تنتظر التصحيح.</p></div>
         </div>
 
         <div class="card-box">
@@ -172,7 +171,7 @@
             </div>
         </div>
 
-        <!-- تبويب امتحانات الطالب المحسنة -->
+        <!-- تبويب امتحانات الطالب المحسنة وجدول النتائج -->
         <div id="st-tab-my-exams" class="tab-pane hidden">
             <div class="card-box">
                 <label>اختر المدرس الذي تم قبولك معه لعرض امتحاناته:</label>
@@ -181,7 +180,13 @@
                 </select>
             </div>
             <div id="active-exam-container"><p style="text-align: center; color: #666;">اختر مدرساً لعرض الامتحانات المتاحة...</p></div>
-            <div class="card-box" id="completed-exams-list" style="margin-top: 20px;"><p>لم تقم بأي امتحانات بعد.</p></div>
+            
+            <div class="card-box" style="margin-top: 25px;">
+                <h3 style="color: var(--primary); margin-bottom: 15px;">📊 سجل امتحاناتي السابقة ودرجاتي</h3>
+                <div id="student-history-table-container">
+                    <p style="text-align: center; color: #666;">جاري تحميل سجل النتائج...</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -197,7 +202,6 @@
                 <img id="exam-question-img" src="" alt="صورة توضيحية للسؤال" style="max-width: 100%; max-height: 250px; border-radius: 8px; border: 2px solid #cbd5e1;">
             </div>
 
-            <!-- حاوية الأسئلة (تتغير حسب نوع السؤال: اختياري أو مقالي برفع صورة) -->
             <div id="exam-question-content-box"></div>
 
             <div class="flex-row" style="margin-top: 25px;">
@@ -228,7 +232,7 @@
     let timerInterval = null;
     let timeLeft = 0;
     let currentQIndex = 0;
-    let studentAnswers = {}; // يحفظ إجابات الطالب (اختياري أو صورة مقالية)
+    let studentAnswers = {}; 
 
     window.onload = function() {
         db.ref('teachers').once('value', (snapshot) => {
@@ -272,7 +276,6 @@
         }
     }
 
-    // إدارة الليدر العام (كلمة السر: 8888)
     function verifyAdminAccess() {
         const pass = document.getElementById('admin-pass-input').value.trim();
         if (pass === '8888') { 
@@ -325,7 +328,6 @@
         }
     }
 
-    // تسجيل دخول المدرس
     function handleTeacherLogin() {
         const code = document.getElementById('teacher-login-id').value.trim();
         const pass = document.getElementById('teacher-login-pass').value.trim();
@@ -345,7 +347,6 @@
         });
     }
 
-    // تسجيل دخول الطالب الشامل الموحد
     function handleStudentAuth() {
         const name = document.getElementById('student-auth-name').value.trim();
         const phone = document.getElementById('student-auth-phone').value.trim();
@@ -366,7 +367,6 @@
                     alert('❌ الرقم السري غير صحيح لهذا الهاتف!');
                 }
             } else {
-                // إنشاء حساب جديد للطالب تلقائياً
                 const newAcc = { name, password, role: 'student', createdAt: Date.now() };
                 db.ref('students_accounts/' + phone).set(newAcc).then(() => {
                     currentUser = { ...newAcc, phone };
@@ -383,12 +383,10 @@
         location.reload();
     }
 
-    // لوحة تحكم المدرس وتصحيح المقالي
     function loadTeacherDashboardData() {
         document.getElementById('teacher-dash-title').innerText = `لوحة تحكم المعلم: ${currentUser.name}`;
         document.getElementById('teacher-welcome-msg').innerText = `المادة: ${currentUser.subject} | كود: ${currentUser.id}`;
 
-        // طلبات الانضمام المعلقة
         db.ref('pending_students/' + currentUser.id).on('value', (snapshot) => {
             const data = snapshot.val();
             const container = document.getElementById('pending-students-list');
@@ -410,7 +408,7 @@
             container.innerHTML = html;
         });
 
-        // الامتحانات المقالية التي تنتظر التصحيح اليدوي
+        // تصحيح الامتحانات المقالية برفع الصور (مصححة ومحدثة لتعمل بفعالية تامة)
         db.ref('pending_essays_grading/' + currentUser.id).on('value', (snapshot) => {
             const data = snapshot.val();
             const container = document.getElementById('pending-essays-list');
@@ -422,22 +420,25 @@
                 Object.keys(submissions).forEach(studentPhone => {
                     let sub = submissions[studentPhone];
                     html += `
-                        <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 12px; border: 1.5px solid var(--accent);">
+                        <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 2px solid var(--accent);">
                             <p><b>الطالب:</b> ${sub.studentName} | <b>الامتحان:</b> ${sub.examTitle}</p>
-                            <p><b>السؤال المقالي:</b> ${sub.questionText}</p>
+                            <p style="margin-top: 5px;"><b>السؤال المقالي:</b> ${sub.questionText}</p>
                             ${sub.questionImage ? `<div style="margin:5px 0;"><img src="${sub.questionImage}" style="max-height:80px; border-radius:4px;"></div>` : ''}
-                            <p style="margin-top: 10px;"><b>إجابة الطالب (صورة):</b></p>
-                            <div style="margin: 5px 0;"><a href="${sub.studentImageAnswer}" target="_blank"><img src="${sub.studentImageAnswer}" style="max-height: 120px; border-radius: 6px; border: 1px solid #ccc;"></a></div>
+                            
+                            <p style="margin-top: 10px; font-weight: bold; color: var(--primary);">📷 صورة إجابة الطالب:</p>
+                            <div style="margin: 5px 0; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px dashed #cbd5e1; text-align: center;">
+                                ${sub.studentImageAnswer ? `<a href="${sub.studentImageAnswer}" target="_blank"><img src="${sub.studentImageAnswer}" style="max-height: 220px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"></a><br><small style="color:var(--accent);">اضغط على الصورة لتكبيرها</small>` : '<span style="color:var(--danger);">لم يقم الطالب برفع صورة للإجابة!</span>'}
+                            </div>
                             
                             <div class="form-group" style="margin-top: 10px;">
                                 <label>الدرجة الممنوحة:</label>
-                                <input type="number" id="grade_${studentPhone}_${examKey}" placeholder="مثال: 5 من 10" min="0" max="20" style="width: 150px;">
+                                <input type="number" id="grade_${studentPhone}_${examKey}" placeholder="مثال: 5" min="0" max="20" style="width: 150px;">
                             </div>
                             <div class="form-group">
-                                <label>تعليل الخطأ (إن وجد) والتوضيح الصحيح:</label>
-                                <textarea id="feedback_${studentPhone}_${examKey}" placeholder="اكتب تعليقاً للطالب عن إجابته..." rows="2"></textarea>
+                                <label>تعليق المعلم / ملاحظات:</label>
+                                <textarea id="feedback_${studentPhone}_${examKey}" placeholder="اكتب تعليقاً للطالب..." rows="2"></textarea>
                             </div>
-                            <button class="btn btn-success" onclick="submitEssayGrade('${examKey}', '${studentPhone}', '${sub.examTitle}')">اعتماد الدرجة وإرسالها للطالب ✅</button>
+                            <button class="btn btn-success" onclick="submitEssayGrade('${examKey}', '${studentPhone}', '${sub.examTitle}', ${sub.mcqScore || 0})">اعتماد الدرجة وإرسالها للطالب ✅</button>
                         </div>
                     `;
                 });
@@ -445,7 +446,6 @@
             container.innerHTML = html;
         });
 
-        // الطلاب المقبولين
         db.ref('approved_students/' + currentUser.id).on('value', (snapshot) => {
             const data = snapshot.val();
             const container = document.getElementById('teacher-students-management-list');
@@ -482,27 +482,34 @@
         }
     }
 
-    function submitEssayGrade(examKey, studentPhone, examTitle) {
+    function submitEssayGrade(examKey, studentPhone, examTitle, mcqScore) {
         let gradeInput = document.getElementById(`grade_${studentPhone}_${examKey}`).value;
         let feedbackInput = document.getElementById(`feedback_${studentPhone}_${examKey}`).value.trim();
-        let earnedGrade = parseFloat(gradeInput);
+        let essayScore = parseFloat(gradeInput);
 
-        if (isNaN(earnedGrade)) { alert('أدخل درجة صحيحة!'); return; }
+        if (isNaN(essayScore)) { alert('أدخل درجة صحيحة!'); return; }
 
-        // حفظ النتيجة وتحديث تقرير الطالب
-        const gradingResult = {
-            examKey, examTitle, teacherId: currentUser.id, teacherName: currentUser.name,
-            subject: currentUser.subject, studentPhone, earnedGrade, feedback: feedbackInput, timestamp: Date.now()
-        };
+        db.ref(`exam_results/${studentPhone}/${examKey}`).once('value', (snap) => {
+            let existingRecord = snap.val() || { examTitle, subject: currentUser.subject, teacherName: currentUser.name, mcqScore };
+            let totalScore = (existingRecord.mcqScore || mcqScore) + essayScore;
 
-        db.ref(`essay_results/${currentUser.id}/${examKey}/${studentPhone}`).set(gradingResult).then(() => {
-            db.ref(`pending_essays_grading/${currentUser.id}/${examKey}/${studentPhone}`).remove().then(() => {
-                alert('✅ تمت إضافة درجة المقالي وتحديث النتيجة!');
+            const finalRecord = {
+                ...existingRecord,
+                essayScore,
+                totalScore,
+                feedback: feedbackInput,
+                status: 'مصحح بالكامل ✅',
+                timestamp: Date.now()
+            };
+
+            db.ref(`exam_results/${studentPhone}/${examKey}`).set(finalRecord).then(() => {
+                db.ref(`pending_essays_grading/${currentUser.id}/${examKey}/${studentPhone}`).remove().then(() => {
+                    alert('✅ تمت اعتماد درجة المقالي وتحديث النتيجة للطالب بنجاح!');
+                });
             });
         });
     }
 
-    // بناء الأسئلة (اختياري أو مقالي)
     function addNewQuestionField(type = 'mcq') {
         const container = document.getElementById('dynamic-questions-container');
         const qCount = container.children.length + 1;
@@ -586,13 +593,13 @@
         });
     }
 
-    // واجهة الطالب
     function enterStudentDashboard() {
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('student-dashboard').classList.remove('hidden');
         document.getElementById('welcome-name').innerText = currentUser.name;
         loadAllTeachersDirectory();
         loadStudentApprovedTeachersDropdown();
+        loadStudentExamsHistory();
     }
 
     function switchStudentTab(tabId) {
@@ -681,6 +688,49 @@
                     <button class="btn btn-success" onclick="startExamView()">ابدأ الامتحان الآن 🚀</button>
                 </div>
             `;
+        });
+    }
+
+    function loadStudentExamsHistory() {
+        db.ref('exam_results/' + currentUser.phone).on('value', (snapshot) => {
+            const data = snapshot.val();
+            const container = document.getElementById('student-history-table-container');
+            if (!data) {
+                container.innerHTML = '<p style="text-align: center; color: #666;">لم تقم بأي امتحانات مسجلة حتى الآن.</p>';
+                return;
+            }
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>اسم الامتحان</th>
+                            <th>المادة</th>
+                            <th>المعلم</th>
+                            <th>الدرجة النهائية</th>
+                            <th>الحالة</th>
+                            <th>ملاحظات المعلم</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            Object.keys(data).forEach(examKey => {
+                let res = data[examKey];
+                html += `
+                    <tr>
+                        <td><b>${res.examTitle}</b></td>
+                        <td>${res.subject}</td>
+                        <td>${res.teacherName}</td>
+                        <td><span style="color:var(--success); font-weight:bold; font-size:1.1rem;">${res.totalScore !== undefined ? res.totalScore : (res.mcqScore || 0)}</span></td>
+                        <td><span style="color:var(--primary);">${res.status || 'قيد تصحيح المقالي ⏳'}</span></td>
+                        <td>${res.feedback || 'لا توجد ملاحظات'}</td>
+                    </tr>
+                `;
+            });
+
+            html += `</tbody></table>`;
+            container.innerHTML = html;
         });
     }
 
@@ -782,21 +832,34 @@
                 if (studentAnswers[idx] === q.correct) mcqScore += 10;
             } else if (q.type === 'essay') {
                 hasEssay = true;
-                // إرسال الإجابة المقالية للمعلم لتصحيحها يدوياً
                 let essayPayload = {
                     studentName: currentUser.name,
                     examTitle: currentExamData.title,
                     questionText: q.text,
                     questionImage: q.image || '',
                     studentImageAnswer: studentAnswers[idx] || '',
+                    mcqScore: mcqScore,
                     timestamp: Date.now()
                 };
                 db.ref(`pending_essays_grading/${currentExamData.teacherId}/${currentExamData.id}/${currentUser.phone}`).set(essayPayload);
             }
         });
 
-        alert(`✅ تم تسليم الامتحان بنجاح!\nدرجة الأسئلة الاختيارية أُحتسبت فوراً (${mcqScore} درجة).\nالأسئلة المقالية تم إرسالها للمعلم لتصحيحها يدوياً وإضافتها لدرجتك.`);
-        location.reload();
+        // حفظ النتيجة الأولية في جدول الطالب
+        const initialResult = {
+            examTitle: currentExamData.title,
+            teacherName: currentExamData.teacherName,
+            subject: currentExamData.subject,
+            mcqScore: mcqScore,
+            totalScore: mcqScore,
+            status: hasEssay ? 'قيد تصحيح المقالي ⏳' : 'منتهي ✅',
+            timestamp: Date.now()
+        };
+
+        db.ref(`exam_results/${currentUser.phone}/${currentExamData.id}`).set(initialResult).then(() => {
+            alert(`✅ تم تسليم الامتحان بنجاح!\nدرجة الأسئلة الاختيارية (${mcqScore} درجة) أُحتسبت فوراً.\nتم إرسال إجاباتك المقالية لمعلم المادة.`);
+            location.reload();
+        });
     }
 </script>
 
