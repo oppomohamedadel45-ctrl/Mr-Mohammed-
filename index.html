@@ -73,7 +73,7 @@
         <p style="text-align: center; color: #555; margin-bottom: 20px;">النظام السحابي الموحد لإدارة المدرسين والطلاب</p>
         
         <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; flex-wrap: wrap;">
-            <button class="btn" id="tab-btn-student" onclick="switchLoginMode('student')" style="width: auto; padding: 10px 20px; background: var(--primary);">بوابة الطالب 👨‍🎓</button>
+            <button class="btn" id="tab-btn-student" onclick="switchLoginMode('student')" style="width: auto; padding: 10px 20px; background: var(--primary);">بوابة الطالب 👨‍‍🎓</button>
             <button class="btn" id="tab-btn-teacher" onclick="switchLoginMode('teacher')" style="width: auto; padding: 10px 20px; background: #64748b;">دخول مدرس 👨‍🏫</button>
             <button class="btn" id="tab-btn-admin" onclick="switchLoginMode('admin')" style="width: auto; padding: 10px 20px; background: #b91c1c;">👑 الليدر العام (الإدارة)</button>
         </div>
@@ -82,7 +82,7 @@
         <div id="box-student-login" class="card-box" style="text-align: right; max-width: 480px; margin: 0 auto;">
             <h3 style="color: var(--secondary); margin-bottom: 15px; text-align: center;">👤 تسجيل دخول أو إنشاء حساب طالب</h3>
             <div class="form-group"><label>الاسم الثلاثي:</label><input type="text" id="student-auth-name" placeholder="محمد أحمد محمود..."></div>
-            <div class="form-group"><label>رقم الهاتف:</label><input type="text" id="student-auth-phone" placeholder="اكتب رقم هاتفك..."></div>
+            <div class="form-group"><label>رقم الهاتف (أرقام فقط):</label><input type="tel" id="student-auth-phone" placeholder="01012345678" oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="11"></div>
             <div class="form-group"><label>الرقم السري:</label><input type="password" id="student-auth-pass" placeholder="اكتب الرقم السري الخاص بك..."></div>
             <button class="btn btn-success" onclick="handleStudentAuth()">دخول للمنصة 🚀</button>
         </div>
@@ -118,7 +118,7 @@
 
     <!-- لوحة تحكم المدرس المستقل -->
     <div id="teacher-dashboard" class="hidden">
-        <h1 id="teacher-dash-title">لوحة تحكم المعلم ⚙️️</h1>
+        <h1 id="teacher-dash-title">لوحة تحكم المعلم ⚙</h1>
         <p style="text-align:center; color: var(--success); font-weight:bold; margin-bottom:20px;" id="teacher-welcome-msg">أهلاً بك.</p>
         
         <div class="card-box" style="border: 2px solid var(--warning); background: #fffbeb;">
@@ -353,7 +353,7 @@
         const password = document.getElementById('student-auth-pass').value.trim();
 
         if (!name || name.split(' ').length < 3) { alert('يجب كتابة الاسم الثلاثي إجبارياً!'); return; }
-        if (!phone || phone.length < 10) { alert('أدخل رقم هاتف صحيح!'); return; }
+        if (!phone || phone.length < 10) { alert('أدخل رقم هاتف صحيح (10 أرقام على الأقل)!'); return; }
         if (!password) { alert('أدخل الرقم السري!'); return; }
 
         db.ref('students_accounts/' + phone).once('value', (snapshot) => {
@@ -408,7 +408,7 @@
             container.innerHTML = html;
         });
 
-        // تصحيح الامتحانات المقالية برفع الصور (مصححة ومحدثة لتعمل بفعالية تامة)
+        // تصحيح الامتحانات المقالية برفع الصور (تصحيح مسار القراءة ليتطابق مع الـ Exam ID المعالج)
         db.ref('pending_essays_grading/' + currentUser.id).on('value', (snapshot) => {
             const data = snapshot.val();
             const container = document.getElementById('pending-essays-list');
@@ -419,6 +419,8 @@
                 let submissions = data[examKey];
                 Object.keys(submissions).forEach(studentPhone => {
                     let sub = submissions[studentPhone];
+                    // استبدال نقاط المسار الممنوعة في الـ Firebase بدلاً من الـ Exam ID المباشر إن وجدت
+                    let safeExamKey = examKey.replace(/\./g, '_');
                     html += `
                         <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 2px solid var(--accent);">
                             <p><b>الطالب:</b> ${sub.studentName} | <b>الامتحان:</b> ${sub.examTitle}</p>
@@ -432,11 +434,11 @@
                             
                             <div class="form-group" style="margin-top: 10px;">
                                 <label>الدرجة الممنوحة:</label>
-                                <input type="number" id="grade_${studentPhone}_${examKey}" placeholder="مثال: 5" min="0" max="20" style="width: 150px;">
+                                <input type="number" id="grade_${studentPhone}_${safeExamKey}" placeholder="مثال: 5" min="0" max="20" style="width: 150px;">
                             </div>
                             <div class="form-group">
                                 <label>تعليق المعلم / ملاحظات:</label>
-                                <textarea id="feedback_${studentPhone}_${examKey}" placeholder="اكتب تعليقاً للطالب..." rows="2"></textarea>
+                                <textarea id="feedback_${studentPhone}_${safeExamKey}" placeholder="اكتب تعليقاً للطالب..." rows="2"></textarea>
                             </div>
                             <button class="btn btn-success" onclick="submitEssayGrade('${examKey}', '${studentPhone}', '${sub.examTitle}', ${sub.mcqScore || 0})">اعتماد الدرجة وإرسالها للطالب ✅</button>
                         </div>
@@ -483,13 +485,14 @@
     }
 
     function submitEssayGrade(examKey, studentPhone, examTitle, mcqScore) {
-        let gradeInput = document.getElementById(`grade_${studentPhone}_${examKey}`).value;
-        let feedbackInput = document.getElementById(`feedback_${studentPhone}_${examKey}`).value.trim();
+        let safeExamKey = examKey.replace(/\./g, '_');
+        let gradeInput = document.getElementById(`grade_${studentPhone}_${safeExamKey}`).value;
+        let feedbackInput = document.getElementById(`feedback_${studentPhone}_${safeExamKey}`).value.trim();
         let essayScore = parseFloat(gradeInput);
 
         if (isNaN(essayScore)) { alert('أدخل درجة صحيحة!'); return; }
 
-        db.ref(`exam_results/${studentPhone}/${examKey}`).once('value', (snap) => {
+        db.ref(`exam_results/${studentPhone}/${safeExamKey}`).once('value', (snap) => {
             let existingRecord = snap.val() || { examTitle, subject: currentUser.subject, teacherName: currentUser.name, mcqScore };
             let totalScore = (existingRecord.mcqScore || mcqScore) + essayScore;
 
@@ -502,7 +505,7 @@
                 timestamp: Date.now()
             };
 
-            db.ref(`exam_results/${studentPhone}/${examKey}`).set(finalRecord).then(() => {
+            db.ref(`exam_results/${studentPhone}/${safeExamKey}`).set(finalRecord).then(() => {
                 db.ref(`pending_essays_grading/${currentUser.id}/${examKey}/${studentPhone}`).remove().then(() => {
                     alert('✅ تمت اعتماد درجة المقالي وتحديث النتيجة للطالب بنجاح!');
                 });
@@ -826,6 +829,7 @@
         clearInterval(timerInterval);
         let mcqScore = 0;
         let hasEssay = false;
+        let safeExamKey = currentExamData.id.replace(/\./g, '_');
 
         currentExamData.questions.forEach((q, idx) => {
             if (q.type === 'mcq') {
@@ -856,7 +860,7 @@
             timestamp: Date.now()
         };
 
-        db.ref(`exam_results/${currentUser.phone}/${currentExamData.id}`).set(initialResult).then(() => {
+        db.ref(`exam_results/${currentUser.phone}/${safeExamKey}`).set(initialResult).then(() => {
             alert(`✅ تم تسليم الامتحان بنجاح!\nدرجة الأسئلة الاختيارية (${mcqScore} درجة) أُحتسبت فوراً.\nتم إرسال إجاباتك المقالية لمعلم المادة.`);
             location.reload();
         });
