@@ -48,10 +48,6 @@
         .btn-whatsapp { background: #25d366; }
         .btn-whatsapp:hover { background: #1ebe5d; }
 
-        .nav-buttons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 25px; }
-        .nav-btn { padding: 10px; background: #e2e8f0; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; color: var(--primary); transition: 0.3s; text-align: center; }
-        .nav-btn:hover, .nav-btn.active { background: var(--primary); color: white; }
-
         .card-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
         .timer-box { font-size: 1.3rem; font-weight: bold; color: var(--danger); text-align: center; margin-bottom: 15px; background: #fee2e2; padding: 12px; border-radius: 8px; border: 1px solid #fca5a5; }
         
@@ -85,7 +81,7 @@
             <button class="btn" id="tab-btn-admin" onclick="switchLoginMode('admin')" style="width: auto; padding: 10px 20px; background: #b91c1c;">👑 الإدارة العامة</button>
         </div>
 
-        <!-- بوابة الطالب -->
+        <!-- بوابة الطالب (داخل المنصة مباشرة ثم اختيار المعلم والتسجيل/الدخول) -->
         <div id="box-student-login" class="card-box" style="text-align: right; max-width: 480px; margin: 0 auto;">
             <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                 <button class="btn" id="st-mode-login-btn" onclick="switchStudentAuthMode('login')" style="margin:0; background: var(--primary);">تسجيل دخول</button>
@@ -94,16 +90,16 @@
 
             <!-- نموذج تسجيل الدخول -->
             <div id="student-login-form">
-                <h3 style="color: var(--secondary); margin-bottom: 15px; text-align: center;">👤 تسجيل دخول الطالب</h3>
+                <h3 style="color: var(--secondary); margin-bottom: 15px; text-align: center;">👤 تسجيل دخول الطالب للمنصة</h3>
                 <div class="form-group"><label>رقم الهاتف:</label><input type="tel" id="st-login-phone" placeholder="01012345678" oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="11"></div>
                 <div class="form-group"><label>الرقم السري:</label><input type="password" id="st-login-pass" placeholder="الرقم السري الخاص بك..."></div>
                 <button class="btn btn-success" onclick="handleStudentLogin()">دخول للمنصة 🚀</button>
             </div>
 
-            <!-- نموذج إنشاء حساب جديد -->
+            <!-- نموذج إنشاء حساب جديد واختيار المعلم -->
             <div id="student-register-form" class="hidden">
-                <h3 style="color: var(--secondary); margin-bottom: 15px; text-align: center;">📝 إنشاء حساب طالب جديد</h3>
-                <div class="form-group"><label>اختر المدرس المطلوب:</label><select id="reg-target-teacher"><option value="">-- اختر مدرساً --</option></select></div>
+                <h3 style="color: var(--secondary); margin-bottom: 15px; text-align: center;">📝 إنشاء حساب طالب جديد داخل المنصة</h3>
+                <div class="form-group"><label>اختر المعلم الذي ترغب في الانضمام إليه:</label><select id="reg-target-teacher"><option value="">-- اختر مدرساً --</option></select></div>
                 <div class="form-group"><label>الاسم الثلاثي:</label><input type="text" id="reg-student-name" placeholder="محمد أحمد محمود..."></div>
                 <div class="form-group"><label>رقم هاتفك الشخصي:</label><input type="tel" id="reg-student-phone" placeholder="01012345678" oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="11"></div>
                 <div class="form-group"><label>رقم هاتف ولي الأمر (لاستلام تقارير النتائج):</label><input type="tel" id="reg-parent-phone" placeholder="01112345678" oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="11"></div>
@@ -154,7 +150,7 @@
         <p style="text-align:center; color: var(--success); font-weight:bold; margin-bottom:20px;" id="teacher-welcome-msg"></p>
         
         <div class="card-box" style="border: 2px solid var(--warning); background: #fffbeb;">
-            <h3>⏳ طلبات انضمام الطلاب الجدد (مع مراجعة البطاقات الشخصية)</h3>
+            <h3>⏳ طلبات انضمام الطلاب الجدد (الموافقة أو الرفض مع مراجعة البطاقات)</h3>
             <div id="pending-students-list" style="margin-top: 15px; max-height: 280px; overflow-y: auto;"><p>لا توجد طلبات معلقة.</p></div>
         </div>
 
@@ -359,7 +355,7 @@
         if (!idCard) { alert('يجب رفع صورة البطاقة الشخصية أو شهادة الميلاد!'); return; }
 
         db.ref(`pending_students/${teacherId}/${phone}`).set({
-            name, phone, parentPhone, password, idCard, timestamp: Date.now()
+            name, phone, parentPhone, password, idCard, teacherId, timestamp: Date.now()
         }).then(() => {
             alert('✅ تم إرسال طلبك وصورة البطاقة للمعلم بنجاح! بانتظار الموافقة.');
             switchStudentAuthMode('login');
@@ -396,7 +392,7 @@
                         handleFailedLoginAttempt(phone);
                     }
                 } else {
-                    alert('❌ حسابك غير موجود أو لم يتم اعتماده من المعلم بعد!');
+                    alert('❌ حسابك غير موجود أو لم يتم اعتماده من المعلم بعد أو قيد المراجعة!');
                 }
             });
         });
@@ -492,7 +488,7 @@
         document.getElementById('teacher-dash-title').innerText = `لوحة تحكم المعلم: ${currentUser.name}`;
         document.getElementById('teacher-welcome-msg').innerText = `المادة: ${currentUser.subject} | كود: ${currentUser.id}`;
 
-        // طلبات الطلاب المعلقة وبطاقاتهم
+        // طلبات الطلاب المعلقة للموافقة أو الرفض
         db.ref('pending_students/' + currentUser.id).on('value', (snapshot) => {
             const data = snapshot.val();
             const container = document.getElementById('pending-students-list');
@@ -570,7 +566,9 @@
     }
 
     function rejectStudent(phone) {
-        db.ref(`pending_students/${currentUser.id}/${phone}`).remove();
+        db.ref(`pending_students/${currentUser.id}/${phone}`).remove().then(() => {
+            alert('❌ تم رفض طلب الطالب بنجاح.');
+        });
     }
 
     function addNewQuestionField(type = 'mcq') {
