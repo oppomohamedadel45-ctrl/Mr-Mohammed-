@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>المنصة التعليمية الذكية - الإصدار الاحترافي</title>
+    <title>المنصة التعليمية الذكية - الإصدار المطور الشامل</title>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -36,7 +36,7 @@
                               radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 40%);
         }
 
-        .container { max-width: 1000px; margin: 0 auto; background: var(--bg-card); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); border: 1px solid var(--border-color); position: relative; overflow: hidden; }
+        .container { max-width: 1050px; margin: 0 auto; background: var(--bg-card); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); border: 1px solid var(--border-color); position: relative; overflow: hidden; }
         
         .container::before {
             content: '';
@@ -79,6 +79,7 @@
         .question-card-builder { background: #111827; border: 2px dashed var(--primary); padding: 20px; border-radius: 12px; margin-bottom: 15px; }
         .badge { padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; display: inline-block; }
         .badge-success { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.4); }
+        .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.4); }
     </style>
 </head>
 <body>
@@ -100,7 +101,7 @@
             <button class="tab-btn" id="tab-btn-admin" onclick="switchLoginMode('admin')" style="color: var(--danger);">👑 الإدارة العامة</button>
         </div>
 
-        <!-- تسجيل حساب طالب جديد (يذهب للإدارة العامة) -->
+        <!-- تسجيل حساب طالب جديد -->
         <div id="box-student-register" class="card-box hidden" style="max-width: 550px; margin: 0 auto; border-color: var(--success);">
             <h3 style="color: var(--success);">📝 طلب انضمام جديد (يُرسل للإدارة العامة)</h3>
             <div class="form-group"><label>الاسم الرباعي:</label><input type="text" id="reg-name" placeholder="محمد أحمد محمود علي"></div>
@@ -165,11 +166,24 @@
             <div id="teacher-approved-students-list"><p style="color: var(--text-muted);">جاري التحميل...</p></div>
         </div>
 
+        <div class="card-box" style="border-color: var(--accent);">
+            <h3 style="color: var(--accent);">✍️ تصحيح إجابات الأسئلة المقالية للطلاب (إضافة الدرجة لتنضاف للمجموع الشامل)</h3>
+            <div id="teacher-essay-grading-list"><p style="color: var(--text-muted);">لا توجد إجابات مقالية مرسلة تنتظر التصحيح حالياً.</p></div>
+        </div>
+
         <div class="card-box" style="border-color: var(--primary);">
-            <h3>✍️ إنشاء ونشر امتحان جديد (لا يظهر إلا لطلابك المقبولين فقط)</h3>
+            <h3>📊 درجات وسجل اختبارات جميع الطلاب لديك</h3>
+            <div id="teacher-students-grades-list"><p style="color: var(--text-muted);">جاري تحميل الدرجات...</p></div>
+        </div>
+
+        <div class="card-box" style="border-color: var(--primary);">
+            <h3>📝 إنشاء ونشر امتحان جديد (يدعم الاختياري، المقالي، ورفع الصور)</h3>
             <div class="form-group" style="margin-top: 15px;"><label>عنوان الامتحان:</label><input type="text" id="exam-title-input" placeholder="اختبار الفصل الأول..."></div>
             <div id="dynamic-questions-container"></div>
-            <button class="btn btn-warning" onclick="addNewQuestionField()" style="margin-bottom: 15px;">➕ إضافة سؤال جديد لاختبار</button>
+            <div class="flex-row" style="margin-bottom: 15px;">
+                <button class="btn btn-warning" onclick="addQuestionField('mcq')">➕ إضافة سؤال اختياري</button>
+                <button class="btn btn-success" onclick="addQuestionField('essay')">➕ إضافة سؤال مقالي</button>
+            </div>
             <div class="form-group"><label>وقت الامتحان (بالدقائق):</label><input type="number" id="exam-time" value="30" min="1"></div>
             <button class="btn btn-success" onclick="publishExam()">نشر الامتحان فوراً للطلاب 🚀</button>
         </div>
@@ -184,6 +198,12 @@
             <button class="btn btn-danger" style="width: auto; padding: 6px 15px;" onclick="logoutSession()">تسجيل الخروج</button>
         </div>
 
+        <!-- الملف الشخصي ومعلومات الطالب -->
+        <div class="card-box" style="border-color: var(--primary);">
+            <h3 style="color: var(--primary);">📇 ملفي الشخصي ومعلوماتي</h3>
+            <div id="student-profile-info" style="font-size: 15px; line-height: 1.8;"></div>
+        </div>
+
         <!-- اختيار المعلم وطلب الانضمام -->
         <div class="card-box" style="border-color: var(--warning);">
             <h3 style="color: var(--warning);">🏫 اختيار المعلم وإرسال طلب انضمام</h3>
@@ -196,15 +216,15 @@
             <div id="teacher-join-action-box" style="margin-top: 15px;"></div>
         </div>
 
-        <!-- قسم الامتحانات (لا يظهر إلا بعد قبول المعلم) -->
+        <!-- قسم الامتحانات -->
         <div id="student-active-section" class="hidden">
             <div class="card-box" style="border-color: var(--success);">
-                <h3 style="color: var(--success);">📚 امتحانات المعلم (المتاحة لك لحصولك على القبول)</h3>
+                <h3 style="color: var(--success);">📚 امتحانات المعلم (المتاحة لك)</h3>
                 <div id="student-active-exams-box"><p style="color: var(--text-muted);">في انتظار تحميل الامتحانات...</p></div>
             </div>
 
             <div class="card-box">
-                <h3>📊 سجل درجاتك ونتائجك السابقة</h3>
+                <h3>📊 سجل درجاتك ونتائجك الشيك بالكامل</h3>
                 <div id="student-history-table-container"><p style="color: var(--text-muted);">لا توجد اختبارات مؤداة حتى الآن.</p></div>
             </div>
         </div>
@@ -216,7 +236,8 @@
         <div class="card-box">
             <h2 id="exam-view-title">عنوان الامتحان</h2>
             <div style="margin: 10px 0; font-weight: 700; color: var(--primary);"><span id="question-counter">السؤال 1 من 1</span></div>
-            <p id="exam-view-text" style="font-size: 1.2rem; margin: 20px 0; font-weight: 600; line-height: 1.6;"></p>
+            <p id="exam-view-text" style="font-size: 1.2rem; margin: 15px 0; font-weight: 600; line-height: 1.6;"></p>
+            <div id="exam-question-image-box" style="margin-bottom: 15px; text-align: center;"></div>
             <div id="exam-question-content-box"></div>
             <div class="flex-row" style="margin-top: 25px;">
                 <button class="btn" style="background: #374151;" onclick="prevQuestion()">⬅ السابق</button>
@@ -235,6 +256,7 @@
                 <div style="font-size: 2.5rem; font-weight: 900; color: var(--success); margin: 15px 0;">
                     <span id="res-score-val">0</span> / <span id="res-total-val">0</span>
                 </div>
+                <p id="res-status-note" style="color: var(--warning); font-weight: 700;"></p>
             </div>
             <button class="btn btn-success" onclick="returnToStudentDashboard()" style="max-width: 250px; margin: 0 auto;">العودة للوحة الرئيسية 🏠</button>
         </div>
@@ -478,6 +500,78 @@
             html += '</table>';
             container.innerHTML = hasSt ? html : '<p style="color: var(--text-muted);">لا يوجد طلاب مقبولة عضويتهم معك حالياً.</p>';
         });
+
+        // قسم تصحيح المقالي عند المعلم
+        db.ref('exam_results').on('value', (snap) => {
+            const allResults = snap.val() || {};
+            const essayContainer = document.getElementById('teacher-essay-grading-list');
+            const gradesContainer = document.getElementById('teacher-students-grades-list');
+            
+            let essayHtml = '';
+            let gradesHtml = '<table><tr><th>هاتف الطالب</th><th>اسم الامتحان</th><th>درجة الاختياري</th><th>درجة المقالي</th><th>المجموع الكلي</th><th>الحالة</th></tr>';
+            let hasEssay = false;
+            let hasGrades = false;
+
+            Object.keys(allResults).forEach(stPhone => {
+                let studentExams = allResults[stPhone];
+                Object.keys(studentExams).forEach(examId => {
+                    let res = studentExams[examId];
+                    if (res.teacherId === currentUser.id) {
+                        hasGrades = true;
+                        let essayScore = res.essayScore !== undefined ? res.essayScore : '-';
+                        let totalSum = res.essayScore !== undefined ? (res.mcqScore + res.essayScore) : res.mcqScore;
+                        let statusBadge = res.essayScore !== undefined ? '<span class="badge badge-success">تم التصحيح والاعتماد ✅</span>' : '<span class="badge badge-warning">بانتظار تصحيح المقالي ⏳</span>';
+
+                        gradesHtml += `<tr><td>${stPhone}</td><td>${res.examTitle}</td><td>${res.mcqScore}</td><td><b>${essayScore}</b></td><td><b>${totalSum}</b> / ${res.maxTotal}</td><td>${statusBadge}</td></tr>`;
+
+                        // إذا كان هناك أسئلة مقالية ولم تُصحح بعد أو تحتاج مراجعة
+                        if (res.answers) {
+                            Object.keys(res.answers).forEach(qIdx => {
+                                let ans = res.answers[qIdx];
+                                if (ans.type === 'essay' && ans.graded === undefined) {
+                                    hasEssay = true;
+                                    essayHtml += `
+                                        <div style="background: #111827; padding: 15px; border-radius: 10px; margin-bottom: 12px; border: 1px solid var(--border-color);">
+                                            <b>هاتف الطالب:</b> ${stPhone} | <b>الامتحان:</b> ${res.examTitle}<br>
+                                            <p style="margin: 8px 0; color: var(--primary);"><b>نص إجابة الطالب:</b> ${ans.text || 'لم يتم كتابة نص'}</p>
+                                            ${ans.fileData ? `<div style="margin: 10px 0;"><img src="${ans.fileData}" style="max-width:200px; max-height:130px; border-radius:6px; border:1px solid var(--border-color);" alt="صورة إجابة الطالب"></div>` : '<p style="color:var(--text-muted); font-size:13px;">لم يتم إرفاق صورة.</p>'}
+                                            <div class="flex-row" style="align-items: center; margin-top: 10px;">
+                                                <input type="number" id="grade_input_${stPhone}_${examId}_${qIdx}" placeholder="أدخل درجة المقالي (مثلاً 5)" style="max-width: 220px;" min="0">
+                                                <button class="btn btn-success" style="padding: 10px 20px; font-size: 14px; width: auto; margin-top:0;" onclick="submitEssayGrade('${stPhone}', '${examId}', '${qIdx}')">اعتماد وإضافة للمجموع 🎯</button>
+                                            </div>
+                                        </div>
+                                    `;
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+
+            essayContainer.innerHTML = hasEssay ? essayHtml : '<p style="color: var(--text-muted);">لا توجد إجابات مقالية مرسلة تنتظر التصحيح حالياً.</p>';
+            gradesHtml += '</table>';
+            gradesContainer.innerHTML = hasGrades ? gradesHtml : '<p style="color: var(--text-muted);">لا توجد سجلات درجات مسجلة لطلابك حتى الآن.</p>';
+        });
+    }
+
+    function submitEssayGrade(stPhone, examId, qIdx) {
+        const inputVal = document.getElementById(`grade_input_${stPhone}_${examId}_${qIdx}`).value;
+        if (inputVal === '') { alert('برجاء إدخال درجة السؤال المقالي!'); return; }
+        const essayScore = parseFloat(inputVal);
+
+        db.ref(`exam_results/${stPhone}/${examId}`).once('value', (snap) => {
+            let res = snap.val();
+            if (res) {
+                res.essayScore = essayScore;
+                res.totalScore = res.mcqScore + essayScore;
+                res.answers[qIdx].graded = true;
+                res.answers[qIdx].givenScore = essayScore;
+
+                db.ref(`exam_results/${stPhone}/${examId}`).set(res).then(() => {
+                    alert('✅ تمت إضافة درجة المقالي وتحديث المجموع الكلي وإظهارها للطالب بنجاح!');
+                });
+            }
+        });
     }
 
     function acceptStudentJoin(teacherId, studentPhone) {
@@ -503,21 +597,32 @@
         });
     }
 
-    function addNewQuestionField() {
+    function addQuestionField(type) {
         const container = document.getElementById('dynamic-questions-container');
         const qCount = container.children.length + 1;
         const qCard = document.createElement('div');
         qCard.className = 'question-card-builder';
+        qCard.dataset.type = type;
 
-        qCard.innerHTML = `
-            <h4 style="color: var(--primary); margin-bottom: 10px;">سؤال اختياري رقم (${qCount})</h4>
-            <div class="form-group"><label>نص السؤال:</label><textarea class="m-q-text" rows="2" placeholder="اكتب نص السؤال هنا..."></textarea></div>
-            <div class="form-group"><input type="text" class="m-opt-0" placeholder="الخيار الأول"></div>
-            <div class="form-group"><input type="text" class="m-opt-1" placeholder="الخيار الثاني"></div>
-            <div class="form-group"><input type="text" class="m-opt-2" placeholder="الخيار الثالث"></div>
-            <div class="form-group"><input type="text" class="m-opt-3" placeholder="الخيار الرابع"></div>
-            <div class="form-group"><label>الإجابة الصحيحة:</label><select class="m-correct"><option value="0">الخيار الأول</option><option value="1">الخيار الثاني</option><option value="2">الخيار الثالث</option><option value="3">الخيار الرابع</option></select></div>
-        `;
+        if (type === 'mcq') {
+            qCard.innerHTML = `
+                <h4 style="color: var(--primary); margin-bottom: 10px;">سؤال اختياري رقم (${qCount})</h4>
+                <div class="form-group"><label>نص السؤال:</label><textarea class="m-q-text" rows="2" placeholder="اكتب نص السؤال هنا..."></textarea></div>
+                <div class="form-group"><label>إدراج صورة توضيحية للسؤال (اختياري):</label><input type="file" class="m-q-img" accept="image/*"></div>
+                <div class="form-group"><input type="text" class="m-opt-0" placeholder="الخيار الأول"></div>
+                <div class="form-group"><input type="text" class="m-opt-1" placeholder="الخيار الثاني"></div>
+                <div class="form-group"><input type="text" class="m-opt-2" placeholder="الخيار الثالث"></div>
+                <div class="form-group"><input type="text" class="m-opt-3" placeholder="الخيار الرابع"></div>
+                <div class="form-group"><label>الإجابة الصحيحة:</label><select class="m-correct"><option value="0">الخيار الأول</option><option value="1">الخيار الثاني</option><option value="2">الخيار الثالث</option><option value="3">الخيار الرابع</option></select></div>
+            `;
+        } else {
+            qCard.innerHTML = `
+                <h4 style="color: var(--success); margin-bottom: 10px;">سؤال مقالي رقم (${qCount})</h4>
+                <div class="form-group"><label>نص السؤال المقالي:</label><textarea class="m-q-text" rows="2" placeholder="اكتب نص السؤال المقالي..."></textarea></div>
+                <div class="form-group"><label>إدراج صورة توضيحية للسؤال المقالي (اختياري):</label><input type="file" class="m-q-img" accept="image/*"></div>
+                <p style="color: var(--success); font-size: 13px;">💡 سيظهر هذا السؤال للطالب ليكتب إجابته ويرفق صورتها ليقوم المعلم بتصحيحها.</p>
+            `;
+        }
         container.appendChild(qCard);
     }
 
@@ -528,26 +633,56 @@
         if (!title || cards.length === 0) { alert('أدخل عنوان الامتحان وأضف سؤالاً واحداً على الأقل!'); return; }
 
         let questions = [];
-        cards.forEach(card => {
-            let text = card.querySelector('.m-q-text').value.trim();
-            let options = [
-                card.querySelector('.m-opt-0').value.trim(),
-                card.querySelector('.m-opt-1').value.trim(),
-                card.querySelector('.m-opt-2').value.trim(),
-                card.querySelector('.m-opt-3').value.trim()
-            ];
-            let correct = parseInt(card.querySelector('.m-correct').value);
-            questions.push({ text, options, correct });
-        });
+        let pendingReads = cards.length;
+        let mcqCount = 0;
 
-        const examData = { id: 'exam_' + Date.now(), title, teacherId: currentUser.id, teacherName: currentUser.name, subject: currentUser.subject, questions, duration, maxTotal: questions.length * 10 };
-        db.ref('active_exams/' + currentUser.id).set(examData).then(() => alert('🚀 تم نشر الامتحان بنجاح ولن يظهر إلا لطلابك المقبولين فقط!'));
+        cards.forEach((card, index) => {
+            let type = card.dataset.type;
+            let text = card.querySelector('.m-q-text').value.trim();
+            let imgInput = card.querySelector('.m-q-img');
+            if (type === 'mcq') mcqCount++;
+
+            let processQuestionData = (imgData) => {
+                let qData = { type, text, imgData: imgData || null };
+                if (type === 'mcq') {
+                    qData.options = [
+                        card.querySelector('.m-opt-0').value.trim(),
+                        card.querySelector('.m-opt-1').value.trim(),
+                        card.querySelector('.m-opt-2').value.trim(),
+                        card.querySelector('.m-opt-3').value.trim()
+                    ];
+                    qData.correct = parseInt(card.querySelector('.m-correct').value);
+                }
+                questions[index] = qData;
+                pendingReads--;
+
+                if (pendingReads === 0) {
+                    const examData = { id: 'exam_' + Date.now(), title, teacherId: currentUser.id, teacherName: currentUser.name, subject: currentUser.subject, questions, duration, maxTotal: (mcqCount * 10) + (cards.length - mcqCount) * 10 };
+                    db.ref('active_exams/' + currentUser.id).set(examData).then(() => alert('🚀 تم نشر الامتحان بنجاح ولن يظهر إلا لطلابك المقبولين فقط!'));
+                }
+            };
+
+            if (imgInput.files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = function(e) { processQuestionData(e.target.result); };
+                reader.readAsDataURL(imgInput.files[0]);
+            } else {
+                processQuestionData(null);
+            }
+        });
     }
 
     function enterStudentDashboard() {
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('student-dashboard').classList.remove('hidden');
         document.getElementById('welcome-name').innerText = currentUser.name;
+
+        document.getElementById('student-profile-info').innerHTML = `
+            <b>الاسم الرباعي:</b> ${currentUser.name}<br>
+            <b>رقم الهاتف:</b> ${currentUser.phone}<br>
+            <b>رقم ولي الأمر:</b> ${currentUser.parentPhone}<br>
+            <b>حالة الحساب:</b> <span class="badge badge-success">معتمد رسمياً من الإدارة العامة ✅</span>
+        `;
 
         db.ref('teachers').once('value', (snapshot) => {
             const teachers = snapshot.val() || defaultTeachers;
@@ -559,14 +694,19 @@
             document.getElementById('student-select-teacher').innerHTML = html;
         });
 
+        // جدول النتائج الشيك للطالب
         db.ref('exam_results/' + currentUser.phone).on('value', (snap) => {
             const data = snap.val() || {};
-            let html = `<table><tr><th>اسم الامتحان</th><th>الدرجة النهائية</th><th>الحالة</th></tr>`;
+            let html = `<table><tr><th>اسم الامتحان</th><th>درجة الاختياري</th><th>درجة المقالي</th><th>المجموع الكلي</th><th>الحالة</th></tr>`;
             let hasRes = false;
             Object.keys(data).forEach(k => {
                 hasRes = true;
                 let r = data[k];
-                html += `<tr><td>${r.examTitle}</td><td><b>${r.totalScore}</b> / ${r.maxTotal}</td><td><span class="badge badge-success">${r.status}</span></td></tr>`;
+                let essayDisplay = r.essayScore !== undefined ? r.essayScore : '<span style="color:var(--warning);">قيد التصحيح ⏳</span>';
+                let totalDisplay = r.essayScore !== undefined ? `<b>${r.totalScore}</b> / ${r.maxTotal}` : `${r.mcqScore} / ${r.maxTotal} (مبدئي)`;
+                let statusBadge = r.essayScore !== undefined ? '<span class="badge badge-success">مصحح ومعتمد ✅</span>' : '<span class="badge badge-warning">بانتظار تصحيح المعلم ⏳</span>';
+
+                html += `<tr><td>${r.examTitle}</td><td>${r.mcqScore}</td><td>${essayDisplay}</td><td>${totalDisplay}</td><td>${statusBadge}</td></tr>`;
             });
             html += `</table>`;
             document.getElementById('student-history-table-container').innerHTML = hasRes ? html : '<p style="color: var(--text-muted);">لا توجد اختبارات مؤداة مسجلة بعد.</p>';
@@ -652,14 +792,46 @@
         const q = currentExamData.questions[currentQIndex];
         document.getElementById('question-counter').innerText = `السؤال ${currentQIndex + 1} من ${currentExamData.questions.length}`;
         document.getElementById('exam-view-text').innerText = q.text;
-        const box = document.getElementById('exam-question-content-box');
+        
+        const imgBox = document.getElementById('exam-question-image-box');
+        if (q.imgData) {
+            imgBox.innerHTML = `<img src="${q.imgData}" style="max-width:100%; max-height:220px; border-radius:8px; border:1px solid var(--border-color);" alt="صورة السؤال">`;
+        } else {
+            imgBox.innerHTML = '';
+        }
 
+        const box = document.getElementById('exam-question-content-box');
         let html = '';
-        q.options.goto?.forEach ? '' : q.options.forEach((opt, idx) => {
-            let checked = studentAnswers[currentQIndex] === idx ? 'checked' : '';
-            html += `<label style="display:block; padding:12px; margin:8px 0; background:#0b0f19; border: 1px solid var(--border-color); border-radius:8px; cursor:pointer;"><input type="radio" name="st_mcq" value="${idx}" ${checked} onchange="studentAnswers[${currentQIndex}] = ${idx}"> ${opt}</label>`;
-        });
+
+        if (q.type === 'mcq') {
+            q.options.forEach((opt, idx) => {
+                let checked = (studentAnswers[currentQIndex] && studentAnswers[currentQIndex].choice === idx) ? 'checked' : '';
+                html += `<label style="display:block; padding:12px; margin:8px 0; background:#0b0f19; border: 1px solid var(--border-color); border-radius:8px; cursor:pointer;"><input type="radio" name="st_mcq" value="${idx}" ${checked} onchange="studentAnswers[${currentQIndex}] = {type: 'mcq', choice: ${idx}}"> ${opt}</label>`;
+            });
+        } else {
+            let savedText = (studentAnswers[currentQIndex] && studentAnswers[currentQIndex].text) ? studentAnswers[currentQIndex].text : '';
+            html = `
+                <div class="form-group"><label>إجابتك المقالية النصية:</label><textarea rows="3" placeholder="اكتب إجابتك هنا..." oninput="saveEssayText(${currentQIndex}, this.value)">${savedText}</textarea></div>
+                <div class="form-group"><label>إرفاق صورة الإجابة (مطلوبة أو اختيارية للمقالي):</label><input type="file" accept="image/*" onchange="saveEssayImage(${currentQIndex}, this)"></div>
+            `;
+        }
         box.innerHTML = html;
+    }
+
+    function saveEssayText(qIdx, val) {
+        if (!studentAnswers[qIdx]) studentAnswers[qIdx] = { type: 'essay', text: '', fileData: null };
+        studentAnswers[qIdx].text = val;
+    }
+
+    function saveEssayImage(qIdx, input) {
+        if (input.files.length > 0) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (!studentAnswers[qIdx]) studentAnswers[qIdx] = { type: 'essay', text: '', fileData: null };
+                studentAnswers[qIdx].fileData = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
     }
 
     function nextQuestion() {
@@ -683,26 +855,35 @@
 
     function submitExamPipeline() {
         clearInterval(timerInterval);
-        let score = 0;
+        let mcqScore = 0;
+        let hasEssay = false;
+
         currentExamData.questions.forEach((q, idx) => {
-            if (studentAnswers[idx] === q.correct) score += 10;
+            if (q.type === 'mcq' && studentAnswers[idx] && studentAnswers[idx].choice === q.correct) {
+                mcqScore += 10;
+            }
+            if (q.type === 'essay') {
+                hasEssay = true;
+            }
         });
 
         const record = {
             examTitle: currentExamData.title,
             teacherId: currentExamData.teacherId,
-            totalScore: score,
+            mcqScore: mcqScore,
             maxTotal: currentExamData.maxTotal,
-            status: 'تم التسليم ✅',
-            timestamp: Date.now()
+            status: hasEssay ? 'بانتظار تصحيح المقالي ⏳' : 'مصحح بالكامل ✅',
+            timestamp: Date.now(),
+            answers: studentAnswers
         };
 
         db.ref(`exam_results/${currentUser.phone}/${currentExamData.id}`).set(record).then(() => {
             document.getElementById('exam-taking-screen').classList.add('hidden');
             document.getElementById('exam-result-screen').classList.remove('hidden');
             document.getElementById('res-exam-title').innerText = currentExamData.title;
-            document.getElementById('res-score-val').innerText = score;
+            document.getElementById('res-score-val').innerText = mcqScore;
             document.getElementById('res-total-val').innerText = record.maxTotal;
+            document.getElementById('res-status-note').innerText = hasEssay ? '📌 درجة الاختياري ظهرت فوراً، وفي انتظار تصحيح المعلم للأسئلة المقالية لتنضاف للمجموع الكلي!' : '🎉 تم رصد الدرجة النهائية بنجاح!';
         });
     }
 
