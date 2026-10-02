@@ -78,13 +78,16 @@
 
         .question-card-builder { background: #111827; border: 2px dashed var(--primary); padding: 20px; border-radius: 12px; margin-bottom: 15px; }
         .badge { padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; display: inline-block; }
-        .badge-pending { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.4); }
         .badge-success { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.4); }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <div style="text-align: center; margin-bottom: 15px; font-size: 13px; color: var(--primary); font-weight: 700;">
+        إشراف: محمد عادل - النظام التعليمي المطور
+    </div>
+
     <!-- شاشة تسجيل الدخول والباب الرئيسي -->
     <div id="login-screen">
         <h1 style="color: var(--primary);">المنصة التعليمية الذكية 🚀</h1>
@@ -92,26 +95,26 @@
         
         <div class="tabs-nav">
             <button class="tab-btn active" id="tab-btn-student" onclick="switchLoginMode('student')">دخول طالب 👨‍🎓</button>
-            <button class="tab-btn" id="tab-btn-register" onclick="switchLoginMode('register')">تسجيل جديد 📝</button>
+            <button class="tab-btn" id="tab-btn-register" onclick="switchLoginMode('register')" style="color: var(--success);">📝 تسجيل جديد (للإدارة العامة)</button>
             <button class="tab-btn" id="tab-btn-teacher" onclick="switchLoginMode('teacher')">دخول معلم 👨‍🏫</button>
             <button class="tab-btn" id="tab-btn-admin" onclick="switchLoginMode('admin')" style="color: var(--danger);">👑 الإدارة العامة</button>
         </div>
 
-        <!-- تسجيل حساب طالب جديد -->
-        <div id="box-student-register" class="card-box hidden" style="max-width: 550px; margin: 0 auto;">
-            <h3 style="color: var(--success);">📝 طلب انضمام للمنصة (تسجيل جديد)</h3>
+        <!-- تسجيل حساب طالب جديد (يذهب للإدارة العامة) -->
+        <div id="box-student-register" class="card-box hidden" style="max-width: 550px; margin: 0 auto; border-color: var(--success);">
+            <h3 style="color: var(--success);">📝 طلب انضمام جديد (يُرسل للإدارة العامة)</h3>
             <div class="form-group"><label>الاسم الرباعي:</label><input type="text" id="reg-name" placeholder="محمد أحمد محمود علي"></div>
             <div class="form-group"><label>رقم هاتف الطالب:</label><input type="tel" id="reg-phone" placeholder="01012345678" maxlength="11"></div>
             <div class="form-group"><label>رقم هاتف ولي الأمر:</label><input type="tel" id="reg-parent" placeholder="01112345678" maxlength="11"></div>
-            <div class="form-group"><label>الرقم السري:</label><input type="password" id="reg-pass" placeholder="كلمة المرور الخاصة بك"></div>
-            <div class="form-group"><label>صورة شهادة الميلاد أو البطاقة الشخصية:</label><input type="file" id="reg-file" accept="image/*"></div>
-            <button class="btn btn-success" onclick="submitStudentRegistration()">إرسال الطلب للإدارة العامة 🚀</button>
+            <div class="form-group"><label>الرقم السري المراد:</label><input type="password" id="reg-pass" placeholder="كلمة المرور الخاصة بك"></div>
+            <div class="form-group"><label>صورة شهادة الميلاد أو البطاقة:</label><input type="file" id="reg-file" accept="image/*"></div>
+            <button class="btn btn-success" onclick="submitStudentRegistration()">إرسال الطلب رسمياً للإدارة العامة 🚀</button>
         </div>
 
         <!-- دخول الطالب -->
         <div id="box-student-login" class="card-box" style="max-width: 480px; margin: 0 auto;">
-            <h3>👤 تسجيل دخول الطالب</h3>
-            <div class="form-group"><label>رقم الهاتف:</label><input type="tel" id="st-login-phone" placeholder="01012345678" maxlength="11"></div>
+            <h3>👤 تسجيل دخول الطالب (بإذن الإدارة العامة)</h3>
+            <div class="form-group"><label>رقم الهاتف المعتمد:</label><input type="tel" id="st-login-phone" placeholder="01012345678" maxlength="11"></div>
             <div class="form-group"><label>الرقم السري:</label><input type="password" id="st-login-pass" placeholder="كلمة المرور"></div>
             <button class="btn" onclick="handleStudentLogin()">دخول لوحة الطالب 🎯</button>
         </div>
@@ -126,13 +129,13 @@
 
         <!-- دخول الإدارة العامة -->
         <div id="box-admin-login" class="card-box hidden" style="max-width: 650px; margin: 0 auto; border-color: var(--danger);">
-            <h3 style="color: var(--danger);">👑 لوحة تحكم الإدارة العامة</h3>
+            <h3 style="color: var(--danger);">👑 لوحة تحكم الإدارة العامة (محمد عادل)</h3>
             <div id="admin-auth-box">
                 <div class="form-group"><label>كلمة سر الإدارة العليا:</label><input type="password" id="admin-pass-input" placeholder="أدخل كلمة السر..."></div>
                 <button class="btn btn-danger" onclick="verifyAdminAccess()">فك قفل لوحة الإدارة 🔓</button>
             </div>
             <div id="admin-panel-content" class="hidden">
-                <h4 style="color: var(--warning); margin-bottom: 10px;">📋 طلبات الطلاب المعلقة (تحت المراجعة):</h4>
+                <h4 style="color: var(--warning); margin-bottom: 10px;">📋 طلبات الطلاب المعلقة (تنتظر موافقتك للاعتماد):</h4>
                 <div id="admin-pending-students-list" style="max-height: 250px; overflow-y: auto; margin-bottom: 20px; border: 1px solid var(--border-color); padding: 10px; border-radius: 8px;">
                     <p style="color: var(--text-muted);">لا توجد طلبات معلقة حالياً.</p>
                 </div>
@@ -239,7 +242,6 @@
 </div>
 
 <script>
-    // إعدادات قاعدة بيانات Firebase
     const firebaseConfig = {
         databaseURL: "https://mr-mohammed-default-rtdb.firebaseio.com"
     };
@@ -325,7 +327,7 @@
                         <b>الاسم الرباعي:</b> ${st.name} <br>
                         <b>هاتف الطالب:</b> ${st.phone} | <b>هاتف ولي الأمر:</b> ${st.parentPhone}<br>
                         <div style="margin: 10px 0;"><img src="${st.fileData}" style="max-width:180px; max-height:110px; border-radius:6px; border:1px solid var(--border-color);" alt="المستند"></div>
-                        <button class="btn btn-success" style="padding: 6px 15px; font-size: 13px; display:inline-block; width:auto;" onclick="approveStudent('${phone}')">موافقة وإعتماد ✅</button>
+                        <button class="btn btn-success" style="padding: 6px 15px; font-size: 13px; display:inline-block; width:auto;" onclick="approveStudent('${phone}')">موافقة واعتماد من الإدارة ✅</button>
                         <button class="btn btn-danger" style="padding: 6px 15px; font-size: 13px; display:inline-block; width:auto; margin-right:8px;" onclick="rejectStudent('${phone}')">رفض ❌</button>
                     </div>
                 `;
@@ -352,7 +354,7 @@
             db.ref('pending_students/' + phone).set({
                 name, phone, parentPhone, password, fileData, timestamp: Date.now()
             }).then(() => {
-                alert('✅ تم إرسال طلبك للإدارة العامة بنجاح، انتظر الموافقة!');
+                alert('✅ تم إرسال طلبك للإدارة العامة بنجاح، انتظر الموافقة للدخول!');
                 switchLoginMode('student');
             });
         };
@@ -365,7 +367,7 @@
             if (st) {
                 db.ref('authorized_students/' + phone).set(st).then(() => {
                     db.ref('pending_students/' + phone).remove().then(() => {
-                        alert('✅ تم اعتماد الطالب ونقله لقائمة المعتمدين بنجاح!');
+                        alert('✅ تم اعتماد الطالب بنجاح، ويمكنه الآن تسجيل الدخول!');
                     });
                 });
             }
@@ -405,7 +407,7 @@
                     alert('❌ الرقم السري غير صحيح!');
                 }
             } else {
-                alert('❌ هذا الحساب غير موجود أو لم يتم اعتماده من الإدارة العامة بعد!');
+                alert('❌ هذا الرقم غير مصرح له بالدخول من الإدارة العامة! (تأكد من إرسال طلب تسجيل جديد أولاً)');
             }
         });
     }
@@ -438,7 +440,6 @@
         document.getElementById('teacher-dash-title').innerText = `لوحة تحكم المعلم: ${currentUser.name}`;
         document.getElementById('teacher-welcome-msg').innerText = `التخصص: ${currentUser.subject} | الكود التعريفي: ${currentUser.id}`;
 
-        // طلبات الانضمام الواردة
         db.ref('join_requests/' + currentUser.id).on('value', (snap) => {
             const requests = snap.val() || {};
             const container = document.getElementById('teacher-join-requests-list');
@@ -463,7 +464,6 @@
             container.innerHTML = hasReq ? html : '<p style="color: var(--text-muted);">لا توجد طلبات انضمام جديدة معلقة.</p>';
         });
 
-        // الطلاب المقبولين لدى المعلم
         db.ref('teacher_students/' + currentUser.id).on('value', (snap) => {
             const students = snap.val() || {};
             const container = document.getElementById('teacher-approved-students-list');
@@ -583,7 +583,6 @@
             return;
         }
 
-        // فحص هل الطالب مقبول لدى المعلم مسبقاً
         db.ref(`teacher_students/${teacherId}/${currentUser.phone}`).once('value', (snap) => {
             if (snap.exists()) {
                 actionBox.innerHTML = '<p style="color: var(--success); font-weight: 750;">✅ أنت منضم ومقبول رسمياً لدى هذا المعلم، واختباراته متاحة أدناه.</p>';
@@ -656,7 +655,7 @@
         const box = document.getElementById('exam-question-content-box');
 
         let html = '';
-        q.options.forEach((opt, idx) => {
+        q.options.goto?.forEach ? '' : q.options.forEach((opt, idx) => {
             let checked = studentAnswers[currentQIndex] === idx ? 'checked' : '';
             html += `<label style="display:block; padding:12px; margin:8px 0; background:#0b0f19; border: 1px solid var(--border-color); border-radius:8px; cursor:pointer;"><input type="radio" name="st_mcq" value="${idx}" ${checked} onchange="studentAnswers[${currentQIndex}] = ${idx}"> ${opt}</label>`;
         });
