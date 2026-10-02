@@ -68,8 +68,8 @@
 <div class="container">
     <!-- شاشة الحظر التام -->
     <div id="banned-screen" class="hidden" style="text-align: center; padding: 40px;">
-        <h1 style="color: var(--danger); font-size: 2.5rem;">🚫 تم حظر حسابك وجهازك نهائياً!</h1>
-        <p style="font-size: 1.2rem; color: #555; margin-top: 20px;">لقد تجاوزت الحد المسموح من المحاولات الخاطئة (سواء في تسجيل الدخول أو كلمة سر الإدارة). تم حظر هذا الجهاز تماماً ولن يُسمح لك بفتح المنصة مرة أخرى.</p>
+        <h1 style="color: var(--danger); font-size: 2.5rem;">🚫 تم حظر حسابك مؤقتاً لتجاوز المحاولات!</h1>
+        <p style="font-size: 1.2rem; color: #555; margin-top: 20px;">لقد تجاوزت الحد المسموح من المحاولات الخاطئة. تم إرسال طلبك للإدارة العامة لمراجعته ومنحك فرصة أخرى أو تأكيد الحظر.</p>
     </div>
 
     <!-- شاشة تسجيل الدخول الرئيسية -->
@@ -98,13 +98,18 @@
             <button class="btn btn-success" onclick="handleTeacherLogin()">دخول لوحة التحكم ⚙</button>
         </div>
 
-        <div id="box-admin-login" class="card-box hidden" style="text-align: right; max-width: 600px; margin: 0 auto; border: 2px solid var(--danger);">
+        <div id="box-admin-login" class="card-box hidden" style="text-align: right; max-width: 650px; margin: 0 auto; border: 2px solid var(--danger);">
             <h3 style="color: var(--danger); margin-bottom: 15px; text-align: center;">👑 لوحة تحكم الليدر العام</h3>
             <div id="admin-auth-box">
                 <div class="form-group"><label>كلمة سر الليدر العام:</label><input type="password" id="admin-pass-input" placeholder="أدخل كلمة سر الإدارة..."></div>
                 <button class="btn btn-danger" onclick="verifyAdminAccess()">دخول للإدارة المطلقة 🔓</button>
             </div>
             <div id="admin-panel-content" class="hidden" style="margin-top: 15px;">
+                <h4 style="color: var(--warning); margin-bottom: 10px;">⚠️ طلبات الطلاب المحظورين لتجاوز المحاولات (مراجعة الإدارة):</h4>
+                <div id="admin-banned-students-list" style="max-height: 220px; overflow-y: auto; margin-bottom: 20px; border: 1px solid #cbd5e1; padding: 10px; border-radius: 8px; background: #fffbeb;">
+                    <p>لا توجد طلبات محظورين معلقة.</p>
+                </div>
+
                 <h4 style="color: var(--primary); margin-bottom: 10px;">➕ إضافة مدرس جديد للنظام:</h4>
                 <div class="form-group"><label>اسم المدرس:</label><input type="text" id="new-t-name" placeholder="مثال: أستاذ المادة..."></div>
                 <div class="form-group"><label>المادة / التخصص:</label><input type="text" id="new-t-subject" placeholder="مثال: جيولوجيا"></div>
@@ -260,17 +265,9 @@
             }
         });
 
-        // التحقق من حالة الحظر بالمتصفح
-        const isBanned = localStorage.getItem('smart_platform_banned');
-        if (isBanned === 'true') {
-            triggerBanState();
-            return;
-        }
-
         const savedUser = localStorage.getItem('smart_platform_multiteacher_user');
         if (savedUser) {
             currentUser = JSON.parse(savedUser);
-            // التحقق السحابي من الحظر
             db.ref('banned_users/' + currentUser.phone).once('value', (snap) => {
                 if (snap.exists()) {
                     triggerBanState();
@@ -288,13 +285,8 @@
     };
 
     function triggerBanState() {
-        localStorage.setItem('smart_platform_banned', 'true');
-        document.body.innerHTML = `
-            <div style="text-align: center; padding: 60px; font-family: Tahoma;">
-                <h1 style="color: #dc2626; font-size: 2.5rem;">🚫 تم حظر وصولك للمنصة نهائياً!</h1>
-                <p style="font-size: 1.2rem; color: #555; margin-top: 20px;">لقد تجاوزت الحد المسموح من محاولات الدخول الخاطئة (أو محاولة الدخول لحساب الإدارة). تم حظر هذا الجهاز ورقم الهاتف ولن يفتح معك الرابط بعد الآن.</p>
-            </div>
-        `;
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('banned-screen').classList.remove('hidden');
     }
 
     function switchLoginMode(mode) {
@@ -316,31 +308,61 @@
             document.getElementById('box-admin-login').classList.remove('hidden');
             document.getElementById('tab-btn-admin').style.background = 'var(--danger)';
             loadAdminTeachers();
+            loadAdminBannedStudents();
         }
     }
 
     function verifyAdminAccess() {
         const pass = document.getElementById('admin-pass-input').value.trim();
         if (pass === 'Mohamed opo9067rtypro hkjlpo') { 
-            // تصفير عداد المحاولات الفشل للإدارة عند النجاح
-            localStorage.setItem('admin_failed_attempts', '0');
             document.getElementById('admin-auth-box').classList.add('hidden');
             document.getElementById('admin-panel-content').classList.remove('hidden');
             loadAdminTeachers();
+            loadAdminBannedStudents();
         } else {
-            // تتبع محاولات كلمة سر الإدارة الفاشلة (لأي مستخدم على الجهاز)
-            let currentAttempts = parseInt(localStorage.getItem('admin_failed_attempts') || '0') + 1;
-            localStorage.setItem('admin_failed_attempts', currentAttempts);
+            alert('❌ كلمة سر الليدر العام غير صحيحة!');
+        }
+    }
 
-            if (currentAttempts >= 3) {
-                // إذا كان هناك طالب مسجل دخول حالياً، يتم حفظ حظره سحابياً برقم هاتفه أيضاً
-                if (currentUser && currentUser.phone) {
-                    db.ref('banned_users/' + currentUser.phone).set({ phone: currentUser.phone, name: currentUser.name, reason: 'Admin brute-force', timestamp: Date.now() });
-                }
-                triggerBanState();
-            } else {
-                alert(`❌ كلمة سر الليدر العام غير صحيحة! متبقي لديك (${3 - currentAttempts}) محاولات قبل حظر الجهاز نهائياً.`);
+    function loadAdminBannedStudents() {
+        db.ref('banned_users').on('value', (snapshot) => {
+            const data = snapshot.val();
+            const container = document.getElementById('admin-banned-students-list');
+            if (!data) {
+                container.innerHTML = '<p>لا توجد طلبات محظورين معلقة.</p>';
+                return;
             }
+
+            let html = '';
+            Object.keys(data).forEach(phone => {
+                let u = data[phone];
+                html += `
+                    <div style="background: white; padding: 10px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #cbd5e1; display: flex; justify-content: space-between; align-items: center;">
+                        <div><b>${u.name}</b> (هاتف: ${phone})</div>
+                        <div class="flex-row">
+                            <button class="btn btn-success" style="padding: 4px 10px; font-size: 13px;" onclick="grantMoreAttempts('${phone}')">منح فرصة أخرى ✅</button>
+                            <button class="btn btn-danger" style="padding: 4px 10px; font-size: 13px;" onclick="confirmPermanentBan('${phone}')">تأكيد الحظر 🚫</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        });
+    }
+
+    function grantMoreAttempts(phone) {
+        db.ref('banned_users/' + phone).remove().then(() => {
+            db.ref('failed_attempts/' + phone).remove().then(() => {
+                alert('✅ تم منح الطالب فرصة جديدة وإلغاء الحظر بنجاح!');
+            });
+        });
+    }
+
+    function confirmPermanentBan(phone) {
+        if (confirm('هل أنت متأكد من تأكيد الحظر النهائي لهذا المستخدم؟')) {
+            db.ref('banned_users/' + phone).update({ status: 'Permanent Ban' }).then(() => {
+                alert('🚫 تم تأكيد الحظر النهائي.');
+            });
         }
     }
 
@@ -413,7 +435,6 @@
         if (!phone || phone.length < 10) { alert('أدخل رقم هاتف صحيح (10 أرقام على الأقل)!'); return; }
         if (!password) { alert('أدخل الرقم السري!'); return; }
 
-        // فحص حالة الحظر لهذا الهاتف مسبقاً
         db.ref('banned_users/' + phone).once('value', (bSnap) => {
             if (bSnap.exists()) {
                 triggerBanState();
@@ -438,7 +459,7 @@
                                     triggerBanState();
                                 });
                             } else {
-                                alert(`❌ الرقم السري غير صحيح! متبقي لديك (${3 - attempts}) محاولات قبل حظر الحساب نهائياً.`);
+                                alert(`❌ الرقم السري غير صحيح! متبقي لديك (${3 - attempts}) محاولات قبل رفع طلب حظر الحساب للإدارة.`);
                             }
                         });
                     }
