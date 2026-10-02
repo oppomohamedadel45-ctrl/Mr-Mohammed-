@@ -68,8 +68,8 @@
 <div class="container">
     <!-- شاشة الحظر التام -->
     <div id="banned-screen" class="hidden" style="text-align: center; padding: 40px;">
-        <h1 style="color: var(--danger); font-size: 2.5rem;">🚫 تم حظر حسابك نهائياً!</h1>
-        <p style="font-size: 1.2rem; color: #555; margin-top: 20px;">لقد قمت بإدخال الرقم السري بشكل خاطئ 3 مرات متتالية. تم حظر هذا الجهاز ورقم الهاتف ولن يُسمح لك بفتح المنصة مرة أخرى.</p>
+        <h1 style="color: var(--danger); font-size: 2.5rem;">🚫 تم حظر حسابك وجهازك نهائياً!</h1>
+        <p style="font-size: 1.2rem; color: #555; margin-top: 20px;">لقد تجاوزت الحد المسموح من المحاولات الخاطئة (سواء في تسجيل الدخول أو كلمة سر الإدارة). تم حظر هذا الجهاز تماماً ولن يُسمح لك بفتح المنصة مرة أخرى.</p>
     </div>
 
     <!-- شاشة تسجيل الدخول الرئيسية -->
@@ -260,7 +260,6 @@
             }
         });
 
-        // التحقق من حالة الحظر بالمتصفح ورقم الهاتف المخزن
         const isBanned = localStorage.getItem('smart_platform_banned');
         if (isBanned === 'true') {
             triggerBanState();
@@ -270,7 +269,6 @@
         const savedUser = localStorage.getItem('smart_platform_multiteacher_user');
         if (savedUser) {
             currentUser = JSON.parse(savedUser);
-            // التحقق السحابي من الحظر
             db.ref('banned_users/' + currentUser.phone).once('value', (snap) => {
                 if (snap.exists()) {
                     triggerBanState();
@@ -292,7 +290,7 @@
         document.body.innerHTML = `
             <div style="text-align: center; padding: 60px; font-family: Tahoma;">
                 <h1 style="color: #dc2626; font-size: 2.5rem;">🚫 تم حظر وصولك للمنصة نهائياً!</h1>
-                <p style="font-size: 1.2rem; color: #555; margin-top: 20px;">لقد تجاوزت الحد المسموح من محاولات تسجيل الدخول الخاطئة. تم حظر هذا الجهاز ورقم الهاتف ولن يفتح معك الرابط بعد الآن.</p>
+                <p style="font-size: 1.2rem; color: #555; margin-top: 20px;">لقد تجاوزت الحد المسموح من محاولات الدخول الخاطئة (أو محاولة الدخول لحساب الإدارة). تم حظر هذا الجهاز ورقم الهاتف ولن يفتح معك الرابط بعد الآن.</p>
             </div>
         `;
     }
@@ -322,11 +320,22 @@
     function verifyAdminAccess() {
         const pass = document.getElementById('admin-pass-input').value.trim();
         if (pass === 'Mohamed opo9067rtypro hkjlpo') { 
+            localStorage.setItem('admin_failed_attempts', '0');
             document.getElementById('admin-auth-box').classList.add('hidden');
             document.getElementById('admin-panel-content').classList.remove('hidden');
             loadAdminTeachers();
         } else {
-            alert('كلمة سر الليدر العام غير صحيحة!');
+            let currentAttempts = parseInt(localStorage.getItem('admin_failed_attempts') || '0') + 1;
+            localStorage.setItem('admin_failed_attempts', currentAttempts);
+
+            if (currentAttempts >= 3) {
+                if (currentUser && currentUser.phone) {
+                    db.ref('banned_users/' + currentUser.phone).set({ phone: currentUser.phone, name: currentUser.name, reason: 'Admin brute-force', timestamp: Date.now() });
+                }
+                triggerBanState();
+            } else {
+                alert(`❌ كلمة سر الليدر العام غير صحيحة! متبقي لديك (${3 - currentAttempts}) محاولات قبل حظر الجهاز نهائياً.`);
+            }
         }
     }
 
@@ -399,7 +408,6 @@
         if (!phone || phone.length < 10) { alert('أدخل رقم هاتف صحيح (10 أرقام على الأقل)!'); return; }
         if (!password) { alert('أدخل الرقم السري!'); return; }
 
-        // فحص حالة الحظر لهذا الهاتف مسبقاً
         db.ref('banned_users/' + phone).once('value', (bSnap) => {
             if (bSnap.exists()) {
                 triggerBanState();
@@ -410,13 +418,11 @@
                 let acc = snapshot.val();
                 if (acc) {
                     if (acc.password === password) {
-                        // إعادة تعيين محاولات الفشل عند الدخول الناجح
                         db.ref('failed_attempts/' + phone).remove();
                         currentUser = { ...acc, phone, role: 'student' };
                         localStorage.setItem('smart_platform_multiteacher_user', JSON.stringify(currentUser));
                         enterStudentDashboard();
                     } else {
-                        // تتبع محاولات الدخول الفاشلة
                         db.ref('failed_attempts/' + phone).transaction((currentAttempts) => {
                             return (currentAttempts || 0) + 1;
                         }, (error, committed, snapshotVal) => {
@@ -640,7 +646,7 @@
             let text = card.querySelector('.m-q-text').value.trim();
             let image = card.querySelector('.m-q-img-data').value;
             if (type === 'mcq') {
-                maxTotal += 10; // كل سؤال اختياري بـ 10 درجات افتراضياً
+                maxTotal += 10;
                 let opts = [
                     card.querySelector('.m-opt-0').value.trim(),
                     card.querySelector('.m-opt-1').value.trim(),
@@ -650,7 +656,7 @@
                 let correct = parseInt(card.querySelector('.m-correct').value);
                 questionsList.push({ type: 'mcq', text, image, options: opts, correct });
             } else {
-                maxTotal += 10; // السؤال المقالي بـ 10 درجات افتراضياً
+                maxTotal += 10;
                 questionsList.push({ type: 'essay', text, image });
             }
         });
@@ -942,7 +948,6 @@
         };
 
         db.ref(`exam_results/${currentUser.phone}/${safeExamKey}`).set(initialResult).then(() => {
-            // الانتقال لصفحة عرض النتيجة المنفصلة
             document.getElementById('exam-taking-screen').classList.add('hidden');
             document.getElementById('exam-result-screen').classList.remove('hidden');
             document.getElementById('res-exam-title').innerText = currentExamData.title;
