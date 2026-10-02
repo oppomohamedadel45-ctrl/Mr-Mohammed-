@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>منصة المعلم الذكية - النظام الشامل المطور</title>
-    <!-- مكتبات Firebase السحابية -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     
@@ -67,18 +66,23 @@
 <body>
 
 <div class="container">
+    <!-- شاشة الحظر التام -->
+    <div id="banned-screen" class="hidden" style="text-align: center; padding: 40px;">
+        <h1 style="color: var(--danger); font-size: 2.5rem;">🚫 تم حظر حسابك وجهازك نهائياً!</h1>
+        <p style="font-size: 1.2rem; color: #555; margin-top: 20px;">لقد تجاوزت الحد المسموح من المحاولات الخاطئة (سواء في تسجيل الدخول أو كلمة سر الإدارة). تم حظر هذا الجهاز تماماً ولن يُسمح لك بفتح المنصة مرة أخرى.</p>
+    </div>
+
     <!-- شاشة تسجيل الدخول الرئيسية -->
     <div id="login-screen">
         <h1 style="color: var(--primary);">منصة المعلم الذكية 🎓</h1>
         <p style="text-align: center; color: #555; margin-bottom: 20px;">النظام السحابي الموحد لإدارة المدرسين والطلاب</p>
         
         <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; flex-wrap: wrap;">
-            <button class="btn" id="tab-btn-student" onclick="switchLoginMode('student')" style="width: auto; padding: 10px 20px; background: var(--primary);">بوابة الطالب 👨‍‍🎓</button>
+            <button class="btn" id="tab-btn-student" onclick="switchLoginMode('student')" style="width: auto; padding: 10px 20px; background: var(--primary);">بوابة الطالب 👨‍🎓</button>
             <button class="btn" id="tab-btn-teacher" onclick="switchLoginMode('teacher')" style="width: auto; padding: 10px 20px; background: #64748b;">دخول مدرس 👨‍🏫</button>
             <button class="btn" id="tab-btn-admin" onclick="switchLoginMode('admin')" style="width: auto; padding: 10px 20px; background: #b91c1c;">👑 الليدر العام (الإدارة)</button>
         </div>
 
-        <!-- 1. نموذج تسجيل الدخول / حساب جديد للطالب -->
         <div id="box-student-login" class="card-box" style="text-align: right; max-width: 480px; margin: 0 auto;">
             <h3 style="color: var(--secondary); margin-bottom: 15px; text-align: center;">👤 تسجيل دخول أو إنشاء حساب طالب</h3>
             <div class="form-group"><label>الاسم الثلاثي:</label><input type="text" id="student-auth-name" placeholder="محمد أحمد محمود..."></div>
@@ -87,7 +91,6 @@
             <button class="btn btn-success" onclick="handleStudentAuth()">دخول للمنصة 🚀</button>
         </div>
 
-        <!-- 2. نموذج تسجيل دخول المدرس -->
         <div id="box-teacher-login" class="card-box hidden" style="text-align: right; max-width: 450px; margin: 0 auto;">
             <h3 style="color: var(--secondary); margin-bottom: 15px; text-align: center;">👨‍🏫 بوابة المدرسين</h3>
             <div class="form-group"><label>كود المعلم (Teacher ID):</label><input type="text" id="teacher-login-id" placeholder="مثال: TCH-101"></div>
@@ -95,7 +98,6 @@
             <button class="btn btn-success" onclick="handleTeacherLogin()">دخول لوحة التحكم ⚙</button>
         </div>
 
-        <!-- 3. نموذج الليدر العام (الإدارة) -->
         <div id="box-admin-login" class="card-box hidden" style="text-align: right; max-width: 600px; margin: 0 auto; border: 2px solid var(--danger);">
             <h3 style="color: var(--danger); margin-bottom: 15px; text-align: center;">👑 لوحة تحكم الليدر العام</h3>
             <div id="admin-auth-box">
@@ -150,7 +152,7 @@
         <button class="btn btn-danger" onclick="logoutSession()">تسجيل الخروج الآمن</button>
     </div>
 
-    <!-- لوحة الطالب الرئيسية (بعد الدخول) -->
+    <!-- لوحة الطالب الرئيسية -->
     <div id="student-dashboard" class="hidden">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h3>أهلاً بك يا بطل، <span id="welcome-name" style="color: var(--primary);"></span> 🎯</h3>
@@ -162,7 +164,6 @@
             <button class="nav-btn" onclick="switchStudentTab('my-exams')">امتحاناتي ونتائجي ✅</button>
         </div>
 
-        <!-- تبويب قائمة المدرسين وطلب الانضمام -->
         <div id="st-tab-teachers-list" class="tab-pane">
             <div class="card-box">
                 <h3>📚 جميع المدرسين المتاحين في المنصة</h3>
@@ -171,7 +172,6 @@
             </div>
         </div>
 
-        <!-- تبويب امتحانات الطالب المحسنة وجدول النتائج -->
         <div id="st-tab-my-exams" class="tab-pane hidden">
             <div class="card-box">
                 <label>اختر المدرس الذي تم قبولك معه لعرض امتحاناته:</label>
@@ -211,6 +211,25 @@
             <button class="btn btn-success" id="submit-exam-btn" style="margin-top: 15px;" onclick="submitExamPipeline()">تسليم الامتحان نهائياً 📩</button>
         </div>
     </div>
+
+    <!-- شاشة عرض النتيجة المنفصلة بشكل أنيق -->
+    <div id="exam-result-screen" class="hidden" style="text-align: center; padding: 20px;">
+        <div class="card-box" style="max-width: 600px; margin: 0 auto; border: 3px solid var(--success);">
+            <h1 style="color: var(--success); margin-bottom: 10px;">🎉 تم تسليم الامتحان بنجاح!</h1>
+            <p style="font-size: 1.1rem; color: #555; margin-bottom: 20px;">هذه هي نتيجة امتحانك الحالية:</p>
+            <div style="background: #f0fdf4; padding: 20px; border-radius: 12px; border: 1.5px solid #86efac; margin-bottom: 20px;">
+                <h3 id="res-exam-title" style="color: var(--primary); margin-bottom: 10px;">اسم الامتحان</h3>
+                <div style="font-size: 2.2rem; font-weight: bold; color: var(--success); margin: 15px 0;">
+                    <span id="res-score-val">0</span> / <span id="res-total-val">0</span>
+                </div>
+                <div style="font-size: 1.3rem; font-weight: bold; color: var(--accent);">
+                    النسبة المئوية: <span id="res-percent-val">0%</span>
+                </div>
+            </div>
+            <p id="res-status-msg" style="font-weight: bold; color: var(--warning); margin-bottom: 20px;"></p>
+            <button class="btn btn-success" onclick="returnToStudentDashboard()" style="max-width: 250px; margin: 0 auto;">العودة للوحة الرئيسية 🏠</button>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -241,18 +260,42 @@
             }
         });
 
+        // التحقق من حالة الحظر بالمتصفح
+        const isBanned = localStorage.getItem('smart_platform_banned');
+        if (isBanned === 'true') {
+            triggerBanState();
+            return;
+        }
+
         const savedUser = localStorage.getItem('smart_platform_multiteacher_user');
         if (savedUser) {
             currentUser = JSON.parse(savedUser);
-            if (currentUser.role === 'teacher') {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('teacher-dashboard').classList.remove('hidden');
-                loadTeacherDashboardData();
-            } else if (currentUser.role === 'student') {
-                enterStudentDashboard();
-            }
+            // التحقق السحابي من الحظر
+            db.ref('banned_users/' + currentUser.phone).once('value', (snap) => {
+                if (snap.exists()) {
+                    triggerBanState();
+                    return;
+                }
+                if (currentUser.role === 'teacher') {
+                    document.getElementById('login-screen').classList.add('hidden');
+                    document.getElementById('teacher-dashboard').classList.remove('hidden');
+                    loadTeacherDashboardData();
+                } else if (currentUser.role === 'student') {
+                    enterStudentDashboard();
+                }
+            });
         }
     };
+
+    function triggerBanState() {
+        localStorage.setItem('smart_platform_banned', 'true');
+        document.body.innerHTML = `
+            <div style="text-align: center; padding: 60px; font-family: Tahoma;">
+                <h1 style="color: #dc2626; font-size: 2.5rem;">🚫 تم حظر وصولك للمنصة نهائياً!</h1>
+                <p style="font-size: 1.2rem; color: #555; margin-top: 20px;">لقد تجاوزت الحد المسموح من محاولات الدخول الخاطئة (أو محاولة الدخول لحساب الإدارة). تم حظر هذا الجهاز ورقم الهاتف ولن يفتح معك الرابط بعد الآن.</p>
+            </div>
+        `;
+    }
 
     function switchLoginMode(mode) {
         document.getElementById('box-student-login').classList.add('hidden');
@@ -278,12 +321,26 @@
 
     function verifyAdminAccess() {
         const pass = document.getElementById('admin-pass-input').value.trim();
-        if (pass === '8888') { 
+        if (pass === 'Mohamed opo9067rtypro hkjlpo') { 
+            // تصفير عداد المحاولات الفشل للإدارة عند النجاح
+            localStorage.setItem('admin_failed_attempts', '0');
             document.getElementById('admin-auth-box').classList.add('hidden');
             document.getElementById('admin-panel-content').classList.remove('hidden');
             loadAdminTeachers();
         } else {
-            alert('كلمة سر الليدر العام غير صحيحة!');
+            // تتبع محاولات كلمة سر الإدارة الفاشلة (لأي مستخدم على الجهاز)
+            let currentAttempts = parseInt(localStorage.getItem('admin_failed_attempts') || '0') + 1;
+            localStorage.setItem('admin_failed_attempts', currentAttempts);
+
+            if (currentAttempts >= 3) {
+                // إذا كان هناك طالب مسجل دخول حالياً، يتم حفظ حظره سحابياً برقم هاتفه أيضاً
+                if (currentUser && currentUser.phone) {
+                    db.ref('banned_users/' + currentUser.phone).set({ phone: currentUser.phone, name: currentUser.name, reason: 'Admin brute-force', timestamp: Date.now() });
+                }
+                triggerBanState();
+            } else {
+                alert(`❌ كلمة سر الليدر العام غير صحيحة! متبقي لديك (${3 - currentAttempts}) محاولات قبل حظر الجهاز نهائياً.`);
+            }
         }
     }
 
@@ -356,25 +413,45 @@
         if (!phone || phone.length < 10) { alert('أدخل رقم هاتف صحيح (10 أرقام على الأقل)!'); return; }
         if (!password) { alert('أدخل الرقم السري!'); return; }
 
-        db.ref('students_accounts/' + phone).once('value', (snapshot) => {
-            let acc = snapshot.val();
-            if (acc) {
-                if (acc.password === password) {
-                    currentUser = { ...acc, phone, role: 'student' };
-                    localStorage.setItem('smart_platform_multiteacher_user', JSON.stringify(currentUser));
-                    enterStudentDashboard();
-                } else {
-                    alert('❌ الرقم السري غير صحيح لهذا الهاتف!');
-                }
-            } else {
-                const newAcc = { name, password, role: 'student', createdAt: Date.now() };
-                db.ref('students_accounts/' + phone).set(newAcc).then(() => {
-                    currentUser = { ...newAcc, phone };
-                    localStorage.setItem('smart_platform_multiteacher_user', JSON.stringify(currentUser));
-                    alert('✅ تم إنشاء حسابك بنجاح!');
-                    enterStudentDashboard();
-                });
+        // فحص حالة الحظر لهذا الهاتف مسبقاً
+        db.ref('banned_users/' + phone).once('value', (bSnap) => {
+            if (bSnap.exists()) {
+                triggerBanState();
+                return;
             }
+
+            db.ref('students_accounts/' + phone).once('value', (snapshot) => {
+                let acc = snapshot.val();
+                if (acc) {
+                    if (acc.password === password) {
+                        db.ref('failed_attempts/' + phone).remove();
+                        currentUser = { ...acc, phone, role: 'student' };
+                        localStorage.setItem('smart_platform_multiteacher_user', JSON.stringify(currentUser));
+                        enterStudentDashboard();
+                    } else {
+                        db.ref('failed_attempts/' + phone).transaction((currentAttempts) => {
+                            return (currentAttempts || 0) + 1;
+                        }, (error, committed, snapshotVal) => {
+                            let attempts = snapshotVal || 1;
+                            if (attempts >= 3) {
+                                db.ref('banned_users/' + phone).set({ phone, name, timestamp: Date.now() }).then(() => {
+                                    triggerBanState();
+                                });
+                            } else {
+                                alert(`❌ الرقم السري غير صحيح! متبقي لديك (${3 - attempts}) محاولات قبل حظر الحساب نهائياً.`);
+                            }
+                        });
+                    }
+                } else {
+                    const newAcc = { name, password, role: 'student', createdAt: Date.now() };
+                    db.ref('students_accounts/' + phone).set(newAcc).then(() => {
+                        currentUser = { ...newAcc, phone };
+                        localStorage.setItem('smart_platform_multiteacher_user', JSON.stringify(currentUser));
+                        alert('✅ تم إنشاء حسابك بنجاح!');
+                        enterStudentDashboard();
+                    });
+                }
+            });
         });
     }
 
@@ -408,7 +485,6 @@
             container.innerHTML = html;
         });
 
-        // تصحيح الامتحانات المقالية برفع الصور (تصحيح مسار القراءة ليتطابق مع الـ Exam ID المعالج)
         db.ref('pending_essays_grading/' + currentUser.id).on('value', (snapshot) => {
             const data = snapshot.val();
             const container = document.getElementById('pending-essays-list');
@@ -419,7 +495,6 @@
                 let submissions = data[examKey];
                 Object.keys(submissions).forEach(studentPhone => {
                     let sub = submissions[studentPhone];
-                    // استبدال نقاط المسار الممنوعة في الـ Firebase بدلاً من الـ Exam ID المباشر إن وجدت
                     let safeExamKey = examKey.replace(/\./g, '_');
                     html += `
                         <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 2px solid var(--accent);">
@@ -440,7 +515,7 @@
                                 <label>تعليق المعلم / ملاحظات:</label>
                                 <textarea id="feedback_${studentPhone}_${safeExamKey}" placeholder="اكتب تعليقاً للطالب..." rows="2"></textarea>
                             </div>
-                            <button class="btn btn-success" onclick="submitEssayGrade('${examKey}', '${studentPhone}', '${sub.examTitle}', ${sub.mcqScore || 0})">اعتماد الدرجة وإرسالها للطالب ✅</button>
+                            <button class="btn btn-success" onclick="submitEssayGrade('${examKey}', '${studentPhone}', '${sub.examTitle}', ${sub.mcqScore || 0}, ${sub.maxTotal || 10})">اعتماد الدرجة وإرسالها للطالب ✅</button>
                         </div>
                     `;
                 });
@@ -484,7 +559,7 @@
         }
     }
 
-    function submitEssayGrade(examKey, studentPhone, examTitle, mcqScore) {
+    function submitEssayGrade(examKey, studentPhone, examTitle, mcqScore, maxTotal) {
         let safeExamKey = examKey.replace(/\./g, '_');
         let gradeInput = document.getElementById(`grade_${studentPhone}_${safeExamKey}`).value;
         let feedbackInput = document.getElementById(`feedback_${studentPhone}_${safeExamKey}`).value.trim();
@@ -493,13 +568,17 @@
         if (isNaN(essayScore)) { alert('أدخل درجة صحيحة!'); return; }
 
         db.ref(`exam_results/${studentPhone}/${safeExamKey}`).once('value', (snap) => {
-            let existingRecord = snap.val() || { examTitle, subject: currentUser.subject, teacherName: currentUser.name, mcqScore };
+            let existingRecord = snap.val() || { examTitle, subject: currentUser.subject, teacherName: currentUser.name, mcqScore, maxTotal };
+            let finalMaxTotal = existingRecord.maxTotal || maxTotal;
             let totalScore = (existingRecord.mcqScore || mcqScore) + essayScore;
+            let percentage = Math.round((totalScore / finalMaxTotal) * 100);
 
             const finalRecord = {
                 ...existingRecord,
                 essayScore,
                 totalScore,
+                maxTotal: finalMaxTotal,
+                percentage,
                 feedback: feedbackInput,
                 status: 'مصحح بالكامل ✅',
                 timestamp: Date.now()
@@ -567,11 +646,13 @@
         if (!title || questionCards.length === 0) { alert('أدخل عنوان الامتحان وأضف سؤالاً واحداً على الأقل!'); return; }
 
         let questionsList = [];
+        let maxTotal = 0;
         questionCards.forEach((card) => {
             let type = card.dataset.qtype;
             let text = card.querySelector('.m-q-text').value.trim();
             let image = card.querySelector('.m-q-img-data').value;
             if (type === 'mcq') {
+                maxTotal += 10;
                 let opts = [
                     card.querySelector('.m-opt-0').value.trim(),
                     card.querySelector('.m-opt-1').value.trim(),
@@ -581,6 +662,7 @@
                 let correct = parseInt(card.querySelector('.m-correct').value);
                 questionsList.push({ type: 'mcq', text, image, options: opts, correct });
             } else {
+                maxTotal += 10;
                 questionsList.push({ type: 'essay', text, image });
             }
         });
@@ -588,7 +670,7 @@
         const examData = {
             id: 'exam_' + Date.now(), title, teacherId: currentUser.id,
             teacherName: currentUser.name, subject: currentUser.subject,
-            questions: questionsList, duration, timestamp: Date.now()
+            questions: questionsList, duration, maxTotal, timestamp: Date.now()
         };
 
         db.ref('active_exams/' + currentUser.id).set(examData).then(() => {
@@ -710,7 +792,8 @@
                             <th>اسم الامتحان</th>
                             <th>المادة</th>
                             <th>المعلم</th>
-                            <th>الدرجة النهائية</th>
+                            <th>الدرجة</th>
+                            <th>النسبة</th>
                             <th>الحالة</th>
                             <th>ملاحظات المعلم</th>
                         </tr>
@@ -720,12 +803,16 @@
 
             Object.keys(data).forEach(examKey => {
                 let res = data[examKey];
+                let score = res.totalScore !== undefined ? res.totalScore : (res.mcqScore || 0);
+                let max = res.maxTotal || 10;
+                let perc = res.percentage !== undefined ? res.percentage + '%' : Math.round((score/max)*100) + '%';
                 html += `
                     <tr>
                         <td><b>${res.examTitle}</b></td>
                         <td>${res.subject}</td>
                         <td>${res.teacherName}</td>
-                        <td><span style="color:var(--success); font-weight:bold; font-size:1.1rem;">${res.totalScore !== undefined ? res.totalScore : (res.mcqScore || 0)}</span></td>
+                        <td><span style="color:var(--success); font-weight:bold;">${score} / ${max}</span></td>
+                        <td><span style="color:var(--accent); font-weight:bold;">${perc}</span></td>
                         <td><span style="color:var(--primary);">${res.status || 'قيد تصحيح المقالي ⏳'}</span></td>
                         <td>${res.feedback || 'لا توجد ملاحظات'}</td>
                     </tr>
@@ -830,6 +917,7 @@
         let mcqScore = 0;
         let hasEssay = false;
         let safeExamKey = currentExamData.id.replace(/\./g, '_');
+        let maxTotal = currentExamData.maxTotal || (currentExamData.questions.length * 10);
 
         currentExamData.questions.forEach((q, idx) => {
             if (q.type === 'mcq') {
@@ -843,27 +931,42 @@
                     questionImage: q.image || '',
                     studentImageAnswer: studentAnswers[idx] || '',
                     mcqScore: mcqScore,
+                    maxTotal: maxTotal,
                     timestamp: Date.now()
                 };
                 db.ref(`pending_essays_grading/${currentExamData.teacherId}/${currentExamData.id}/${currentUser.phone}`).set(essayPayload);
             }
         });
 
-        // حفظ النتيجة الأولية في جدول الطالب
+        let totalScore = mcqScore;
+        let percentage = Math.round((totalScore / maxTotal) * 100);
+
         const initialResult = {
             examTitle: currentExamData.title,
             teacherName: currentExamData.teacherName,
             subject: currentExamData.subject,
             mcqScore: mcqScore,
-            totalScore: mcqScore,
-            status: hasEssay ? 'قيد تصحيح المقالي ⏳' : 'منتهي ✅',
+            totalScore: totalScore,
+            maxTotal: maxTotal,
+            percentage: percentage,
+            status: hasEssay ? 'قيد تصحيح المقالي ⏳' : 'مصحح بالكامل ✅',
             timestamp: Date.now()
         };
 
         db.ref(`exam_results/${currentUser.phone}/${safeExamKey}`).set(initialResult).then(() => {
-            alert(`✅ تم تسليم الامتحان بنجاح!\nدرجة الأسئلة الاختيارية (${mcqScore} درجة) أُحتسبت فوراً.\nتم إرسال إجاباتك المقالية لمعلم المادة.`);
-            location.reload();
+            document.getElementById('exam-taking-screen').classList.add('hidden');
+            document.getElementById('exam-result-screen').classList.remove('hidden');
+            document.getElementById('res-exam-title').innerText = currentExamData.title;
+            document.getElementById('res-score-val').innerText = totalScore;
+            document.getElementById('res-total-val').innerText = maxTotal;
+            document.getElementById('res-percent-val').innerText = percentage + '%';
+            document.getElementById('res-status-msg').innerText = hasEssay ? 'ملاحظة: تم احتساب درجة الأسئلة الاختيارية فوريًا، وبانتظار تصعيد المعلم لأسئلة المقالي.' : 'تم تصحيح امتحانك بالكامل واعتماد النتيجة بنجاح!';
         });
+    }
+
+    function returnToStudentDashboard() {
+        document.getElementById('exam-result-screen').classList.add('hidden');
+        enterStudentDashboard();
     }
 </script>
 
