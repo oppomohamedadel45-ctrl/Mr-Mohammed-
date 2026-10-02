@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة المعلم الذكية - إذن الإدارة العامة</title>
+    <title>منصة المعلم الذكية - نظام الموافقات وطلبات الانضمام</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     
@@ -45,8 +45,6 @@
         .btn-danger:hover { background: #b91c1c; }
         .btn-warning { background: var(--warning); color: #fff; }
         .btn-warning:hover { background: #b45309; }
-        .btn-whatsapp { background: #25d366; }
-        .btn-whatsapp:hover { background: #1ebe5d; }
 
         .card-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
         .timer-box { font-size: 1.3rem; font-weight: bold; color: var(--danger); text-align: center; margin-bottom: 15px; background: #fee2e2; padding: 12px; border-radius: 8px; border: 1px solid #fca5a5; }
@@ -64,36 +62,42 @@
 <body>
 
 <div class="container">
-    <!-- شاشة الحظر التام -->
-    <div id="banned-screen" class="hidden" style="text-align: center; padding: 40px;">
-        <h1 style="color: var(--danger); font-size: 2.5rem;">🚫 تم حظر حسابك مؤقتاً لتجاوز المحاولات!</h1>
-        <p style="font-size: 1.2rem; color: #555; margin-top: 20px;">لقد تجاوزت الحد المسموح من المحاولات الخاطئة. برجاء مراجعة الإدارة العامة.</p>
-    </div>
-
     <!-- شاشة تسجيل الدخول الرئيسية -->
     <div id="login-screen">
         <h1 style="color: var(--primary);">منصة المعلم الذكية 🎓</h1>
-        <p style="text-align: center; color: #555; margin-bottom: 20px;">إشراف: محمد عادل - النظام التعليمي المطور</p>
+        <p style="text-align: center; color: #555; margin-bottom: 20px;">نظام إدارة الطلاب والمعلمين المطور</p>
         
         <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; flex-wrap: wrap;">
             <button class="btn" id="tab-btn-student" onclick="switchLoginMode('student')" style="width: auto; padding: 10px 20px; background: var(--primary);">دخول طالب 👨‍🎓</button>
+            <button class="btn" id="tab-btn-register" onclick="switchLoginMode('register')" style="width: auto; padding: 10px 20px; background: #64748b;">تسجيل طالب جديد 📝</button>
             <button class="btn" id="tab-btn-teacher" onclick="switchLoginMode('teacher')" style="width: auto; padding: 10px 20px; background: #64748b;">دخول مدرس 👨‍🏫</button>
             <button class="btn" id="tab-btn-admin" onclick="switchLoginMode('admin')" style="width: auto; padding: 10px 20px; background: #b91c1c;">👑 الإدارة العامة</button>
         </div>
 
-        <!-- بوابة الطالب (بإذن الإدارة العامة فقط) -->
+        <!-- بوابة تسجيل طالب جديد -->
+        <div id="box-student-register" class="card-box hidden" style="text-align: right; max-width: 500px; margin: 0 auto;">
+            <h3 style="color: var(--secondary); margin-bottom: 15px; text-align: center;">📝 طلب تسجيل حساب طالب جديد</h3>
+            <div class="form-group"><label>الاسم الرباعي:</label><input type="text" id="reg-name" placeholder="محمد أحمد محمود علي..."></div>
+            <div class="form-group"><label>رقم هاتف الطالب:</label><input type="tel" id="reg-phone" placeholder="01012345678" maxlength="11"></div>
+            <div class="form-group"><label>رقم هاتف ولي الأمر:</label><input type="tel" id="reg-parent" placeholder="01112345678" maxlength="11"></div>
+            <div class="form-group"><label>الرقم السري:</label><input type="password" id="reg-pass" placeholder="الرقم السري الخاص بك..."></div>
+            <div class="form-group"><label>صورة شهادة الميلاد أو البطاقة:</label><input type="file" id="reg-file" accept="image/*"></div>
+            <button class="btn btn-success" onclick="submitStudentRegistration()">إرسال الطلب للإدارة العامة 🚀</button>
+        </div>
+
+        <!-- بوابة تسجيل دخول الطالب -->
         <div id="box-student-login" class="card-box" style="text-align: right; max-width: 480px; margin: 0 auto;">
-            <h3 style="color: var(--secondary); margin-bottom: 15px; text-align: center;">👤 تسجيل دخول الطالب (بإذن الإدارة العامة)</h3>
-            <div class="form-group"><label>رقم الهاتف المعتمد:</label><input type="tel" id="st-login-phone" placeholder="01012345678" oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="11"></div>
+            <h3 style="color: var(--secondary); margin-bottom: 15px; text-align: center;">👤 تسجيل دخول الطالب</h3>
+            <div class="form-group"><label>رقم الهاتف:</label><input type="tel" id="st-login-phone" placeholder="01012345678" maxlength="11"></div>
             <div class="form-group"><label>الرقم السري:</label><input type="password" id="st-login-pass" placeholder="الرقم السري الخاص بك..."></div>
             <button class="btn btn-success" onclick="handleStudentLogin()">دخول للمنصة 🚀</button>
         </div>
 
         <!-- بوابة المدرس -->
         <div id="box-teacher-login" class="card-box hidden" style="text-align: right; max-width: 450px; margin: 0 auto;">
-            <h3 style="color: var(--secondary); margin-bottom: 15px; text-align: center;">👨‍🏫 بوابة المدرسين</h3>
-            <div class="form-group"><label>كود المعلم (Teacher ID):</label><input type="text" id="teacher-login-id" placeholder="مثال: TCH-101"></div>
-            <div class="form-group"><label>الرقم السري (Password):</label><input type="password" id="teacher-login-pass" placeholder="الرقم السري الخاص بك..."></div>
+            <h3 style="color: var(--secondary); margin-bottom: 15px; text-align: center;">👨‍‍🏫 بوابة المدرسين</h3>
+            <div class="form-group"><label>كود المعلم:</label><input type="text" id="teacher-login-id" placeholder="مثال: TCH-101"></div>
+            <div class="form-group"><label>الرقم السري:</label><input type="password" id="teacher-login-pass" placeholder="الرقم السري..."></div>
             <button class="btn btn-success" onclick="handleTeacherLogin()">دخول لوحة التحكم ⚙</button>
         </div>
 
@@ -105,17 +109,10 @@
                 <button class="btn btn-danger" onclick="verifyAdminAccess()">دخول للإدارة المطلقة 🔓</button>
             </div>
             <div id="admin-panel-content" class="hidden" style="margin-top: 15px;">
-                <h4 style="color: var(--warning); margin-bottom: 10px;">⚠️ طلبات الطلاب المحظورين لتجاوز المحاولات:</h4>
-                <div id="admin-banned-students-list" style="max-height: 150px; overflow-y: auto; margin-bottom: 20px; border: 1px solid #cbd5e1; padding: 10px; border-radius: 8px; background: #fffbeb;">
-                    <p>لا توجد طلبات حظر.</p>
+                <h4 style="color: var(--warning); margin-bottom: 10px;">📋 طلبات تسجيل الطلاب الجديدة (بانتظار الموافقة):</h4>
+                <div id="admin-pending-students-list" style="max-height: 250px; overflow-y: auto; margin-bottom: 20px; border: 1px solid #cbd5e1; padding: 10px; border-radius: 8px; background: #fffbeb;">
+                    <p>لا توجد طلبات معلقة.</p>
                 </div>
-                
-                <h4 style="color: var(--success); margin-bottom: 10px;">➕ اعتماد طالب جديد لمنح إذن الدخول:</h4>
-                <div class="form-group"><label>اسم الطالب:</label><input type="text" id="adm-st-name" placeholder="محمد أحمد محمود..."></div>
-                <div class="form-group"><label>رقم هاتف الطالب:</label><input type="tel" id="adm-st-phone" placeholder="01012345678" maxlength="11"></div>
-                <div class="form-group"><label>رقم هاتف ولي الأمر:</label><input type="tel" id="adm-st-parent" placeholder="01112345678" maxlength="11"></div>
-                <div class="form-group"><label>الرقم السري المخصص للطالب:</label><input type="password" id="adm-st-pass" placeholder="الرقم السري..."></div>
-                <button class="btn btn-success" onclick="adminCreateStudent()">إصدار إذن دخول للطالب 📩</button>
 
                 <hr style="margin: 20px 0;">
                 <h4 style="color: var(--primary); margin-bottom: 10px;">➕ إضافة مدرس جديد للنظام:</h4>
@@ -133,47 +130,53 @@
         <h1 id="teacher-dash-title">لوحة تحكم المعلم ⚙</h1>
         <p style="text-align:center; color: var(--success); font-weight:bold; margin-bottom:20px;" id="teacher-welcome-msg"></p>
         
+        <div class="card-box" style="border: 2px solid var(--warning); background: #fffbeb;">
+            <h3>📥 طلبات انضمام الطلاب إليك</h3>
+            <div id="teacher-join-requests-list" style="margin-top: 15px;"><p>جاري التحقق من الطلبات...</p></div>
+        </div>
+
         <div class="card-box" style="border: 2px solid var(--accent); background: #f0fdf4;">
-            <h3>📊 درجات وإجابات الطلاب المسجلين معك</h3>
-            <div id="teacher-students-grades-list" style="margin-top: 15px; max-height: 300px; overflow-y: auto;"><p>جاري تحميل درجات الطلاب...</p></div>
+            <h3>👥 طلابي المقبولون</h3>
+            <div id="teacher-approved-students-list" style="margin-top: 15px;"><p>جاري تحميل الطلاب...</p></div>
         </div>
 
         <div class="card-box">
-            <h3>✍️ بناء امتحان جديد</h3>
+            <h3>✍️ بناء امتحان جديد (لا يراه إلا طلابك المقبولون)</h3>
             <div class="form-group" style="margin-top: 15px;"><label>عنوان الامتحان:</label><input type="text" id="exam-title-input" placeholder="مثال: امتحان التاريخ الشهر الأول..."></div>
             <div id="dynamic-questions-container"></div>
             <div class="flex-row" style="margin-bottom: 20px;">
                 <button class="btn btn-warning" onclick="addNewQuestionField('mcq')">➕ إضافة سؤال اختياري</button>
             </div>
             <div class="form-group"><label>وقت الامتحان بالدقائق:</label><input type="number" id="exam-time" value="30" min="1" max="240"></div>
-            <button class="btn btn-success" onclick="publishExam()" style="background: var(--primary);">نشر الامتحان لطلابك 🚀</button>
+            <button class="btn btn-success" onclick="publishExam()" style="background: var(--primary);">نشر الامتحان لطلابك المقبولين 🚀</button>
         </div>
 
         <button class="btn btn-danger" onclick="logoutSession()">تسجيل الخروج الآمن</button>
     </div>
 
-    <!-- لوحة الطالب الرئيسية (اختيار المعلم من الداخل) -->
+    <!-- لوحة الطالب الرئيسية -->
     <div id="student-dashboard" class="hidden">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h3>أهلاً بك يا بطل، <span id="welcome-name" style="color: var(--primary);"></span> 🎯</h3>
             <button class="btn btn-danger" style="width: auto; padding: 6px 12px;" onclick="logoutSession()">خروج</button>
         </div>
 
-        <!-- اختيار المعلم من داخل المنصة -->
+        <!-- اختيار المعلم وإرسال طلب انضمام -->
         <div class="card-box" style="border: 2px solid var(--warning); background: #fffbeb;">
-            <h3 style="color: var(--secondary); margin-bottom: 10px;">🏫 اختيار المعلم والمتابعة</h3>
+            <h3 style="color: var(--secondary); margin-bottom: 10px;">🏫 اختيار المعلم وإرسال طلب انضمام</h3>
             <div class="form-group">
-                <label>اختر المعلم الذي ترغب في الانضمام إليه:</label>
-                <select id="student-select-teacher" onchange="onStudentSelectTeacher(this.value)">
-                    <option value="">-- اختر مدرساً من القائمة --</option>
+                <label>اختر المعلم من القائمة:</label>
+                <select id="student-select-teacher" onchange="checkStudentJoinStatus(this.value)">
+                    <option value="">-- اختر مدرساً --</option>
                 </select>
             </div>
+            <div id="teacher-join-action-box" style="margin-top: 15px;"></div>
         </div>
 
         <div id="student-active-section" class="hidden">
             <div class="card-box">
-                <h3 style="color: var(--primary); margin-bottom: 10px;">📚 امتحانات المعلم المختار</h3>
-                <div id="student-active-exams-box"><p>اختر المعلم أولاً لعرض الامتحانات...</p></div>
+                <h3 style="color: var(--primary); margin-bottom: 10px;">📚 امتحانات المعلم (المتاحة لك بعد قبولك)</h3>
+                <div id="student-active-exams-box"><p>في انتظار تحميل الامتحانات...</p></div>
             </div>
 
             <div class="card-box">
@@ -221,15 +224,6 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // مسح وتطهير كامل لقاعدة البيانات عند التشغيل لتكون المنصة نظيفة تماماً
-    function cleanDatabaseOnStartup() {
-        db.ref('authorized_students').remove();
-        db.ref('active_exams').remove();
-        db.ref('exam_results').remove();
-        db.ref('banned_users').remove();
-        db.ref('failed_attempts').remove();
-    }
-
     const defaultTeachers = {
         "TCH-101": { name: "أستاذ التاريخ", subject: "التاريخ", password: "Hist@2026_#1", role: "teacher" },
         "TCH-102": { name: "أستاذ الجغرافيا", subject: "الجغرافيا", password: "Geog@2026_#2", role: "teacher" }
@@ -243,54 +237,49 @@
     let studentAnswers = {}; 
 
     window.onload = function() {
-        cleanDatabaseOnStartup();
-
         db.ref('teachers').once('value', (snapshot) => {
             if (!snapshot.exists()) {
                 db.ref('teachers').set(defaultTeachers);
             }
         });
 
-        const savedUser = localStorage.getItem('smart_platform_multiteacher_user');
+        const savedUser = localStorage.getItem('smart_platform_user_v2');
         if (savedUser) {
             currentUser = JSON.parse(savedUser);
-            db.ref('banned_users/' + currentUser.phone).once('value', (snap) => {
-                if (snap.exists()) { triggerBanState(); return; }
-                if (currentUser.role === 'teacher') {
-                    document.getElementById('login-screen').classList.add('hidden');
-                    document.getElementById('teacher-dashboard').classList.remove('hidden');
-                    loadTeacherDashboardData();
-                } else if (currentUser.role === 'student') {
-                    enterStudentDashboard();
-                }
-            });
+            if (currentUser.role === 'teacher') {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('teacher-dashboard').classList.remove('hidden');
+                loadTeacherDashboardData();
+            } else if (currentUser.role === 'student') {
+                enterStudentDashboard();
+            }
         }
     };
 
-    function triggerBanState() {
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('banned-screen').classList.remove('hidden');
-    }
-
     function switchLoginMode(mode) {
         document.getElementById('box-student-login').classList.add('hidden');
+        document.getElementById('box-student-register').classList.add('hidden');
         document.getElementById('box-teacher-login').classList.add('hidden');
         document.getElementById('box-admin-login').classList.add('hidden');
         
         document.getElementById('tab-btn-student').style.background = '#64748b';
+        document.getElementById('tab-btn-register').style.background = '#64748b';
         document.getElementById('tab-btn-teacher').style.background = '#64748b';
         document.getElementById('tab-btn-admin').style.background = '#64748b';
 
         if (mode === 'student') {
             document.getElementById('box-student-login').classList.remove('hidden');
             document.getElementById('tab-btn-student').style.background = 'var(--primary)';
+        } else if (mode === 'register') {
+            document.getElementById('box-student-register').classList.remove('hidden');
+            document.getElementById('tab-btn-register').style.background = 'var(--primary)';
         } else if (mode === 'teacher') {
             document.getElementById('box-teacher-login').classList.remove('hidden');
             document.getElementById('tab-btn-teacher').style.background = 'var(--primary)';
         } else if (mode === 'admin') {
             document.getElementById('box-admin-login').classList.remove('hidden');
             document.getElementById('tab-btn-admin').style.background = 'var(--danger)';
-            loadAdminBannedStudents();
+            loadAdminPendingStudents();
         }
     }
 
@@ -304,17 +293,21 @@
         }
     }
 
-    function loadAdminBannedStudents() {
-        db.ref('banned_users').on('value', (snapshot) => {
+    function loadAdminPendingStudents() {
+        db.ref('pending_students').on('value', (snapshot) => {
             const data = snapshot.val();
-            const container = document.getElementById('admin-banned-students-list');
-            if (!data) { container.innerHTML = '<p>لا توجد طلبات حظر.</p>'; return; }
+            const container = document.getElementById('admin-pending-students-list');
+            if (!data) { container.innerHTML = '<p>لا توجد طلبات معلقة.</p>'; return; }
             let html = '';
             Object.keys(data).forEach(phone => {
+                let st = data[phone];
                 html += `
-                    <div style="background: white; padding: 10px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
-                        <div>هاتف المحظور: ${phone}</div>
-                        <button class="btn btn-success" style="padding: 4px 10px; font-size: 13px;" onclick="grantMoreAttempts('${phone}')">إلغاء الحظر ✅</button>
+                    <div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #cbd5e1;">
+                        <b>الاسم:</b> ${st.name} <br>
+                        <b>هاتف الطالب:</b> ${st.phone} | <b>هاتف ولي الأمر:</b> ${st.parentPhone}<br>
+                        <div style="margin: 8px 0;"><img src="${st.fileData}" style="max-width:150px; max-height:100px; border-radius:4px; border:1px solid #ccc;" alt="صورة الشهادة"></div>
+                        <button class="btn btn-success" style="padding: 6px 15px; font-size: 14px; display:inline-block; width:auto;" onclick="approveStudent('${phone}')">موافقة وقبول ✅</button>
+                        <button class="btn btn-danger" style="padding: 6px 15px; font-size: 14px; display:inline-block; width:auto; margin-right:5px;" onclick="rejectStudent('${phone}')">رفض ❌</button>
                     </div>
                 `;
             });
@@ -322,29 +315,47 @@
         });
     }
 
-    function grantMoreAttempts(phone) {
-        db.ref('banned_users/' + phone).remove().then(() => {
-            db.ref('failed_attempts/' + phone).remove();
-            alert('✅ تم إلغاء الحظر بنجاح.');
+    function submitStudentRegistration() {
+        const name = document.getElementById('reg-name').value.trim();
+        const phone = document.getElementById('reg-phone').value.trim();
+        const parentPhone = document.getElementById('reg-parent').value.trim();
+        const password = document.getElementById('reg-pass').value.trim();
+        const fileInput = document.getElementById('reg-file');
+
+        if (!name || !phone || !parentPhone || !password || fileInput.files.length === 0) {
+            alert('برجاء إدخال كافة البيانات ورفع صورة شهادة الميلاد أو البطاقة!');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const fileData = e.target.result;
+            db.ref('pending_students/' + phone).set({
+                name, phone, parentPhone, password, fileData, timestamp: Date.now()
+            }).then(() => {
+                alert('✅ تم إرسال طلبك للإدارة العامة بنجاح! انتظر الموافقة.');
+                switchLoginMode('student');
+            });
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+    }
+
+    function approveStudent(phone) {
+        db.ref('pending_students/' + phone).once('value', (snap) => {
+            const st = snap.val();
+            if (st) {
+                db.ref('authorized_students/' + phone).set(st).then(() => {
+                    db.ref('pending_students/' + phone).remove().then(() => {
+                        alert('✅ تم قبول الطالب بنجاح!');
+                    });
+                });
+            }
         });
     }
 
-    function adminCreateStudent() {
-        const name = document.getElementById('adm-st-name').value.trim();
-        const phone = document.getElementById('adm-st-phone').value.trim();
-        const parentPhone = document.getElementById('adm-st-parent').value.trim();
-        const password = document.getElementById('adm-st-pass').value.trim();
-
-        if (!name || !phone || !password) { alert('أدخل بيانات الطالب كاملة (الاسم، الهاتف، الرقم السري)!'); return; }
-
-        db.ref('authorized_students/' + phone).set({
-            name, phone, parentPhone, password, role: 'student', timestamp: Date.now()
-        }).then(() => {
-            alert('✅ تم إصدار إذن الدخول للطالب بنجاح!');
-            document.getElementById('adm-st-name').value = '';
-            document.getElementById('adm-st-phone').value = '';
-            document.getElementById('adm-st-parent').value = '';
-            document.getElementById('adm-st-pass').value = '';
+    function rejectStudent(phone) {
+        db.ref('pending_students/' + phone).remove().then(() => {
+            alert('❌ تم رفض الطلب وحذفه.');
         });
     }
 
@@ -364,38 +375,18 @@
         const password = document.getElementById('st-login-pass').value.trim();
         if (!phone || !password) { alert('أدخل رقم الهاتف والرقم السري!'); return; }
 
-        db.ref('banned_users/' + phone).once('value', (bSnap) => {
-            if (bSnap.exists()) { triggerBanState(); return; }
-
-            db.ref('authorized_students/' + phone).once('value', (snap) => {
-                const student = snap.val();
-                if (student) {
-                    if (student.password === password) {
-                        db.ref('failed_attempts/' + phone).remove();
-                        currentUser = student;
-                        localStorage.setItem('smart_platform_multiteacher_user', JSON.stringify(currentUser));
-                        enterStudentDashboard();
-                    } else {
-                        handleFailedLoginAttempt(phone);
-                    }
+        db.ref('authorized_students/' + phone).once('value', (snap) => {
+            const student = snap.val();
+            if (student) {
+                if (student.password === password) {
+                    currentUser = student;
+                    localStorage.setItem('smart_platform_user_v2', JSON.stringify(currentUser));
+                    enterStudentDashboard();
                 } else {
-                    alert('❌ هذا الرقم غير مصرح له بالدخول من الإدارة العامة!');
+                    alert('❌ الرقم السري غير صحيح!');
                 }
-            });
-        });
-    }
-
-    function handleFailedLoginAttempt(phone) {
-        db.ref('failed_attempts/' + phone).transaction((currentAttempts) => {
-            return (currentAttempts || 0) + 1;
-        }, (error, committed, snapshotVal) => {
-            let attempts = snapshotVal || 1;
-            if (attempts >= 3) {
-                db.ref('banned_users/' + phone).set({ phone, timestamp: Date.now() }).then(() => {
-                    triggerBanState();
-                });
             } else {
-                alert(`❌ الرقم السري غير صحيح! متبقي لديك (${3 - attempts}) محاولات قبل حظر الحساب.`);
+                alert('❌ هذا الحساب غير موجود أو لم توافق عليه الإدارة العامة بعد!');
             }
         });
     }
@@ -409,7 +400,7 @@
             const t = snapshot.val();
             if (t && t.password === pass) {
                 currentUser = { ...t, id: code };
-                localStorage.setItem('smart_platform_multiteacher_user', JSON.stringify(currentUser));
+                localStorage.setItem('smart_platform_user_v2', JSON.stringify(currentUser));
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('teacher-dashboard').classList.remove('hidden');
                 loadTeacherDashboardData();
@@ -420,7 +411,7 @@
     }
 
     function logoutSession() {
-        localStorage.removeItem('smart_platform_multiteacher_user');
+        localStorage.removeItem('smart_platform_user_v2');
         location.reload();
     }
 
@@ -428,49 +419,68 @@
         document.getElementById('teacher-dash-title').innerText = `لوحة تحكم المعلم: ${currentUser.name}`;
         document.getElementById('teacher-welcome-msg').innerText = `المادة: ${currentUser.subject} | كود: ${currentUser.id}`;
 
-        db.ref('exam_results').on('value', (resSnap) => {
-            const results = resSnap.val() || {};
-            const container = document.getElementById('teacher-students-grades-list');
-            
+        // تحميل طلبات الانضمام المعلقة لهذا المعلم
+        db.ref('join_requests/' + currentUser.id).on('value', (snap) => {
+            const requests = snap.val() || {};
+            const container = document.getElementById('teacher-join-requests-list');
             let html = '';
-            let foundAny = false;
+            let hasReq = false;
 
-            // تجميع الطلاب الذين أدوا امتحانات لهذا المعلم
-            db.ref('authorized_students').once('value', (stSnap) => {
-                const allStudents = stSnap.val() || {};
-                
-                Object.keys(results).forEach(phone => {
-                    let stResults = results[phone] || {};
-                    let studentObj = allStudents[phone];
-                    if (!studentObj) return;
-
-                    let hasExamForTeacher = false;
-                    Object.keys(stResults).forEach(exKey => {
-                        if (stResults[exKey].teacherId === currentUser.id) hasExamForTeacher = true;
-                    });
-
-                    if (hasExamForTeacher) {
-                        foundAny = true;
-                        let examsCount = Object.keys(stResults).length;
-                        html += `
-                            <div style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #cbd5e1;">
-                                <b>${studentObj.name}</b> (هاتف ولي الأمر: ${studentObj.parentPhone})
-                                <table style="margin-top: 8px;">
-                                    <tr><th>اسم الامتحان</th><th>الدرجة</th><th>الحالة</th></tr>
-                        `;
-
-                        Object.keys(stResults).forEach(exKey => {
-                            let r = stResults[exKey];
-                            if (r.teacherId === currentUser.id) {
-                                html += `<tr><td>${r.examTitle}</td><td>${r.totalScore} / ${r.maxTotal}</td><td>${r.status}</td></tr>`;
-                            }
-                        });
-
-                        html += `</table></div>`;
-                    }
-                });
-                container.innerHTML = html || '<p>لا توجد بيانات لطلاب أدوا امتحاناتك بعد.</p>';
+            Object.keys(requests).forEach(stPhone => {
+                let req = requests[stPhone];
+                if (req.status === 'pending') {
+                    hasReq = true;
+                    html += `
+                        <div style="background: white; padding: 10px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #cbd5e1;">
+                            <div><b>${req.studentName}</b> (هاتف: ${stPhone})</div>
+                            <div>
+                                <button class="btn btn-success" style="padding: 4px 10px; font-size: 13px; display:inline-block; width:auto;" onclick="acceptStudentJoin('${currentUser.id}', '${stPhone}')">قبول الطلب ✅</button>
+                                <button class="btn btn-danger" style="padding: 4px 10px; font-size: 13px; display:inline-block; width:auto; margin-right:5px;" onclick="rejectStudentJoin('${currentUser.id}', '${stPhone}')">رفض ❌</button>
+                            </div>
+                        </div>
+                    `;
+                }
             });
+            container.innerHTML = hasReq ? html : '<p>لا توجد طلبات انضمام جديدة.</p>';
+        });
+
+        // تحميل الطلاب المقبولين لدى هذا المعلم
+        db.ref('teacher_students/' + currentUser.id).on('value', (snap) => {
+            const students = snap.val() || {};
+            const container = document.getElementById('teacher-approved-students-list');
+            let html = '<table><tr><th>اسم الطالب</th><th>هاتف الطالب</th><th>هاتف ولي الأمر</th></tr>';
+            let hasSt = false;
+
+            Object.keys(students).forEach(stPhone => {
+                let st = students[stPhone];
+                hasSt = true;
+                html += `<tr><td>${st.name}</td><td>${st.phone}</td><td>${st.parentPhone}</td></tr>`;
+            });
+            html += '</table>';
+            container.innerHTML = hasSt ? html : '<p>لا يوجد طلاب مقبولة عضويتهم معك حالياً.</p>';
+        });
+    }
+
+    function acceptStudentJoin(teacherId, studentPhone) {
+        db.ref(`join_requests/${teacherId}/${studentPhone}`).once('value', (snap) => {
+            const req = snap.val();
+            if (req) {
+                db.ref(`teacher_students/${teacherId}/${studentPhone}`).set({
+                    name: req.studentName,
+                    phone: studentPhone,
+                    parentPhone: req.parentPhone
+                }).then(() => {
+                    db.ref(`join_requests/${teacherId}/${studentPhone}/status`).set('approved').then(() => {
+                        alert('✅ تم قبول الطالب بنجاح، وأصبحت امتحاناتك ظاهرة له.');
+                    });
+                });
+            }
+        });
+    }
+
+    function rejectStudentJoin(teacherId, studentPhone) {
+        db.ref(`join_requests/${teacherId}/${studentPhone}/status`).set('rejected').then(() => {
+            alert('❌ تم رفض طلب الانضمام.');
         });
     }
 
@@ -479,7 +489,6 @@
         const qCount = container.children.length + 1;
         const qCard = document.createElement('div');
         qCard.className = 'question-card-builder';
-        qCard.dataset.qtype = type;
 
         qCard.innerHTML = `
             <h4>سؤال اختياري رقم (${qCount})</h4>
@@ -515,7 +524,7 @@
         });
 
         const examData = { id: 'exam_' + Date.now(), title, teacherId: currentUser.id, teacherName: currentUser.name, subject: currentUser.subject, questions, duration, maxTotal };
-        db.ref('active_exams/' + currentUser.id).set(examData).then(() => alert('🚀 تم نشر الامتحان بنجاح!'));
+        db.ref('active_exams/' + currentUser.id).set(examData).then(() => alert('🚀 تم نشر الامتحان لطلابك المقبولين بنجاح!'));
     }
 
     function enterStudentDashboard() {
@@ -523,10 +532,9 @@
         document.getElementById('student-dashboard').classList.remove('hidden');
         document.getElementById('welcome-name').innerText = currentUser.name;
 
-        // تحميل قائمة المدرسين داخل المنصة ليختار الطالب منها
         db.ref('teachers').once('value', (snapshot) => {
             const teachers = snapshot.val() || defaultTeachers;
-            let html = '<option value="">-- اختر مدرساً من القائمة --</option>';
+            let html = '<option value="">-- اختر مدرساً --</option>';
             Object.keys(teachers).forEach(tId => {
                 let t = teachers[tId];
                 html += `<option value="${tId}">${t.name} (${t.subject})</option>`;
@@ -534,7 +542,6 @@
             document.getElementById('student-select-teacher').innerHTML = html;
         });
 
-        // تحميل سجل امتحانات الطالب
         db.ref('exam_results/' + currentUser.phone).on('value', (snap) => {
             const data = snap.val() || {};
             let html = `<table><tr><th>اسم الامتحان</th><th>الدرجة</th><th>الحالة</th></tr>`;
@@ -547,18 +554,59 @@
         });
     }
 
-    function onStudentSelectTeacher(teacherId) {
+    function checkStudentJoinStatus(teacherId) {
+        const actionBox = document.getElementById('teacher-join-action-box');
         const activeSec = document.getElementById('student-active-section');
-        const box = document.getElementById('student-active-exams-box');
-
+        
         if (!teacherId) {
+            actionBox.innerHTML = '';
             activeSec.classList.add('hidden');
             return;
         }
 
-        activeSec.classList.remove('hidden');
-        box.innerHTML = '<p>جاري تحميل امتحانات المعلم...</p>';
+        // التحقق هل الطالب مقبول لدى هذا المعلم أم لا
+        db.ref(`teacher_students/${teacherId}/${currentUser.phone}`).once('value', (snap) => {
+            if (snap.exists()) {
+                // الطالب مقبول -> إظهار الامتحانات
+                actionBox.innerHTML = '<p style="color: var(--success); font-weight: bold;">✅ أنت منضم ومقبول لدى هذا المعلم.</p>';
+                activeSec.classList.remove('hidden');
+                loadExamsForStudent(teacherId);
+            } else {
+                // ليس مقبولاً -> فحص حالة طلب الانضمام
+                db.ref(`join_requests/${teacherId}/${currentUser.phone}`).once('value', (reqSnap) => {
+                    const req = reqSnap.val();
+                    activeSec.classList.add('hidden');
 
+                    if (!req) {
+                        actionBox.innerHTML = `<button class="btn btn-success" onclick="sendJoinRequest('${teacherId}')">إرسال طلب انضمام لهذا المعلم 📩</button>`;
+                    } else if (req.status === 'pending') {
+                        actionBox.innerHTML = '<p style="color: var(--warning); font-weight: bold;">⏳ طلب الانضمام قيد المراجعة من قبل المعلم...</p>';
+                    } else if (req.status === 'approved') {
+                        actionBox.innerHTML = '<p style="color: var(--success); font-weight: bold;">✅ أنت منضم ومقبول لدى هذا المعلم.</p>';
+                        activeSec.classList.remove('hidden');
+                        loadExamsForStudent(teacherId);
+                    } else if (req.status === 'rejected') {
+                        actionBox.innerHTML = `<p style="color: var(--danger); font-weight: bold;">❌ تم رفض طلب انضمامك من هذا المعلم.</p>`;
+                    }
+                });
+            }
+        });
+    }
+
+    function sendJoinRequest(teacherId) {
+        db.ref(`join_requests/${teacherId}/${currentUser.phone}`).set({
+            studentName: currentUser.name,
+            parentPhone: currentUser.parentPhone,
+            status: 'pending',
+            timestamp: Date.now()
+        }).then(() => {
+            alert('✅ تم إرسال طلب الانضمام للمعلم بنجاح!');
+            checkStudentJoinStatus(teacherId);
+        });
+    }
+
+    function loadExamsForStudent(teacherId) {
+        const box = document.getElementById('student-active-exams-box');
         db.ref('active_exams/' + teacherId).on('value', (snap) => {
             currentExamData = snap.val();
             if (!currentExamData) {
