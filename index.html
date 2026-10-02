@@ -501,7 +501,6 @@
             container.innerHTML = hasSt ? html : '<p style="color: var(--text-muted);">لا يوجد طلاب مقبولة عضويتهم معك حالياً.</p>';
         });
 
-        // قسم تصحيح المقالي عند المعلم
         db.ref('exam_results').on('value', (snap) => {
             const allResults = snap.val() || {};
             const essayContainer = document.getElementById('teacher-essay-grading-list');
@@ -524,7 +523,6 @@
 
                         gradesHtml += `<tr><td>${stPhone}</td><td>${res.examTitle}</td><td>${res.mcqScore}</td><td><b>${essayScore}</b></td><td><b>${totalSum}</b> / ${res.maxTotal}</td><td>${statusBadge}</td></tr>`;
 
-                        // إذا كان هناك أسئلة مقالية ولم تُصحح بعد أو تحتاج مراجعة
                         if (res.answers) {
                             Object.keys(res.answers).forEach(qIdx => {
                                 let ans = res.answers[qIdx];
@@ -694,7 +692,6 @@
             document.getElementById('student-select-teacher').innerHTML = html;
         });
 
-        // جدول النتائج الشيك للطالب
         db.ref('exam_results/' + currentUser.phone).on('value', (snap) => {
             const data = snap.val() || {};
             let html = `<table><tr><th>اسم الامتحان</th><th>درجة الاختياري</th><th>درجة المقالي</th><th>المجموع الكلي</th><th>الحالة</th></tr>`;
