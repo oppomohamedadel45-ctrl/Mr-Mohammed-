@@ -186,9 +186,9 @@
             <div class="form-group"><label>عنوان الكورس:</label><input type="text" id="course-title" placeholder="كورس الباب الأول كيمياء..."></div>
             <div class="form-group"><label>سعر الكورس (بالنقاط):</label><input type="number" id="course-price" placeholder="مثال: 150 نقطة"></div>
             <div class="form-group">
-                <label>رابط فيديو يوتيوب (رابط فيديو الشرح غير المدرج):</label>
+                <label>رابط فيديو يوتيوب (يدعم الروابط العادية والقصيرة Shorts والمضمنة):</label>
                 <div class="flex-row">
-                    <input type="text" id="course-video-url" placeholder="https://www.youtube.com/embed/... أو رابط اليوتيوب العادي">
+                    <input type="text" id="course-video-url" placeholder="الصق أي رابط يوتيوب هنا (عادي أو شورت)...">
                     <button class="btn btn-youtube" style="width: 140px; margin-top: 0;" onclick="autoFormatYouTubeUrl()">تحويل الرابط 🔗</button>
                 </div>
             </div>
@@ -375,7 +375,7 @@
         alert('ℹ️ تم فتح استوديو يوتيوب في تبويب جديد:\n1. قم برفع الفيديو الخاص بك.\n2. اجعل الخصوصية "غير مدرج" (Unlisted).\n3. بعد اكتمال الرفع، انسخ رابط الفيديو (URL) وضعه في خانة رابط الفيديو بالمنصة ثم اضغط "تحويل الرابط".');
     }
 
-    // دالة تحويل رابط يوتيوب العادي إلى رابط تضمين (Embed) يعمل بسلاسة داخل المنصة
+    // دالة محسنة لتعرف المنصة على أي رابط يوتيوب (عادي، قصير Shorts، أو ايمبد Embed)
     function autoFormatYouTubeUrl() {
         const inputField = document.getElementById('course-video-url');
         let val = inputField.value.trim();
@@ -385,19 +385,29 @@
         }
 
         let videoId = '';
-        if (val.includes('youtu.be/')) {
+        
+        // فحص الروابط القصيرة (shorts)
+        if (val.includes('/shorts/')) {
+            videoId = val.split('/shorts/')[1].split('?')[0];
+        } 
+        // فحص روابط youtu.be المختصرة
+        else if (val.includes('youtu.be/')) {
             videoId = val.split('youtu.be/')[1].split('?')[0];
-        } else if (val.includes('watch?v=')) {
+        } 
+        // فحص الروابط العادية (watch?v=)
+        else if (val.includes('watch?v=')) {
             videoId = val.split('watch?v=')[1].split('&')[0];
-        } else if (val.includes('embed/')) {
+        } 
+        // فحص روابط التضمين (embed/)
+        else if (val.includes('embed/')) {
             videoId = val.split('embed/')[1].split('?')[0];
         }
 
         if (videoId) {
             inputField.value = `https://www.youtube.com/embed/${videoId}`;
-            alert('✅ تم تحويل وتنسيق رابط يوتيوب بنجاح ليصبح جاهزاً للعرض داخل المنصة!');
+            alert('✅ تم التعرف على الرابط وتنسيقه بنجاح (سواء كان عادياً أو شورتس) ليصبح جاهزاً للعرض داخل المنصة!');
         } else {
-            alert('⚠️ لم نتمكن من التعرف على معرف الفيديو تلقائياً، تأكد من لصق رابط يوتيوب صحيح.');
+            alert('⚠️ لم نتمكن من التعرف على معرف الفيديو تلقائياً، تأكد من لصق رابط يوتيوب صحيح (عادي أو شورت).');
         }
     }
 
