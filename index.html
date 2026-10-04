@@ -154,6 +154,12 @@
                 <div class="form-group"><label>كود المعلم:</label><input type="text" id="new-t-code" placeholder="TCH-103"></div>
                 <div class="form-group"><label>الرقم السري:</label><input type="password" id="new-t-pass" placeholder="كلمة المرور"></div>
                 <button class="btn btn-success" onclick="addNewTeacher()">إضافة المعلم رسمياً 🚀</button>
+
+                <hr style="border-color: var(--border-color); margin: 20px 0;">
+                <h4 style="color: var(--danger); margin-bottom: 10px;">🗑️ إدارة المعلمين (إزالة وحذف معلم من النظام):</h4>
+                <div id="admin-teachers-management-list" style="max-height: 220px; overflow-y: auto; border: 1px solid var(--border-color); padding: 10px; border-radius: 8px;">
+                    <p style="color: var(--text-muted);">جاري تحميل قائمة المعلمين...</p>
+                </div>
             </div>
         </div>
     </div>
@@ -226,7 +232,7 @@
 
         <!-- اختيار المعلم والكورسات المدفوعة بالنقاط -->
         <div class="card-box" style="border-color: var(--warning);">
-            <h3 style="color: var(--warning);">🏫 اختيار المعلم وكورساته المتاحة للشراء بالنقاط</h3>
+            <h3 style="color: var(--warning);">🏫 اختيار المعلم والكورسات المتاحة للشراء بالنقاط</h3>
             <div class="form-group">
                 <label>اختر المعلم من قائمة المعلمين المتاحين:</label>
                 <select id="student-select-teacher" onchange="checkStudentJoinStatus(this.value)">
@@ -366,6 +372,7 @@
             document.getElementById('box-admin-login').classList.remove('hidden');
             document.getElementById('tab-btn-admin').classList.add('active');
             loadAdminPendingStudents();
+            loadAdminTeachersList();
         }
     }
 
@@ -399,6 +406,39 @@
             });
             container.innerHTML = html;
         });
+    }
+
+    function loadAdminTeachersList() {
+        db.ref('teachers').on('value', (snapshot) => {
+            const teachers = snapshot.val() || {};
+            const container = document.getElementById('admin-teachers-management-list');
+            let html = '';
+            let hasT = false;
+
+            Object.keys(teachers).forEach(tId => {
+                let t = teachers[tId];
+                hasT = true;
+                html += `
+                    <div style="background: #111827; padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color);">
+                        <div><b>${t.name}</b> (${t.subject}) - الكود: <code>${tId}</code></div>
+                        <button class="btn btn-danger" style="width: auto; padding: 5px 12px; margin-top:0;" onclick="adminDeleteTeacher('${tId}')">إزالة وحذف 🗑️</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = hasT ? html : '<p style="color: var(--text-muted);">لا توجد حسابات معلمين مسجلة حالياً.</p>';
+        });
+    }
+
+    function adminDeleteTeacher(teacherId) {
+        if (confirm(`هل أنت متأكد من إزالة وحذف المعلم (كود: ${teacherId}) نهائياً من النظام؟`)) {
+            db.ref('teachers/' + teacherId).remove().then(() => {
+                db.ref('active_exams/' + teacherId).remove();
+                db.ref(`courses/${teacherId}`).remove();
+                db.ref(`teacher_students/${teacherId}`).remove();
+                db.ref(`join_requests/${teacherId}`).remove();
+                alert('🗑️️ تم حذف المعلم وكافة بياناته بنجاح.');
+            });
+        }
     }
 
     function adminRechargeWallet() {
@@ -516,7 +556,7 @@
                 document.getElementById('teacher-dashboard').classList.remove('hidden');
                 loadTeacherDashboardData();
             } else {
-                alert('❌ بيانات دخول المعلم غير صحيحة!');
+                alert('❌ بيانات دخول المعلم غير صحيحة أو تم حذف هذا الحساب من الإدارة!');
             }
         });
     }
