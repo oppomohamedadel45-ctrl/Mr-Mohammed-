@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>المنصة التعليمية الذكية - الإصدار المطور والناعم الشامل</title>
+    <title>المنصة التعليمية الذكية الشاملة - إصدار المنتدى والمجتمع التعليمي</title>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <!-- Google Fonts & Icons -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-deep: #090d16;
-            --bg-card: #111827;
-            --border-color: #1f2937;
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
-            --accent: #8b5cf6;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
+            --bg-deep: #05080f;
+            --bg-card: #0d1322;
+            --border-color: #1a2236;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --accent: #7c3aed;
+            --success: #059669;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
         }
 
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
@@ -31,213 +31,236 @@
             background: var(--bg-deep); 
             color: var(--text-main); 
             min-height: 100vh; 
-            padding: 20px;
-            background-image: radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
-                              radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 40%);
+            padding: 15px;
+            background-image: radial-gradient(circle at 15% 15%, rgba(37, 99, 235, 0.07) 0%, transparent 45%),
+                              radial-gradient(circle at 85% 85%, rgba(124, 58, 237, 0.07) 0%, transparent 45%);
         }
 
-        .container { max-width: 1050px; margin: 0 auto; background: var(--bg-card); padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); border: 1px solid var(--border-color); position: relative; overflow: hidden; }
+        .container { max-width: 1200px; margin: 0 auto; background: var(--bg-card); padding: 35px; border-radius: 24px; box-shadow: 0 25px 50px rgba(0,0,0,0.7); border: 1px solid var(--border-color); position: relative; overflow: hidden; }
         
         .container::before {
             content: '';
             position: absolute;
             top: 0; right: 0; left: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--accent), var(--success));
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--accent), var(--success), var(--warning));
         }
 
-        h1, h2, h3 { text-align: center; color: var(--text-main); margin-bottom: 20px; font-weight: 700; }
+        h1, h2, h3 { text-align: center; color: var(--text-main); margin-bottom: 20px; font-weight: 900; }
         
-        .tabs-nav { display: flex; gap: 8px; margin-bottom: 25px; justify-content: center; flex-wrap: wrap; background: #0b0f19; padding: 8px; border-radius: 12px; border: 1px solid var(--border-color); }
-        .tab-btn { background: transparent; border: none; color: var(--text-muted); padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 14px; }
-        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
+        .tabs-nav { display: flex; gap: 10px; margin-bottom: 30px; justify-content: center; flex-wrap: wrap; background: #080d1a; padding: 10px; border-radius: 14px; border: 1px solid var(--border-color); }
+        .tab-btn { background: transparent; border: none; color: var(--text-muted); padding: 12px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 15px; }
+        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); }
 
-        .form-group { margin-bottom: 18px; text-align: right; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-muted); font-size: 14px; }
-        input, select, textarea { width: 100%; padding: 12px 16px; background: #0b0f19; border: 1.5px solid var(--border-color); border-radius: 10px; color: white; font-size: 15px; outline: none; transition: 0.3s; }
-        input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(59, 130, 246, 0.3); }
+        .form-group { margin-bottom: 20px; text-align: right; }
+        label { display: block; margin-bottom: 8px; font-weight: 700; color: var(--text-muted); font-size: 14px; }
+        input, select, textarea { width: 100%; padding: 14px 18px; background: #080d1a; border: 1.5px solid var(--border-color); border-radius: 12px; color: white; font-size: 15px; outline: none; transition: 0.3s; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 12px rgba(37, 99, 235, 0.3); }
         
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.3s; background: var(--primary); color: white; margin-top: 10px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; background: var(--primary); color: white; margin-top: 10px; box-shadow: 0 4px 18px rgba(37, 99, 235, 0.3); }
         .btn:hover { background: var(--primary-hover); transform: translateY(-2px); }
-        .btn-success { background: var(--success); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
-        .btn-success:hover { background: #059669; }
-        .btn-danger { background: var(--danger); box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); }
-        .btn-danger:hover { background: #dc2626; }
+        .btn-success { background: var(--success); box-shadow: 0 4px 18px rgba(5, 150, 105, 0.3); }
+        .btn-success:hover { background: #047857; }
+        .btn-danger { background: var(--danger); box-shadow: 0 4px 18px rgba(220, 38, 38, 0.3); }
+        .btn-danger:hover { background: #b91c1c; }
         .btn-warning { background: var(--warning); color: #000; }
-        .btn-warning:hover { background: #d97706; }
-        .btn-youtube { background: #ff0000; box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3); color: white; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-warning:hover { background: #b45309; }
+        .btn-youtube { background: #ff0000; box-shadow: 0 4px 18px rgba(255, 0, 0, 0.3); color: white; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .btn-youtube:hover { background: #cc0000; }
 
-        .card-box { background: #0b0f19; border: 1px solid var(--border-color); padding: 22px; border-radius: 14px; margin-bottom: 20px; }
-        .timer-box { font-size: 1.4rem; font-weight: 900; color: var(--danger); text-align: center; margin-bottom: 15px; background: rgba(239, 68, 68, 0.1); padding: 12px; border-radius: 10px; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .card-box { background: #080d1a; border: 1px solid var(--border-color); padding: 25px; border-radius: 16px; margin-bottom: 25px; }
+        .timer-box { font-size: 1.5rem; font-weight: 900; color: var(--danger); text-align: center; margin-bottom: 20px; background: rgba(220, 38, 38, 0.1); padding: 15px; border-radius: 12px; border: 1px solid rgba(220, 38, 38, 0.3); }
         
         .hidden { display: none !important; }
-        .flex-row { display: flex; gap: 10px; }
+        .flex-row { display: flex; gap: 12px; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #0b0f19; border-radius: 10px; overflow: hidden; border: 1px solid var(--border-color); }
-        th, td { padding: 14px; text-align: center; border-bottom: 1px solid var(--border-color); font-size: 14px; }
-        th { background: #1f2937; color: var(--text-main); }
+        table { width: 100%; border-collapse: collapse; margin-top: 12px; background: #080d1a; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); }
+        th, td { padding: 16px; text-align: center; border-bottom: 1px solid var(--border-color); font-size: 14px; }
+        th { background: #1a2236; color: var(--text-main); }
 
-        .question-card-builder { background: #111827; border: 2px dashed var(--primary); padding: 20px; border-radius: 12px; margin-bottom: 15px; }
-        .badge { padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; display: inline-block; }
-        .badge-success { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.4); }
-        .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.4); }
+        .question-card-builder { background: #0d1322; border: 2px dashed var(--primary); padding: 22px; border-radius: 14px; margin-bottom: 18px; }
+        .badge { padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; display: inline-block; }
+        .badge-success { background: rgba(5, 150, 105, 0.2); color: var(--success); border: 1px solid rgba(5, 150, 105, 0.4); }
+        .badge-warning { background: rgba(217, 119, 6, 0.2); color: var(--warning); border: 1px solid rgba(217, 119, 6, 0.4); }
+
+        /* بانر الإشعارات العلوية */
+        #live-notification-banner {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 99999;
+            font-weight: 700;
+            font-size: 15px;
+            display: none;
+            border: 1px solid rgba(255,255,255,0.2);
+            animation: slideDown 0.4s ease;
+        }
+        @keyframes slideDown { from { top: -50px; opacity: 0; } to { top: 20px; opacity: 1; } }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
+    <!-- بانر الإشعارات العائم -->
+    <div id="live-notification-banner">مرحباً بك في المنصة التعليمية الذكية</div>
+
 <div class="container">
-    <div style="text-align: center; margin-bottom: 15px; font-size: 13px; color: var(--primary); font-weight: 700;">
-        إشراف: محمد عادل - النظام التعليمي المطور والحي 🚀
+    <div style="text-align: center; margin-bottom: 20px; font-size: 14px; color: var(--primary); font-weight: 900; letter-spacing: 0.5px;">
+        🌟 النظام التعليمي الشامل والمطور - إشراف محمد عادل 🚀
     </div>
 
-    <!-- شاشة تسجيل الدخول والباب الرئيسي -->
+    <!-- شاشة تسجيل الدخول الرئيسية -->
     <div id="login-screen">
         <h1 style="color: var(--primary);">المنصة التعليمية الذكية 🚀</h1>
-        <p style="text-align: center; color: var(--text-muted); margin-bottom: 25px;">نظّم مستقبلك الدراسي بكل سهولة وأمان</p>
+        <p style="text-align: center; color: var(--text-muted); margin-bottom: 30px;">بيئة تعليمية متكاملة لطلاب الثانوية العامة والمعلمين</p>
         
         <div class="tabs-nav">
             <button class="tab-btn active" id="tab-btn-student" onclick="switchLoginMode('student')">دخول طالب 👨‍🎓</button>
-            <button class="tab-btn" id="tab-btn-register" onclick="switchLoginMode('register')" style="color: var(--success);">📝 تسجيل جديد (للإدارة العامة)</button>
+            <button class="tab-btn" id="tab-btn-register" onclick="switchLoginMode('register')" style="color: var(--success);">📝 تسجيل حساب جديد</button>
             <button class="tab-btn" id="tab-btn-teacher" onclick="switchLoginMode('teacher')">دخول معلم 👨‍🏫</button>
-            <button class="tab-btn" id="tab-btn-admin" onclick="switchLoginMode('admin')" style="color: var(--danger);">👑 الإدارة العامة</button>
+            <button class="tab-btn" id="tab-btn-admin" onclick="switchLoginMode('admin')" style="color: var(--danger);">👑 الإدارة العليا</button>
         </div>
 
-        <!-- تسجيل حساب طالب جديد -->
-        <div id="box-student-register" class="card-box hidden" style="max-width: 550px; margin: 0 auto; border-color: var(--success);">
-            <h3 style="color: var(--success);">📝 طلب انضمام جديد (يُرسل للإدارة العامة)</h3>
-            <div class="form-group"><label>الاسم الرباعي:</label><input type="text" id="reg-name" placeholder="محمد أحمد محمود علي"></div>
+        <!-- تسجيل طالب جديد -->
+        <div id="box-student-register" class="card-box hidden" style="max-width: 580px; margin: 0 auto; border-color: var(--success);">
+            <h3 style="color: var(--success);">📝 طلب انضمام طالب جديد (بانتظار موافقة الإدارة)</h3>
+            <div class="form-group"><label>الاسم الرباعي:</label><input type="text" id="reg-name" placeholder="محمد أحمد محمود"></div>
             <div class="form-group"><label>رقم هاتف الطالب:</label><input type="tel" id="reg-phone" placeholder="01012345678" maxlength="11"></div>
             <div class="form-group"><label>رقم هاتف ولي الأمر:</label><input type="tel" id="reg-parent" placeholder="01112345678" maxlength="11"></div>
-            <div class="form-group"><label>الرقم السري المراد:</label><input type="password" id="reg-pass" placeholder="كلمة المرور الخاصة بك"></div>
-            <div class="form-group"><label>صورة شهادة الميلاد أو البطاقة:</label><input type="file" id="reg-file" accept="image/*"></div>
-            <button class="btn btn-success" onclick="submitStudentRegistration()">إرسال الطلب رسمياً للإدارة العامة 🚀</button>
+            <div class="form-group"><label>الرقم السري المراد:</label><input type="password" id="reg-pass" placeholder="كلمة المرور"></div>
+            <div class="form-group"><label>صورة شهادة الميلاد أو الهوية:</label><input type="file" id="reg-file" accept="image/*"></div>
+            <button class="btn btn-success" onclick="submitStudentRegistration()">إرسال طلب الانضمام رسمياً 🚀</button>
         </div>
 
         <!-- دخول الطالب -->
-        <div id="box-student-login" class="card-box" style="max-width: 480px; margin: 0 auto;">
-            <h3>👤 تسجيل دخول الطالب (بإذن الإدارة العامة)</h3>
+        <div id="box-student-login" class="card-box" style="max-width: 500px; margin: 0 auto;">
+            <h3>👤 تسجيل دخول الطالب</h3>
             <div class="form-group"><label>رقم الهاتف المعتمد:</label><input type="tel" id="st-login-phone" placeholder="01012345678" maxlength="11"></div>
             <div class="form-group"><label>الرقم السري:</label><input type="password" id="st-login-pass" placeholder="كلمة المرور"></div>
             <button class="btn" onclick="handleStudentLogin()">دخول لوحة الطالب 🎯</button>
         </div>
 
         <!-- دخول المعلم -->
-        <div id="box-teacher-login" class="card-box hidden" style="max-width: 480px; margin: 0 auto;">
-            <h3>👨‍🏫 بوابة المعلمين</h3>
-            <div class="form-group"><label>كود المعلم:</label><input type="text" id="teacher-login-id" placeholder="مثال: TCH-101"></div>
+        <div id="box-teacher-login" class="card-box hidden" style="max-width: 500px; margin: 0 auto;">
+            <h3>👨‍🏫 بوابة المعلمين الذكية</h3>
+            <div class="form-group"><label>كود المعلم التعريفي:</label><input type="text" id="teacher-login-id" placeholder="مثال: TCH-101"></div>
             <div class="form-group"><label>الرقم السري:</label><input type="password" id="teacher-login-pass" placeholder="كلمة المرور"></div>
-            <button class="btn btn-warning" onclick="handleTeacherLogin()">دخول لوحة المعلم ⚙️</button>
+            <button class="btn btn-warning" onclick="handleTeacherLogin()">دخول لوحة المعلم ⚙️️</button>
         </div>
 
         <!-- دخول الإدارة العامة -->
-        <div id="box-admin-login" class="card-box hidden" style="max-width: 650px; margin: 0 auto; border-color: var(--danger);">
+        <div id="box-admin-login" class="card-box hidden" style="max-width: 700px; margin: 0 auto; border-color: var(--danger);">
             <h3 style="color: var(--danger);">👑 لوحة تحكم الإدارة العامة (محمد عادل)</h3>
             <div id="admin-auth-box">
                 <div class="form-group"><label>كلمة سر الإدارة العليا:</label><input type="password" id="admin-pass-input" placeholder="أدخل كلمة السر..."></div>
                 <button class="btn btn-danger" onclick="verifyAdminAccess()">فك قفل لوحة الإدارة 🔓</button>
             </div>
             <div id="admin-panel-content" class="hidden">
-                <h4 style="color: var(--warning); margin-bottom: 10px;">📋 طلبات الطلاب المعلقة (تنتظر موافقتك للاعتماد):</h4>
-                <div id="admin-pending-students-list" style="max-height: 220px; overflow-y: auto; margin-bottom: 20px; border: 1px solid var(--border-color); padding: 10px; border-radius: 8px;">
-                    <p style="color: var(--text-muted);">لا توجد طلبات معلقة حالياً.</p>
+                <h4 style="color: var(--warning); margin-bottom: 12px;">📋 طلبات الطلاب المعلقة للتسجيل:</h4>
+                <div id="admin-pending-students-list" style="max-height: 240px; overflow-y: auto; margin-bottom: 20px; border: 1px solid var(--border-color); padding: 12px; border-radius: 10px;">
+                    <p style="color: var(--text-muted);">لا توجد طلبات معلقة.</p>
                 </div>
                 
                 <hr style="border-color: var(--border-color); margin: 20px 0;">
-                <h4 style="color: var(--success); margin-bottom: 10px;">💳 شحن محفظة الطلاب بالنقاط (1 جنيه = 1 نقطة):</h4>
-                <div class="form-group"><label>رقم هاتف الطالب المراد شحن رصيده:</label><input type="text" id="admin-wallet-phone" placeholder="01012345678"></div>
-                <div class="form-group"><label>عدد النقاط (المبلغ بالجنيه):</label><input type="number" id="admin-wallet-points" placeholder="مثال: 200"></div>
+                <h4 style="color: var(--success); margin-bottom: 12px;">💳 شحن محفظة الطلاب بالنقاط (1 جنيه = 1 نقطة):</h4>
+                <div class="form-group"><label>رقم هاتف الطالب:</label><input type="text" id="admin-wallet-phone" placeholder="01012345678"></div>
+                <div class="form-group"><label>عدد النقاط المراد إضافتها:</label><input type="number" id="admin-wallet-points" placeholder="مثال: 300"></div>
                 <button class="btn btn-success" onclick="adminRechargeWallet()">شحن المحفظة فوراً 💰</button>
 
                 <hr style="border-color: var(--border-color); margin: 20px 0;">
-                <h4 style="color: var(--primary); margin-bottom: 10px;">➕ إضافة معلم جديد للنظام:</h4>
+                <h4 style="color: var(--primary); margin-bottom: 12px;">➕ إضافة معلم جديد للنظام:</h4>
                 <div class="form-group"><label>اسم المعلم:</label><input type="text" id="new-t-name" placeholder="أستاذ المادة..."></div>
-                <div class="form-group"><label>المادة الدراسية:</label><input type="text" id="new-t-subject" placeholder="مثال: الكيمياء"></div>
-                <div class="form-group"><label>كود المعلم:</label><input type="text" id="new-t-code" placeholder="TCH-103"></div>
+                <div class="form-group"><label>المادة الدراسية:</label><input type="text" id="new-t-subject" placeholder="مثال: الفيزياء"></div>
+                <div class="form-group"><label>كود المعلم:</label><input type="text" id="new-t-code" placeholder="TCH-105"></div>
                 <div class="form-group"><label>الرقم السري:</label><input type="password" id="new-t-pass" placeholder="كلمة المرور"></div>
                 <button class="btn btn-success" onclick="addNewTeacher()">إضافة المعلم رسمياً 🚀</button>
 
                 <hr style="border-color: var(--border-color); margin: 20px 0;">
-                <h4 style="color: var(--danger); margin-bottom: 10px;">🗑️ إدارة المعلمين (إزالة وحذف معلم من النظام):</h4>
-                <div id="admin-teachers-management-list" style="max-height: 220px; overflow-y: auto; border: 1px solid var(--border-color); padding: 10px; border-radius: 8px;">
-                    <p style="color: var(--text-muted);">جاري تحميل قائمة المعلمين...</p>
+                <h4 style="color: var(--danger); margin-bottom: 12px;">🗑️ إدارة المعلمين المسجلين:</h4>
+                <div id="admin-teachers-management-list" style="max-height: 240px; overflow-y: auto; border: 1px solid var(--border-color); padding: 12px; border-radius: 10px;">
+                    <p style="color: var(--text-muted);">جاري التحميل...</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- لوحة تحكم المعلم -->
+    <!-- لوحة تحكم المعلم الشاملة -->
     <div id="teacher-dashboard" class="hidden">
         <h1 id="teacher-dash-title">لوحة تحكم المعلم</h1>
-        <p style="text-align:center; color: var(--success); font-weight:700; margin-bottom:20px;" id="teacher-welcome-msg"></p>
+        <p style="text-align:center; color: var(--success); font-weight:800; margin-bottom:25px;" id="teacher-welcome-msg"></p>
 
         <!-- محفظة المعلم -->
         <div class="card-box" style="border-color: var(--success); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
             <div>
-                <h3 style="color: var(--success); margin-bottom: 5px;">💰 محفظة المعلم (أرباح النقاط من اشتراكات الطلاب)</h3>
-                <p style="color: var(--text-muted); font-size: 13px;">تُضاف نقاط اشتراكات الطلاب في كورساتك هنا مباشرة.</p>
+                <h3 style="color: var(--success); margin-bottom: 5px;">💰 أرباح محفظة المعلم (نقاط اشتراكات الكورسات)</h3>
+                <p style="color: var(--text-muted); font-size: 13px;">تُضاف نقاط اشتراكات الطلاب هنا بصورة فورية وآلية.</p>
             </div>
-            <div style="background: rgba(16, 185, 129, 0.1); padding: 15px 25px; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.3); text-align: center; margin-top: 10px;">
-                <span style="font-size: 13px; color: var(--text-muted); display: block;">رصيد أرباح محفظتك:</span>
-                <span id="teacher-wallet-display" style="font-size: 1.8rem; font-weight: 900; color: var(--success);">0 نقطة</span>
+            <div style="background: rgba(5, 150, 105, 0.1); padding: 15px 30px; border-radius: 14px; border: 1px solid rgba(5, 150, 105, 0.3); text-align: center; margin-top: 10px;">
+                <span style="font-size: 13px; color: var(--text-muted); display: block;">الرصيد المتاح للسحب:</span>
+                <span id="teacher-wallet-display" style="font-size: 2rem; font-weight: 900; color: var(--success);">0 نقطة</span>
             </div>
         </div>
         
-        <!-- الزر الحي لرفع فيديو يوتيوب غير مدرج آلياً -->
-        <div class="card-box" style="border-color: #ff0000; background: rgba(255, 0, 0, 0.03);">
-            <h3 style="color: #ff0000;">🔴 زر رفع الفيديو الحي والمباشر إلى يوتيوب</h3>
-            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 12px;">انقر على الزر أدناه لاختيار الفيديو ورفعه مباشرة لاستوديو يوتيوب (كـ "غير مدرج" تلقائياً)، ثم انسخ رابطه وضعه في الكورس:</p>
+        <!-- زر رفع الفيديو الحي لاستوديو يوتيوب -->
+        <div class="card-box" style="border-color: #ff0000; background: rgba(255, 0, 0, 0.02);">
+            <h3 style="color: #ff0000;">🔴 رفع الفيديو المباشر إلى استوديو يوتيوب (غير مدرج تلقائياً)</h3>
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">انقر على الزر لفتح استوديو يوتيوب، اختر الفيديو واجعله غير مدرج، ثم انسخ رابطه وضعه مباشرة بالكورس:</p>
             <button class="btn btn-youtube" onclick="openYouTubeStudioUpload()">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                اضغط هنا لرفع الفيديو مباشرة إلى استوديو يوتيوب 🎬
+                افتح استوديو يوتيوب للرفع السريع 🎬
             </button>
         </div>
 
-        <!-- إنشاء كورس شامل -->
+        <!-- بناء ونشر الكورس المطور -->
         <div class="card-box" style="border-color: var(--primary);">
-            <h3 style="color: var(--primary);">📚 إنشاء كورس شامل (عدة فيديوهات + صور + امتحانات خاصة)</h3>
-            <div class="form-group"><label>عنوان الكورس الشامل:</label><input type="text" id="course-title" placeholder="كورس الباب الأول كيمياء..."></div>
-            <div class="form-group"><label>سعر الكورس (بالنقاط):</label><input type="number" id="course-price" placeholder="مثال: 150 نقطة"></div>
-            <div class="form-group"><label>وصف مختصر للكورس:</label><textarea id="course-desc" rows="2" placeholder="محتويات الكورس..."></textarea></div>
+            <h3 style="color: var(--primary);">📚 إنشاء وتصميم كورس تعليمي شامل</h3>
+            <div class="form-group"><label>عنوان الكورس:</label><input type="text" id="course-title" placeholder="مثال: الباب الأول في المادة..."></div>
+            <div class="form-group"><label>سعر الكورس (بالنقاط):</label><input type="number" id="course-price" placeholder="مثال: 150"></div>
+            <div class="form-group"><label>وصف الكورس:</label><textarea id="course-desc" rows="2" placeholder="محتويات الكورس التفصيلية..."></textarea></div>
 
-            <hr style="border-color: var(--border-color); margin: 15px 0;">
-            <h4 style="color: var(--accent);">🎥 إضافة فيديوهات للكورس</h4>
+            <hr style="border-color: var(--border-color); margin: 20px 0;">
+            <h4 style="color: var(--accent);">🎥 فيديوهات الكورس</h4>
             <div id="course-videos-container"></div>
-            <button class="btn btn-warning" style="margin-bottom: 15px;" onclick="addCourseVideoField()">➕ إضافة فيديو جديد للكورس</button>
+            <button class="btn btn-warning" style="margin-bottom: 15px;" onclick="addCourseVideoField()">➕ إضافة فيديو جديد</button>
 
-            <hr style="border-color: var(--border-color); margin: 15px 0;">
-            <h4 style="color: var(--success);">🖼️ إضافة صور وتوضيحات للكورس</h4>
+            <hr style="border-color: var(--border-color); margin: 20px 0;">
+            <h4 style="color: var(--success);">🖼️ صور ومخططات الكورس التوضيحية</h4>
             <div id="course-images-container"></div>
-            <button class="btn btn-warning" style="margin-bottom: 15px;" onclick="addCourseImageField()">➕ إضافة صورة توضيحية للكورس</button>
+            <button class="btn btn-warning" style="margin-bottom: 15px;" onclick="addCourseImageField()">➕ إضافة صورة توضيحية</button>
 
-            <hr style="border-color: var(--border-color); margin: 15px 0;">
-            <h4 style="color: var(--danger);">📝 امتحان خاص بهذا الكورس</h4>
-            <div class="form-group"><label>عنوان الامتحان التابع للكورس:</label><input type="text" id="course-exam-title" placeholder="اختبار تقييمي على الكورس..."></div>
+            <hr style="border-color: var(--border-color); margin: 20px 0;">
+            <h4 style="color: var(--danger);">📝 امتحان تقييمي تابع للكورس</h4>
+            <div class="form-group"><label>عنوان الامتحان:</label><input type="text" id="course-exam-title" placeholder="اختبار على الكورس الشامل..."></div>
             <div id="course-exam-questions-container"></div>
             <div class="flex-row" style="margin-bottom: 15px;">
-                <button class="btn btn-warning" onclick="addCourseExamQuestion('mcq')">➕ إضافة سؤال اختياري للامتحان</button>
-                <button class="btn btn-success" onclick="addCourseExamQuestion('essay')">➕ إضافة سؤال مقالي للامتحان</button>
+                <button class="btn btn-warning" onclick="addCourseExamQuestion('mcq')">➕ إضافة سؤال اختياري</button>
+                <button class="btn btn-success" onclick="addCourseExamQuestion('essay')">➕ إضافة سؤال مقالي</button>
             </div>
             <div class="form-group"><label>وقت الامتحان (بالدقائق):</label><input type="number" id="course-exam-time" value="30" min="1"></div>
 
-            <button class="btn btn-success" style="margin-top: 20px; padding: 14px;" onclick="publishAdvancedCourse()">نشر الكورس الشامل بكافة محتوياته للطلاب 🚀</button>
+            <button class="btn btn-success" style="margin-top: 15px; padding: 16px;" onclick="publishAdvancedCourse()">نشر الكورس الشامل فوراً للطلاب 🚀</button>
         </div>
 
         <!-- إدارة كورسات المعلم -->
         <div class="card-box" style="border-color: var(--warning);">
-            <h3 style="color: var(--warning);">⚙️ إدارة كورساتك (الحذف وقفل الكورس عن أي طالب مشترك)</h3>
-            <div id="teacher-manage-courses-list"><p style="color: var(--text-muted);">جاري تحميل كورساتك...</p></div>
+            <h3 style="color: var(--warning);">⚙️ إدارة الكورسات (قفل أو حذف الكورس)</h3>
+            <div id="teacher-manage-courses-list"><p style="color: var(--text-muted);">جاري تحميل الكورسات...</p></div>
         </div>
 
-        <!-- تقرير متابعة نسبة فتح الفيديوهات للطلاب -->
+        <!-- تقرير تفاعل الطلاب مع الفيديوهات -->
         <div class="card-box" style="border-color: var(--accent);">
-            <h3 style="color: var(--accent);">📊 تقرير متابعة فتح الفيديوهات ونسب تفاعل الطلاب</h3>
-            <div id="teacher-video-analytics-list"><p style="color: var(--text-muted);">جاري تحميل بيانات تفاعل الطلاب...</p></div>
+            <h3 style="color: var(--accent);">📊 تقرير فتح ومشاهدة الفيديوهات للطلاب</h3>
+            <div id="teacher-video-analytics-list"><p style="color: var(--text-muted);">جاري التحميل...</p></div>
         </div>
 
         <div class="card-box" style="border-color: var(--warning);">
-            <h3 style="color: var(--warning);">📥 طلبات انضمام الطلاب إليك</h3>
-            <div id="teacher-join-requests-list"><p style="color: var(--text-muted);">جاري فحص الطلبات...</p></div>
+            <h3 style="color: var(--warning);">📥 طلبات انضمام الطلاب المعلقة</h3>
+            <div id="teacher-join-requests-list"><p style="color: var(--text-muted);">لا توجد طلبات انضمام حالياً.</p></div>
         </div>
 
         <div class="card-box" style="border-color: var(--success);">
@@ -246,37 +269,37 @@
         </div>
 
         <div class="card-box" style="border-color: var(--accent);">
-            <h3 style="color: var(--accent);">✍️ تصحيح إجابات الأسئلة المقالية للطلاب</h3>
-            <div id="teacher-essay-grading-list"><p style="color: var(--text-muted);">لا توجد إجابات مقالية مرسلة تنتظر التصحيح حالياً.</p></div>
+            <h3 style="color: var(--accent);">✍️ تصحيح الأسئلة المقالية للطلاب</h3>
+            <div id="teacher-essay-grading-list"><p style="color: var(--text-muted);">لا توجد إجابات مقالية تنتظر التصحيح.</p></div>
         </div>
 
         <button class="btn btn-danger" onclick="logoutSession()">تسجيل الخروج الآمن 🚪</button>
     </div>
 
-    <!-- لوحة الطالب -->
+    <!-- لوحة تحكم الطالب الشاملة -->
     <div id="student-dashboard" class="hidden">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
             <h3>أهلاً بك يا بطل، <span id="welcome-name" style="color: var(--primary);"></span> 🎯</h3>
-            <button class="btn btn-danger" style="width: auto; padding: 6px 15px;" onclick="logoutSession()">تسجيل الخروج</button>
+            <button class="btn btn-danger" style="width: auto; padding: 8px 20px;" onclick="logoutSession()">تسجيل الخروج</button>
         </div>
 
         <!-- الملف الشخصي والمحفظة -->
         <div class="card-box" style="border-color: var(--primary); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
             <div>
-                <h3 style="color: var(--primary); margin-bottom: 5px;">📇 ملفي الشخصي ومحفظتي</h3>
+                <h3 style="color: var(--primary); margin-bottom: 5px;">📇 ملف الطالب ومحفظة النقاط</h3>
                 <div id="student-profile-info" style="font-size: 14px; line-height: 1.6;"></div>
             </div>
-            <div style="background: rgba(59, 130, 246, 0.1); padding: 15px 25px; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.3); text-align: center; margin-top: 10px;">
+            <div style="background: rgba(37, 99, 235, 0.1); padding: 15px 30px; border-radius: 14px; border: 1px solid rgba(37, 99, 235, 0.3); text-align: center; margin-top: 10px;">
                 <span style="font-size: 13px; color: var(--text-muted); display: block;">رصيد محفظتك الحالي:</span>
-                <span id="student-wallet-display" style="font-size: 1.8rem; font-weight: 900; color: var(--success);">0 نقطة</span>
+                <span id="student-wallet-display" style="font-size: 2rem; font-weight: 900; color: var(--success);">0 نقطة</span>
             </div>
         </div>
 
         <!-- اختيار المعلم -->
         <div class="card-box" style="border-color: var(--warning);">
-            <h3 style="color: var(--warning);">🏫 اختيار المعلم والكورسات الشاملة</h3>
+            <h3 style="color: var(--warning);">🏫 اختر المعلم لعرض كورساته الشاملة</h3>
             <div class="form-group">
-                <label>اختر المعلم من قائمة المعلمين المتاحين:</label>
+                <label>اختر المعلم من القائمة:</label>
                 <select id="student-select-teacher" onchange="checkStudentJoinStatus(this.value)">
                     <option value="">-- اختر معلماً --</option>
                 </select>
@@ -286,35 +309,51 @@
 
         <!-- قسم الكورسات الشاملة -->
         <div id="student-courses-section" class="hidden card-box" style="border-color: var(--accent);">
-            <h3 style="color: var(--accent);">🎓 الكورسات الشاملة للمعلم (فيديوهات متعددة، صور، وامتحانات)</h3>
+            <h3 style="color: var(--accent);">🎓 الكورسات المتاحة (فيديوهات، صور، وامتحانات)</h3>
             <div id="student-courses-list-box"><p style="color: var(--text-muted);">جاري تحميل الكورسات...</p></div>
+        </div>
+
+        <!-- قسم منتدى النقاش الطلابي الجديد -->
+        <div class="card-box" style="border-color: var(--success); margin-top: 25px;">
+            <h3 style="color: var(--success);">💬 منتدى ومجتمع الطلاب التفاعلي</h3>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">شارك استفساراتك، ناقش زملاءك، وتبادل الخبرات الأكاديمية بحرية.</p>
+            
+            <div style="background: #05080f; padding: 20px; border-radius: 14px; border: 1px solid var(--border-color); margin-bottom: 25px;">
+                <h4 style="color: var(--primary); margin-bottom: 12px;">✍️ إضافة منشور جديد في المنتدى</h4>
+                <div class="form-group"><label>عنوان المنشور أو السؤال:</label><input type="text" id="forum-post-title" placeholder="مثال: استفسار بخصوص مسألة في الباب الثاني..."></div>
+                <div class="form-group"><label>محتوى المنشور:</label><textarea id="forum-post-content" rows="3" placeholder="اكتب تفاصيل سؤالك أو موضوعك هنا..."></textarea></div>
+                <button class="btn btn-success" onclick="publishForumPost()">نشر في المنتدى العام 🚀</button>
+            </div>
+
+            <h4 style="color: var(--accent); margin-bottom: 15px;">📋 أحدث منشورات ومناقشات الطلاب:</h4>
+            <div id="forum-posts-container"><p style="color: var(--text-muted);">جاري تحميل المنشورات...</p></div>
         </div>
 
         <!-- سجل الدرجات -->
         <div id="student-active-section" class="hidden">
             <div class="card-box">
-                <h3>📊 سجل درجاتك ونتائجك بالكامل</h3>
-                <div id="student-history-table-container"><p style="color: var(--text-muted);">لا توجد اختبارات مؤداة حتى الآن.</p></div>
+                <h3>📊 سجل درجاتك ونتائج الامتحانات</h3>
+                <div id="student-history-table-container"><p style="color: var(--text-muted);">لا توجد اختبارات مؤداة بعد.</p></div>
             </div>
         </div>
     </div>
 
-    <!-- نافذة عرض محتوى الكورس الشامل -->
-    <div id="course-view-modal" class="hidden" style="position: fixed; top: 0; right: 0; left: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 999; display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;">
-        <div style="background: var(--bg-card); width: 100%; max-width: 900px; max-height: 90vh; overflow-y: auto; padding: 25px; border-radius: 15px; border: 1px solid var(--border-color); position: relative;">
+    <!-- نافذة عرض محتوى الكورس -->
+    <div id="course-view-modal" class="hidden" style="position: fixed; top: 0; right: 0; left: 0; bottom: 0; background: rgba(0,0,0,0.88); z-index: 999; display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;">
+        <div style="background: var(--bg-card); width: 100%; max-width: 950px; max-height: 90vh; overflow-y: auto; padding: 30px; border-radius: 20px; border: 1px solid var(--border-color); position: relative;">
             <h2 id="modal-course-title" style="color: var(--primary); margin-bottom: 15px;"></h2>
             <div id="modal-course-content"></div>
-            <button class="btn btn-danger" style="margin-top: 25px;" onclick="closeCourseModal()">إغلاق الكورس ❌</button>
+            <button class="btn btn-danger" style="margin-top: 25px;" onclick="closeCourseModal()">إغلاق النافذة ❌</button>
         </div>
     </div>
 
-    <!-- نافذة عرض الفيديو الفردي (شاشة كاملة ومقيد تماماً) -->
-    <div id="video-modal" class="hidden" style="position: fixed; top: 0; right: 0; left: 0; bottom: 0; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px;">
-        <div style="width: 100%; max-width: 1200px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 0 10px;">
-            <h3 id="modal-video-title" style="color: var(--primary); font-size: 1.1rem; margin: 0;">مشاهدة الفيديو التعليمي</h3>
-            <button class="btn btn-danger" style="width: auto; padding: 6px 16px; margin: 0;" onclick="closeVideoModal()">إغلاق الشاشة ❌</button>
+    <!-- نافذة عرض الفيديو الفردي المقيد -->
+    <div id="video-modal" class="hidden" style="position: fixed; top: 0; right: 0; left: 0; bottom: 0; background: rgba(0,0,0,0.96); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px;">
+        <div style="width: 100%; max-width: 1250px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 0 10px;">
+            <h3 id="modal-video-title" style="color: var(--primary); font-size: 1.2rem; margin: 0;">مشاهدة الفيديو التعليمي</h3>
+            <button class="btn btn-danger" style="width: auto; padding: 8px 18px; margin: 0;" onclick="closeVideoModal()">إغلاق الشاشة ❌</button>
         </div>
-        <div id="modal-video-container" style="position: relative; width: 100%; max-width: 1200px; height: 80vh; overflow: hidden; border-radius: 12px; background: #000; border: 1px solid var(--border-color);"></div>
+        <div id="modal-video-container" style="position: relative; width: 100%; max-width: 1250px; height: 82vh; overflow: hidden; border-radius: 14px; background: #000; border: 1px solid var(--border-color);"></div>
     </div>
 
     <!-- شاشة أداء الامتحان -->
@@ -322,31 +361,30 @@
         <div class="timer-box">الوقت المتبقي: <span id="timer-display">00:00</span></div>
         <div class="card-box">
             <h2 id="exam-view-title">عنوان الامتحان</h2>
-            <div style="margin: 10px 0; font-weight: 700; color: var(--primary);"><span id="question-counter">السؤال 1 من 1</span></div>
-            <p id="exam-view-text" style="font-size: 1.2rem; margin: 15px 0; font-weight: 600; line-height: 1.6;"></p>
-            <div id="exam-question-image-box" style="margin-bottom: 15px; text-align: center;"></div>
+            <div style="margin: 12px 0; font-weight: 800; color: var(--primary);"><span id="question-counter">السؤال 1 من 1</span></div>
+            <p id="exam-view-text" style="font-size: 1.25rem; margin: 18px 0; font-weight: 700; line-height: 1.6;"></p>
+            <div id="exam-question-image-box" style="margin-bottom: 18px; text-align: center;"></div>
             <div id="exam-question-content-box"></div>
             <div class="flex-row" style="margin-top: 25px;">
-                <button class="btn" style="background: #374151;" onclick="prevQuestion()">⬅ السابق</button>
+                <button class="btn" style="background: #1f2937;" onclick="prevQuestion()">⬅ السابق</button>
                 <button class="btn" onclick="nextQuestion()">التالي ➡</button>
             </div>
-            <!-- زر التسليم الآمن -->
-            <button class="btn btn-success" style="margin-top: 15px;" onclick="confirmAndSubmitExam()">تسليم الامتحان نهائياً 📩</button>
+            <button class="btn btn-success" style="margin-top: 18px; padding: 16px;" onclick="confirmAndSubmitExam()">تسليم الامتحان نهائياً 📩</button>
         </div>
     </div>
 
     <!-- شاشة عرض النتيجة -->
-    <div id="exam-result-screen" class="hidden" style="text-align: center; padding: 20px;">
-        <div class="card-box" style="max-width: 600px; margin: 0 auto; border-color: var(--success);">
-            <h1 style="color: var(--success); margin-bottom: 10px;">🎉 تم إنهاء الامتحان وتسليمه بنجاح!</h1>
-            <div style="background: rgba(16, 185, 129, 0.1); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(16, 185, 129, 0.3);">
+    <div id="exam-result-screen" class="hidden" style="text-align: center; padding: 25px;">
+        <div class="card-box" style="max-width: 650px; margin: 0 auto; border-color: var(--success);">
+            <h1 style="color: var(--success); margin-bottom: 12px;">🎉 تم إنهاء الامتحان وتسليمه بنجاح!</h1>
+            <div style="background: rgba(5, 150, 105, 0.1); padding: 25px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(5, 150, 105, 0.3);">
                 <h3 id="res-exam-title">اسم الامتحان</h3>
-                <div style="font-size: 2.5rem; font-weight: 900; color: var(--success); margin: 15px 0;">
+                <div style="font-size: 2.8rem; font-weight: 900; color: var(--success); margin: 18px 0;">
                     <span id="res-score-val">0</span> / <span id="res-total-val">0</span>
                 </div>
-                <p id="res-status-note" style="color: var(--warning); font-weight: 700;"></p>
+                <p id="res-status-note" style="color: var(--warning); font-weight: 800;"></p>
             </div>
-            <button class="btn btn-success" onclick="returnToStudentDashboard()" style="max-width: 250px; margin: 0 auto;">العودة للوحة الرئيسية 🏠</button>
+            <button class="btn btn-success" onclick="returnToStudentDashboard()" style="max-width: 280px; margin: 0 auto;">العودة للوحة الرئيسية 🏠</button>
         </div>
     </div>
 </div>
@@ -359,8 +397,8 @@
     const db = firebase.database();
 
     const defaultTeachers = {
-        "TCH-101": { name: "أستاذ التاريخ", subject: "التاريخ", password: "Hist@2026_#1", role: "teacher" },
-        "TCH-102": { name: "أستاذ الجغرافيا", subject: "الجغرافيا", password: "Geog@2026_#2", role: "teacher" }
+        "TCH-101": { name: "أستاذ الفيزياء", subject: "الفيزياء", password: "Phys@2026_#1", role: "teacher" },
+        "TCH-102": { name: "أستاذ الكيمياء", subject: "الكيمياء", password: "Chem@2026_#2", role: "teacher" }
     };
 
     let currentUser = null;
@@ -391,10 +429,16 @@
         }
     };
 
-    // الدالة الخاصة بالزر الحي لرفع الفيديو آلياً لاستوديو يوتيوب
+    function showLiveNotification(msg) {
+        const banner = document.getElementById('live-notification-banner');
+        banner.innerText = msg;
+        banner.style.display = 'block';
+        setTimeout(() => { banner.style.display = 'none'; }, 4500);
+    }
+
     function openYouTubeStudioUpload() {
         window.open('https://studio.youtube.com/', '_blank');
-        alert('ℹ️ تم فتح استوديو يوتيوب في تبويب جديد:\n1. اختر الفيديو من جهازك وقم برفعه.\n2. اجعل الخصوصية تلقائياً "غير مدرج" (Unlisted).\n3. بعد اكتمال الرفع، انسخ رابط الفيديو (URL) وضعه فوراً في خانة الفيديو بالكورس هنا.');
+        showLiveNotification('🎥 تم فتح استوديو يوتيوب في تبويب جديد للرفع السريع!');
     }
 
     function autoFormatYouTubeUrl(val) {
@@ -442,6 +486,7 @@
         if (pass === 'Mohamed opo9067rtypro hkjlpo') {
             document.getElementById('admin-auth-box').classList.add('hidden');
             document.getElementById('admin-panel-content').classList.remove('hidden');
+            showLiveNotification('🔓 تم فك قفل لوحة الإدارة العامة بنجاح');
         } else {
             alert('❌ كلمة سر الإدارة غير صحيحة!');
         }
@@ -456,11 +501,10 @@
             Object.keys(data).forEach(phone => {
                 let st = data[phone];
                 html += `
-                    <div style="background: #111827; padding: 14px; border-radius: 10px; margin-bottom: 12px; border: 1px solid var(--border-color);">
-                        <b>الاسم الرباعي:</b> ${st.name} <br>
-                        <b>هاتف الطالب:</b> ${st.phone} | <b>هاتف ولي الأمر:</b> ${st.parentPhone}<br>
-                        <div style="margin: 10px 0;"><img src="${st.fileData}" style="max-width:180px; max-height:110px; border-radius:6px; border:1px solid var(--border-color);" alt="المستند"></div>
-                        <button class="btn btn-success" style="padding: 6px 15px; font-size: 13px; display:inline-block; width:auto;" onclick="approveStudent('${phone}')">موافقة واعتماد من الإدارة ✅</button>
+                    <div style="background: #05080f; padding: 15px; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);">
+                        <b>الاسم:</b> ${st.name} | <b>الهاتف:</b> ${st.phone} | <b>ولي الأمر:</b> ${st.parentPhone}<br>
+                        <div style="margin: 10px 0;"><img src="${st.fileData}" style="max-width:180px; max-height:110px; border-radius:8px; border:1px solid var(--border-color);" alt="المستند"></div>
+                        <button class="btn btn-success" style="padding: 6px 15px; font-size: 13px; display:inline-block; width:auto;" onclick="approveStudent('${phone}')">موافقة واعتماد ✅</button>
                         <button class="btn btn-danger" style="padding: 6px 15px; font-size: 13px; display:inline-block; width:auto; margin-right:8px;" onclick="rejectStudent('${phone}')">رفض ❌</button>
                     </div>
                 `;
@@ -480,23 +524,21 @@
                 let t = teachers[tId];
                 hasT = true;
                 html += `
-                    <div style="background: #111827; padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color);">
+                    <div style="background: #05080f; padding: 12px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color);">
                         <div><b>${t.name}</b> (${t.subject}) - الكود: <code>${tId}</code></div>
-                        <button class="btn btn-danger" style="width: auto; padding: 5px 12px; margin-top:0;" onclick="adminDeleteTeacher('${tId}')">إزالة وحذف 🗑️</button>
+                        <button class="btn btn-danger" style="width: auto; padding: 5px 12px; margin-top:0;" onclick="adminDeleteTeacher('${tId}')">إزالة 🗑️</button>
                     </div>
                 `;
             });
-            container.innerHTML = hasT ? html : '<p style="color: var(--text-muted);">لا توجد حسابات معلمين مسجلة حالياً.</p>';
+            container.innerHTML = hasT ? html : '<p style="color: var(--text-muted);">لا توجد حسابات معلمين مسجلة.</p>';
         });
     }
 
     function adminDeleteTeacher(teacherId) {
-        if (confirm(`هل أنت متأكد من إزالة وحذف المعلم (كود: ${teacherId}) نهائياً من النظام؟`)) {
+        if (confirm(`هل أنت متأكد من حذف المعلم (كود: ${teacherId}) نهائياً؟`)) {
             db.ref('teachers/' + teacherId).remove().then(() => {
                 db.ref(`courses/${teacherId}`).remove();
-                db.ref(`teacher_students/${teacherId}`).remove();
-                db.ref(`join_requests/${teacherId}`).remove();
-                alert('🗑 تم حذف المعلم وكافة بياناته بنجاح.');
+                showLiveNotification('🗑 تم حذف المعلم بنجاح.');
             });
         }
     }
@@ -511,14 +553,14 @@
 
         db.ref('authorized_students/' + phone).once('value', (snap) => {
             if (!snap.exists()) {
-                alert('❌ هذا الطالب غير مسجل أو غير معتمد في النظام!');
+                alert('❌ هذا الطالب غير مسجل أو غير معتمد!');
                 return;
             }
             db.ref('wallets/' + phone).once('value', (wSnap) => {
                 let currentWallet = wSnap.val() || { points: 0 };
                 let newBalance = currentWallet.points + pointsToAdd;
                 db.ref('wallets/' + phone).set({ points: newBalance }).then(() => {
-                    alert(`✅ تمت عملية الشحن بنجاح! تم إضافة ${pointsToAdd} نقطة لرصيد الطالب.`);
+                    showLiveNotification(`✅ تمت إضافة ${pointsToAdd} نقطة لرصيد الطالب بنجاح!`);
                     document.getElementById('admin-wallet-phone').value = '';
                     document.getElementById('admin-wallet-points').value = '';
                 });
@@ -534,7 +576,7 @@
         const fileInput = document.getElementById('reg-file');
 
         if (!name || !phone || !parentPhone || !password || fileInput.files.length === 0) {
-            alert('برجاء استيفاء جميع البيانات ورفع صورة شهادة الميلاد أو البطاقة!');
+            alert('برجاء استيفاء جميع البيانات ورفع صورة الهوية!');
             return;
         }
 
@@ -544,7 +586,7 @@
             db.ref('pending_students/' + phone).set({
                 name, phone, parentPhone, password, fileData, timestamp: Date.now()
             }).then(() => {
-                alert('✅ تم إرسال طلبك للإدارة العامة بنجاح، انتظر الموافقة للدخول!');
+                showLiveNotification('✅ تم إرسال طلبك للإدارة العامة بنجاح!');
                 switchLoginMode('student');
             });
         };
@@ -557,7 +599,7 @@
             if (st) {
                 db.ref('authorized_students/' + phone).set(st).then(() => {
                     db.ref('pending_students/' + phone).remove().then(() => {
-                        alert('✅ تم اعتماد الطالب بنجاح، ويمكنه الآن تسجيل الدخول!');
+                        showLiveNotification('✅ تم اعتماد الطالب بنجاح!');
                     });
                 });
             }
@@ -566,7 +608,7 @@
 
     function rejectStudent(phone) {
         db.ref('pending_students/' + phone).remove().then(() => {
-            alert('❌ تم رفض الطلب وحذفه.');
+            showLiveNotification('❌ تم رفض الطلب.');
         });
     }
 
@@ -577,7 +619,7 @@
         const password = document.getElementById('new-t-pass').value.trim();
         if (!name || !code || !password || !subject) { alert('أدخل كافة بيانات المعلم بدقة!'); return; }
         db.ref('teachers/' + code).set({ name, subject, code, password, role: 'teacher' }).then(() => {
-            alert('✅ تمت إضافة المعلم الجديد بنجاح!');
+            showLiveNotification('✅ تمت إضافة المعلم الجديد بنجاح!');
         });
     }
 
@@ -597,7 +639,7 @@
                     alert('❌ الرقم السري غير صحيح!');
                 }
             } else {
-                alert('❌ هذا الرقم غير مصرح له بالدخول من الإدارة العامة!');
+                alert('❌ هذا الرقم غير مصرح له بالدخول من الإدارة!');
             }
         });
     }
@@ -616,7 +658,7 @@
                 document.getElementById('teacher-dashboard').classList.remove('hidden');
                 loadTeacherDashboardData();
             } else {
-                alert('❌ بيانات دخول المعلم غير صحيحة أو تم حذف هذا الحساب من الإدارة!');
+                alert('❌ بيانات دخول المعلم غير صحيحة!');
             }
         });
     }
@@ -630,12 +672,12 @@
         const container = document.getElementById('course-videos-container');
         const div = document.createElement('div');
         div.className = 'form-group';
-        div.style.background = '#111827';
-        div.style.padding = '12px';
-        div.style.borderRadius = '8px';
+        div.style.background = '#05080f';
+        div.style.padding = '14px';
+        div.style.borderRadius = '10px';
         div.style.border = '1px solid var(--border-color)';
         div.innerHTML = `
-            <label>عنوان الفيديو:</label><input type="text" class="c-video-title" placeholder="مثال: الدرس الأول - مقدمة الباب">
+            <label>عنوان الفيديو:</label><input type="text" class="c-video-title" placeholder="مثال: الدرس الأول - شرح الباب">
             <label style="margin-top:8px;">رابط يوتيوب (غير مدرج):</label><input type="text" class="c-video-url" placeholder="الصق الرابط هنا...">
         `;
         container.appendChild(div);
@@ -645,12 +687,12 @@
         const container = document.getElementById('course-images-container');
         const div = document.createElement('div');
         div.className = 'form-group';
-        div.style.background = '#111827';
-        div.style.padding = '12px';
-        div.style.borderRadius = '8px';
+        div.style.background = '#05080f';
+        div.style.padding = '14px';
+        div.style.borderRadius = '10px';
         div.style.border = '1px solid var(--border-color)';
         div.innerHTML = `
-            <label>عنوان الصورة أو المخطط:</label><input type="text" class="c-img-title" placeholder="مثال: ملخص قوانين الباب الأول">
+            <label>عنوان الصورة أو المخطط:</label><input type="text" class="c-img-title" placeholder="مثال: خريطة ذهنية للدرس">
             <label style="margin-top:8px;">اختر الصورة:</label><input type="file" class="c-img-file" accept="image/*">
         `;
         container.appendChild(div);
@@ -665,9 +707,9 @@
 
         if (type === 'mcq') {
             qCard.innerHTML = `
-                <h4 style="color: var(--primary); margin-bottom: 10px;">سؤال اختياري رقم (${qCount})</h4>
-                <div class="form-group"><label>نص السؤال:</label><textarea class="m-q-text" rows="2" placeholder="اكتب نص السؤال هنا..."></textarea></div>
-                <div class="form-group"><label>إدراج صورة توضيحية للسؤال (اختياري):</label><input type="file" class="m-q-img" accept="image/*"></div>
+                <h4 style="color: var(--primary); margin-bottom: 10px;">سؤال اختياري (${qCount})</h4>
+                <div class="form-group"><label>نص السؤال:</label><textarea class="m-q-text" rows="2" placeholder="اكتب السؤال هنا..."></textarea></div>
+                <div class="form-group"><label>صورة توضيحية للسؤال (اختياري):</label><input type="file" class="m-q-img" accept="image/*"></div>
                 <div class="form-group"><input type="text" class="m-opt-0" placeholder="الخيار الأول"></div>
                 <div class="form-group"><input type="text" class="m-opt-1" placeholder="الخيار الثاني"></div>
                 <div class="form-group"><input type="text" class="m-opt-2" placeholder="الخيار الثالث"></div>
@@ -676,9 +718,9 @@
             `;
         } else {
             qCard.innerHTML = `
-                <h4 style="color: var(--success); margin-bottom: 10px;">سؤال مقالي رقم (${qCount})</h4>
-                <div class="form-group"><label>نص السؤال المقالي:</label><textarea class="m-q-text" rows="2" placeholder="اكتب نص السؤال المقالي..."></textarea></div>
-                <div class="form-group"><label>إدراج صورة توضيحية (اختياري):</label><input type="file" class="m-q-img" accept="image/*"></div>
+                <h4 style="color: var(--success); margin-bottom: 10px;">سؤال مقالي (${qCount})</h4>
+                <div class="form-group"><label>نص السؤال المقالي:</label><textarea class="m-q-text" rows="2" placeholder="اكتب السؤال المقالي..."></textarea></div>
+                <div class="form-group"><label>صورة توضيحية (اختياري):</label><input type="file" class="m-q-img" accept="image/*"></div>
             `;
         }
         container.appendChild(qCard);
@@ -789,7 +831,7 @@
         db.ref(`courses/${currentUser.id}/${courseId}`).set({
             title, price, desc, videos, images, examData, timestamp: Date.now()
         }).then(() => {
-            alert('🚀 تم نشر الكورس الشامل بكافة محتوياته بنجاح!');
+            showLiveNotification('🚀 تم نشر الكورس الشامل بنجاح!');
             document.getElementById('course-title').value = '';
             document.getElementById('course-price').value = '';
             document.getElementById('course-desc').value = '';
@@ -801,8 +843,8 @@
     }
 
     function loadTeacherDashboardData() {
-        document.getElementById('teacher-dash-title').innerText = `لوحة تحكم المعلم: ${currentUser.name}`;
-        document.getElementById('teacher-welcome-msg').innerText = `التخصص: ${currentUser.subject} | الكود التعريفي: ${currentUser.id}`;
+        document.getElementById('teacher-dash-title').innerText = `لوحة المعلم: ${currentUser.name}`;
+        document.getElementById('teacher-welcome-msg').innerText = `التخصص: ${currentUser.subject} | الكود: ${currentUser.id}`;
 
         db.ref('teacher_wallets/' + currentUser.id).on('value', (snap) => {
             const w = snap.val() || { points: 0 };
@@ -820,22 +862,22 @@
                 hasC = true;
                 let isLocked = c.locked === true;
                 html += `
-                    <div style="background: #111827; padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 10px;">
-                        <div><b>${c.title}</b> (السعر: ${c.price} نقطة) | الحالة: <span style="color: ${isLocked ? 'var(--danger)' : 'var(--success)'};">${isLocked ? 'مقفل 🔒' : 'متاح للطلاب ✅'}</span></div>
-                        <div style="display: flex; gap: 5px;">
-                            <button class="btn ${isLocked ? 'btn-success' : 'btn-warning'}" style="width: auto; padding: 5px 12px; margin-top:0;" onclick="toggleCourseLock('${currentUser.id}', '${cId}', ${isLocked})">${isLocked ? 'فتح الكورس 🔓' : 'قفل الكورس 🔒'}</button>
-                            <button class="btn btn-danger" style="width: auto; padding: 5px 12px; margin-top:0;" onclick="deleteTeacherCourse('${currentUser.id}', '${cId}')">حذف 🗑️</button>
+                    <div style="background: #05080f; padding: 14px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 10px;">
+                        <div><b>${c.title}</b> (السعر: ${c.price} نقطة) | الحالة: <span style="color: ${isLocked ? 'var(--danger)' : 'var(--success)'};">${isLocked ? 'مقفل 🔒' : 'متاح ✅'}</span></div>
+                        <div style="display: flex; gap: 6px;">
+                            <button class="btn ${isLocked ? 'btn-success' : 'btn-warning'}" style="width: auto; padding: 6px 14px; margin-top:0;" onclick="toggleCourseLock('${currentUser.id}', '${cId}', ${isLocked})">${isLocked ? 'فتح 🔓' : 'قفل 🔒'}</button>
+                            <button class="btn btn-danger" style="width: auto; padding: 6px 14px; margin-top:0;" onclick="deleteTeacherCourse('${currentUser.id}', '${cId}')">حذف 🗑️</button>
                         </div>
                     </div>
                 `;
             });
-            container.innerHTML = hasC ? html : '<p style="color: var(--text-muted);">لا توجد كورسات منشورة حالياً.</p>';
+            container.innerHTML = hasC ? html : '<p style="color: var(--text-muted);">لا توجد كورسات منشورة.</p>';
         });
 
         db.ref(`video_analytics/${currentUser.id}`).on('value', (snap) => {
             const analytics = snap.val() || {};
             const container = document.getElementById('teacher-video-analytics-list');
-            let html = `<table><tr><th>هاتف الطالب</th><th>عنوان الفيديو</th><th>نسبة المشاهدة / الحالة</th></tr>`;
+            let html = `<table><tr><th>هاتف الطالب</th><th>عنوان الفيديو</th><th>حالة المشاهدة</th></tr>`;
             let hasData = false;
 
             Object.keys(analytics).forEach(stPhone => {
@@ -843,11 +885,11 @@
                 Object.keys(studentVideos).forEach(vKey => {
                     let vData = studentVideos[vKey];
                     hasData = true;
-                    html += `<tr><td>${stPhone}</td><td>${vData.videoTitle}</td><td><span class="badge badge-success">تم الفتح والمشاهدة (${vData.percent || '100%'})</span></td></tr>`;
+                    html += `<tr><td>${stPhone}</td><td>${vData.videoTitle}</td><td><span class="badge badge-success">تم الفتح (${vData.percent || '100%'})</span></td></tr>`;
                 });
             });
             html += `</table>`;
-            container.innerHTML = hasData ? html : '<p style="color: var(--text-muted);">لا توجد بيانات مسجلة لفتح الفيديوهات حتى الآن.</p>';
+            container.innerHTML = hasData ? html : '<p style="color: var(--text-muted);">لا توجد بيانات مشاهدة حتى الآن.</p>';
         });
 
         db.ref('join_requests/' + currentUser.id).on('value', (snap) => {
@@ -861,17 +903,17 @@
                 if (req.status === 'pending') {
                     hasReq = true;
                     html += `
-                        <div style="background: #111827; padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color);">
+                        <div style="background: #05080f; padding: 12px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color);">
                             <div><b>${req.studentName}</b> (هاتف: ${stPhone})</div>
                             <div>
-                                <button class="btn btn-success" style="padding: 5px 12px; font-size: 13px; display:inline-block; width:auto;" onclick="acceptStudentJoin('${currentUser.id}', '${stPhone}')">قبول ✅</button>
-                                <button class="btn btn-danger" style="padding: 5px 12px; font-size: 13px; display:inline-block; width:auto; margin-right:5px;" onclick="rejectStudentJoin('${currentUser.id}', '${stPhone}')">رفض ❌</button>
+                                <button class="btn btn-success" style="padding: 6px 14px; font-size: 13px; display:inline-block; width:auto;" onclick="acceptStudentJoin('${currentUser.id}', '${stPhone}')">قبول ✅</button>
+                                <button class="btn btn-danger" style="padding: 6px 14px; font-size: 13px; display:inline-block; width:auto; margin-right:6px;" onclick="rejectStudentJoin('${currentUser.id}', '${stPhone}')">رفض ❌</button>
                             </div>
                         </div>
                     `;
                 }
             });
-            container.innerHTML = hasReq ? html : '<p style="color: var(--text-muted);">لا توجد طلبات انضمام جديدة معلقة.</p>';
+            container.innerHTML = hasReq ? html : '<p style="color: var(--text-muted);">لا توجد طلبات انضمام معلقة.</p>';
         });
 
         db.ref('teacher_students/' + currentUser.id).on('value', (snap) => {
@@ -886,7 +928,7 @@
                 html += `<tr><td>${st.name}</td><td>${st.phone}</td><td>${st.parentPhone}</td></tr>`;
             });
             html += '</table>';
-            container.innerHTML = hasSt ? html : '<p style="color: var(--text-muted);">لا يوجد طلاب مقبولة عضويتهم معك حالياً.</p>';
+            container.innerHTML = hasSt ? html : '<p style="color: var(--text-muted);">لا توجد طلاب مقبولة معك.</p>';
         });
 
         db.ref('exam_results').on('value', (snap) => {
@@ -905,13 +947,13 @@
                             if (ans.type === 'essay' && (!ans.graded || ans.graded === false)) {
                                 hasEssay = true;
                                 essayHtml += `
-                                    <div style="background: #111827; padding: 15px; border-radius: 10px; margin-bottom: 12px; border: 1px solid var(--border-color);">
+                                    <div style="background: #05080f; padding: 15px; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);">
                                         <b>هاتف الطالب:</b> ${stPhone} | <b>الامتحان:</b> ${res.examTitle}<br>
-                                        <p style="margin: 8px 0; color: var(--primary);"><b>نص إجابة الطالب:</b> ${ans.text || 'لم يتم كتابة نص'}</p>
-                                        ${ans.fileData ? `<div style="margin: 10px 0;"><img src="${ans.fileData}" style="max-width:200px; max-height:130px; border-radius:6px; border:1px solid var(--border-color);" alt="صورة إجابة الطالب"></div>` : ''}
+                                        <p style="margin: 8px 0; color: var(--primary);"><b>إجابة الطالب:</b> ${ans.text || 'بدون نص'}</p>
+                                        ${ans.fileData ? `<div style="margin: 10px 0;"><img src="${ans.fileData}" style="max-width:200px; max-height:130px; border-radius:8px; border:1px solid var(--border-color);" alt="إجابة الطالب"></div>` : ''}
                                         <div class="flex-row" style="align-items: center; margin-top: 10px;">
-                                            <input type="number" id="grade_input_${stPhone}_${examId}_${qIdx}" placeholder="أدخل الدرجة" style="max-width: 180px;" min="0">
-                                            <button class="btn btn-success" style="padding: 10px 20px; font-size: 14px; width: auto; margin-top:0;" onclick="submitEssayGrade('${stPhone}', '${examId}', '${qIdx}')">اعتماد و إرسال الدرجة للطالب 🎯</button>
+                                            <input type="number" id="grade_input_${stPhone}_${examId}_${qIdx}" placeholder="الدرجة" style="max-width: 150px;" min="0">
+                                            <button class="btn btn-success" style="padding: 10px 18px; font-size: 14px; width: auto; margin-top:0;" onclick="submitEssayGrade('${stPhone}', '${examId}', '${qIdx}')">اعتماد وإرسال للطالب 🎯</button>
                                         </div>
                                     </div>
                                 `;
@@ -920,27 +962,27 @@
                     }
                 });
             });
-            essayContainer.innerHTML = hasEssay ? essayHtml : '<p style="color: var(--text-muted);">لا توجد إجابات مقالية مرسلة تنتظر التصحيح حالياً.</p>';
+            essayContainer.innerHTML = hasEssay ? essayHtml : '<p style="color: var(--text-muted);">لا توجد إجابات مقالية تنتظر التصحيح.</p>';
         });
     }
 
     function toggleCourseLock(teacherId, courseId, currentLockStatus) {
         db.ref(`courses/${teacherId}/${courseId}/locked`).set(!currentLockStatus).then(() => {
-            alert(!currentLockStatus ? '🔒 تم قفل الكورس عن الطلاب بنجاح.' : '🔓 تم فتح الكورس وإتاحته للطلاب بنجاح.');
+            showLiveNotification(!currentLockStatus ? '🔒 تم قفل الكورس.' : '🔓 تم فتح الكورس وإتاحته.');
         });
     }
 
     function deleteTeacherCourse(teacherId, courseId) {
         if (confirm('هل أنت متأكد من حذف هذا الكورس نهائياً؟')) {
             db.ref(`courses/${teacherId}/${courseId}`).remove().then(() => {
-                alert('🗑️ تم حذف الكورس بنجاح.');
+                showLiveNotification('🗑️ تم حذف الكورس بنجاح.');
             });
         }
     }
 
     function submitEssayGrade(stPhone, examId, qIdx) {
         const inputVal = document.getElementById(`grade_input_${stPhone}_${examId}_${qIdx}`).value;
-        if (inputVal === '') { alert('برجاء إدخال درجة السؤال المقالي!'); return; }
+        if (inputVal === '') { alert('أدخل درجة السؤال المقالي!'); return; }
         const essayScore = parseFloat(inputVal);
 
         db.ref(`exam_results/${stPhone}/${examId}`).once('value', (snap) => {
@@ -954,7 +996,7 @@
                 res.status = 'مصحح بالكامل ✅';
 
                 db.ref(`exam_results/${stPhone}/${examId}`).set(res).then(() => {
-                    alert('✅ تمت إضافة وإرسال الدرجة بنجاح للطالب!');
+                    showLiveNotification('✅ تم إرسال الدرجة للطالب بنجاح!');
                 });
             }
         });
@@ -970,7 +1012,7 @@
                     parentPhone: req.parentPhone
                 }).then(() => {
                     db.ref(`join_requests/${teacherId}/${studentPhone}/status`).set('approved').then(() => {
-                        alert('✅ تم قبول الطالب بنجاح.');
+                        showLiveNotification('✅ تم قبول انضمام الطالب.');
                     });
                 });
             }
@@ -979,7 +1021,7 @@
 
     function rejectStudentJoin(teacherId, studentPhone) {
         db.ref(`join_requests/${teacherId}/${studentPhone}/status`).set('rejected').then(() => {
-            alert('❌ تم رفض طلب الانضمام.');
+            showLiveNotification('❌ تم رفض طلب الانضمام.');
         });
     }
 
@@ -1020,7 +1062,105 @@
                 html += `<tr><td>${r.examTitle}</td><td>${r.mcqScore}</td><td>${totalDisplay}</td><td><span class="badge badge-success">${r.status}</span></td></tr>`;
             });
             html += `</table>`;
-            document.getElementById('student-history-table-container').innerHTML = hasRes ? html : '<p style="color: var(--text-muted);">لا توجد اختبارات مؤداة مسجلة بعد.</p>';
+            document.getElementById('student-history-table-container').innerHTML = hasRes ? html : '<p style="color: var(--text-muted);">لا توجد اختبارات مؤداة بعد.</p>';
+        });
+
+        loadForumPosts();
+    }
+
+    function publishForumPost() {
+        const title = document.getElementById('forum-post-title').value.trim();
+        const content = document.getElementById('forum-post-content').value.trim();
+        if (!title || !content) {
+            alert('برجاء كتابة عنوان ومحتوى المنشور أولاً!');
+            return;
+        }
+
+        const postId = 'post_' + Date.now();
+        db.ref('forum_posts/' + postId).set({
+            id: postId,
+            authorName: currentUser.name,
+            authorPhone: currentUser.phone,
+            title: title,
+            content: content,
+            timestamp: Date.now(),
+            likes: 0
+        }).then(() => {
+            showLiveNotification('🚀 تم نشر سؤالك في المنتدى بنجاح!');
+            document.getElementById('forum-post-title').value = '';
+            document.getElementById('forum-post-content').value = '';
+        });
+    }
+
+    function loadForumPosts() {
+        db.ref('forum_posts').on('value', (snapshot) => {
+            const posts = snapshot.val() || {};
+            const container = document.getElementById('forum-posts-container');
+            let html = '';
+            let hasPosts = false;
+
+            Object.keys(posts).sort((a,b) => posts[b].timestamp - posts[a].timestamp).forEach(postId => {
+                let p = posts[postId];
+                hasPosts = true;
+                html += `
+                    <div style="background: #05080f; padding: 18px; border-radius: 12px; margin-bottom: 14px; border: 1px solid var(--border-color);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <b style="color: var(--primary);">👤 ${p.authorName}</b>
+                            <span style="color: var(--text-muted); font-size: 12px;">${new Date(p.timestamp).toLocaleString('ar-EG')}</span>
+                        </div>
+                        <h4 style="color: var(--text-main); margin-bottom: 6px;">${p.title}</h4>
+                        <p style="color: var(--text-muted); font-size: 14px; line-height: 1.6; margin-bottom: 12px;">${p.content}</p>
+                        
+                        <div style="border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 10px;">
+                            <h5 style="color: var(--success); margin-bottom: 8px; font-size: 13px;">💬 الردود والتعليقات:</h5>
+                            <div id="comments_list_${postId}" style="margin-bottom: 10px; max-height: 180px; overflow-y: auto;"></div>
+                            <div class="flex-row">
+                                <input type="text" id="comment_input_${postId}" placeholder="اكتب رداً أو تعليقاً..." style="font-size: 13px; padding: 10px;">
+                                <button class="btn btn-success" style="width: auto; padding: 8px 18px; margin-top:0; font-size: 13px;" onclick="addCommentToPost('${postId}')">إرسال 📩</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                loadCommentsForPost(postId);
+            });
+            container.innerHTML = hasPosts ? html : '<p style="color: var(--text-muted);">لا توجد منشورات في المنتدى حتى الآن. كن أول المشاركين!</p>';
+        });
+    }
+
+    function addCommentToPost(postId) {
+        const input = document.getElementById(`comment_input_${postId}`);
+        const text = input.value.trim();
+        if (!text) return;
+
+        const commentId = 'com_' + Date.now();
+        db.ref(`forum_comments/${postId}/${commentId}`).set({
+            authorName: currentUser.name,
+            text: text,
+            timestamp: Date.now()
+        }).then(() => {
+            input.value = '';
+            showLiveNotification('💬 تم إضافة ردك بنجاح!');
+        });
+    }
+
+    function loadCommentsForPost(postId) {
+        db.ref(`forum_comments/${postId}`).on('value', (snap) => {
+            const comments = snap.val() || {};
+            const listContainer = document.getElementById(`comments_list_${postId}`);
+            if (!listContainer) return;
+            let html = '';
+            let hasC = false;
+
+            Object.keys(comments).forEach(cId => {
+                let c = comments[cId];
+                hasC = true;
+                html += `
+                    <div style="background: #080d1a; padding: 8px 12px; border-radius: 8px; margin-bottom: 6px; border: 1px solid var(--border-color); font-size: 13px;">
+                        <b style="color: var(--accent);">${c.authorName}:</b> ${c.text}
+                    </div>
+                `;
+            });
+            listContainer.innerHTML = hasC ? html : '<p style="color: var(--text-muted); font-size: 12px;">لا توجد تعليقات بعد.</p>';
         });
     }
 
@@ -1038,7 +1178,7 @@
 
         db.ref(`teacher_students/${teacherId}/${currentUser.phone}`).once('value', (snap) => {
             if (snap.exists()) {
-                actionBox.innerHTML = '<p style="color: var(--success); font-weight: 750;">✅ أنت منضم رسمياً لهذا المعلم.</p>';
+                actionBox.innerHTML = '<p style="color: var(--success); font-weight: 800;">✅ أنت منضم رسمياً لهذا المعلم.</p>';
                 activeSec.classList.remove('hidden');
                 coursesSec.classList.remove('hidden');
                 loadCoursesForStudent(teacherId);
@@ -1051,14 +1191,14 @@
                     if (!req) {
                         actionBox.innerHTML = `<button class="btn btn-success" onclick="sendJoinRequest('${teacherId}')">إرسال طلب انضمام لهذا المعلم 📩</button>`;
                     } else if (req.status === 'pending') {
-                        actionBox.innerHTML = '<p style="color: var(--warning); font-weight: 750;">⏳ طلب الانضمام قيد مراجعة المعلم...</p>';
+                        actionBox.innerHTML = '<p style="color: var(--warning); font-weight: 800;">⏳ طلب الانضمام قيد مراجعة المعلم...</p>';
                     } else if (req.status === 'approved') {
-                        actionBox.innerHTML = '<p style="color: var(--success); font-weight: 750;">✅ أنت منضم رسمياً لهذا المعلم.</p>';
+                        actionBox.innerHTML = '<p style="color: var(--success); font-weight: 800;">✅ أنت منضم رسمياً لهذا المعلم.</p>';
                         activeSec.classList.remove('hidden');
                         coursesSec.classList.remove('hidden');
                         loadCoursesForStudent(teacherId);
                     } else if (req.status === 'rejected') {
-                        actionBox.innerHTML = '<p style="color: var(--danger); font-weight: 750;">❌ تم رفض طلب انضمامك.</p>';
+                        actionBox.innerHTML = '<p style="color: var(--danger); font-weight: 800;">❌ تم رفض طلب انضمامك.</p>';
                     }
                 });
             }
@@ -1072,7 +1212,7 @@
             status: 'pending',
             timestamp: Date.now()
         }).then(() => {
-            alert('✅ تم إرسال طلب الانضمام بنجاح!');
+            showLiveNotification('✅ تم إرسال طلب الانضمام بنجاح!');
             checkStudentJoinStatus(teacherId);
         });
     }
@@ -1093,18 +1233,18 @@
                     let isBought = purchased[cId] === true;
 
                     html += `
-                        <div style="background: #111827; padding: 15px; border-radius: 10px; margin-bottom: 12px; border: 1px solid var(--border-color);">
+                        <div style="background: #05080f; padding: 18px; border-radius: 12px; margin-bottom: 14px; border: 1px solid var(--border-color);">
                             <h4>${c.title}</h4>
-                            <p style="color: var(--text-muted); margin: 5px 0;">${c.desc || ''}</p>
-                            <p style="color: var(--warning); font-weight: 700; margin-bottom: 10px;">السعر: ${c.price} نقطة</p>
+                            <p style="color: var(--text-muted); margin: 6px 0;">${c.desc || ''}</p>
+                            <p style="color: var(--warning); font-weight: 800; margin-bottom: 12px;">السعر: ${c.price} نقطة</p>
                             ${isBought ? 
-                                `<button class="btn btn-success" style="width: auto; padding: 8px 20px;" onclick='openCourseModal("${teacherId}", ${JSON.stringify(c)})'>دخول لمحتوى الكورس (فيديوهات، صور، امتحان) 📺</button>` :
-                                `<button class="btn btn-warning" style="width: auto; padding: 8px 20px;" onclick="buyCourse('${teacherId}','${cId}',${c.price})">شراء الكورس بالنقاط 💳</button>`
+                                `<button class="btn btn-success" style="width: auto; padding: 8px 22px;" onclick='openCourseModal("${teacherId}", ${JSON.stringify(c)})'>دخول لمحتوى الكورس الشامل 📺</button>` :
+                                `<button class="btn btn-warning" style="width: auto; padding: 8px 22px;" onclick="buyCourse('${teacherId}','${cId}',${c.price})">شراء الكورس بالنقاط 💳</button>`
                             }
                         </div>
                     `;
                 });
-                box.innerHTML = hasCourses ? html : '<p style="color: var(--text-muted);">لا توجد كورسات متاحة حالياً (قد تكون مقفلة من المعلم).</p>';
+                box.innerHTML = hasCourses ? html : '<p style="color: var(--text-muted);">لا توجد كورسات متاحة حالياً.</p>';
             });
         });
     }
@@ -1113,11 +1253,11 @@
         db.ref('wallets/' + currentUser.phone).once('value', (snap) => {
             let wallet = snap.val() || { points: 0 };
             if (wallet.points < price) {
-                alert('❌ رصيد محفظتك غير كافٍ! برجاء التواصل مع الإدارة العامة لشحن رصيد نقاطك.');
+                alert('❌ رصيد محفظتك غير كافٍ! تواصل مع الإدارة لشحن رصيدك.');
                 return;
             }
 
-            if (confirm(`هل أنت متأكد من خصم ${price} نقطة من محفظتك لشراء هذا الكورس؟`)) {
+            if (confirm(`هل أنت متأكد من خصم ${price} نقطة لشراء الكورس؟`)) {
                 let newBalance = wallet.points - price;
                 db.ref('wallets/' + currentUser.phone).set({ points: newBalance }).then(() => {
                     db.ref(`student_purchases/${currentUser.phone}/${courseId}`).set(true).then(() => {
@@ -1125,7 +1265,7 @@
                             let tWallet = tWSnap.val() || { points: 0 };
                             let newTPoints = tWallet.points + price;
                             db.ref('teacher_wallets/' + teacherId).set({ points: newTPoints }).then(() => {
-                                alert('🎉 مبروك! تم شراء الكورس بنجاح وتم إيداع النقاط لمحفظة المعلم.');
+                                showLiveNotification('🎉 تم شراء الكورس بنجاح!');
                                 location.reload();
                             });
                         });
@@ -1144,39 +1284,39 @@
         if (course.videos && course.videos.length > 0) {
             course.videos.forEach((v, idx) => {
                 contentHtml += `
-                    <div style="background: #0b0f19; padding: 12px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                    <div style="background: #05080f; padding: 14px; border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
                         <span><b>فيديو (${idx + 1}):</b> ${v.title}</span>
-                        <button class="btn btn-success" style="width: auto; padding: 6px 15px; margin-top:0;" onclick="openVideoWithTracking('${teacherId}', '${v.title}', '${v.url}')">مشاهدة الفيديو بشاشة كاملة 📺</button>
+                        <button class="btn btn-success" style="width: auto; padding: 6px 16px; margin-top:0;" onclick="openVideoWithTracking('${teacherId}', '${v.title}', '${v.url}')">مشاهدة بشاشة كاملة 📺</button>
                     </div>
                 `;
             });
         } else {
-            contentHtml += `<p style="color: var(--text-muted);">لا توجد فيديوهات مرفقة في هذا الكورس.</p>`;
+            contentHtml += `<p style="color: var(--text-muted);">لا توجد فيديوهات مرفقة.</p>`;
         }
 
         contentHtml += `<h3 style="color: var(--success); margin-top:20px;">🖼️ صور ومخططات الكورس:</h3>`;
         if (course.images && course.images.length > 0) {
             course.images.forEach(img => {
                 contentHtml += `
-                    <div style="background: #0b0f19; padding: 12px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-color);">
+                    <div style="background: #05080f; padding: 14px; border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--border-color);">
                         <b>${img.title}</b><br>
-                        <img src="${img.data}" style="max-width:100%; border-radius:8px; margin-top:10px; border:1px solid var(--border-color);" alt="مخطط الكورس">
+                        <img src="${img.data}" style="max-width:100%; border-radius:10px; margin-top:10px; border:1px solid var(--border-color);" alt="مخطط">
                     </div>
                 `;
             });
         } else {
-            contentHtml += `<p style="color: var(--text-muted);">لا توجد صور مرفقة في هذا الكورس.</p>`;
+            contentHtml += `<p style="color: var(--text-muted);">لا توجد صور مرفقة.</p>`;
         }
 
-        contentHtml += `<h3 style="color: var(--danger); margin-top:20px;">📝 اختبار الكورس:</h3>`;
+        contentHtml += `<h3 style="color: var(--danger); margin-top:20px;">📝 اختبار الكورس الشامل:</h3>`;
         if (course.examData) {
             contentHtml += `
-                <div style="background: #0b0f19; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <div style="background: #05080f; padding: 16px; border-radius: 10px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <b>${course.examData.title}</b><br>
                         <span style="color: var(--text-muted); font-size: 13px;">عدد الأسئلة: ${course.examData.questions.length}</span>
                     </div>
-                    <button class="btn btn-success" style="width: auto; padding: 8px 20px; margin-top:0;" onclick='startCourseExam(${JSON.stringify(course.examData)})'>ابدأ امتحان الكورس 🚀</button>
+                    <button class="btn btn-success" style="width: auto; padding: 8px 22px; margin-top:0;" onclick='startCourseExam(${JSON.stringify(course.examData)})'>ابدأ الامتحان 🚀</button>
                 </div>
             `;
         } else {
@@ -1235,7 +1375,7 @@
         
         const imgBox = document.getElementById('exam-question-image-box');
         if (q.imgData) {
-            imgBox.innerHTML = `<img src="${q.imgData}" style="max-width:100%; max-height:220px; border-radius:8px; border:1px solid var(--border-color);" alt="صورة السؤال">`;
+            imgBox.innerHTML = `<img src="${q.imgData}" style="max-width:100%; max-height:240px; border-radius:10px; border:1px solid var(--border-color);" alt="صورة السؤال">`;
         } else {
             imgBox.innerHTML = '';
         }
@@ -1246,13 +1386,13 @@
         if (q.type === 'mcq') {
             q.options.forEach((opt, idx) => {
                 let checked = (studentAnswers[currentQIndex] && studentAnswers[currentQIndex].choice === idx) ? 'checked' : '';
-                html += `<label style="display:block; padding:12px; margin:8px 0; background:#0b0f19; border: 1px solid var(--border-color); border-radius:8px; cursor:pointer;"><input type="radio" name="st_mcq" value="${idx}" ${checked} onchange="studentAnswers[${currentQIndex}] = {type: 'mcq', choice: ${idx}}"> ${opt}</label>`;
+                html += `<label style="display:block; padding:14px; margin:10px 0; background:#05080f; border: 1px solid var(--border-color); border-radius:10px; cursor:pointer;"><input type="radio" name="st_mcq" value="${idx}" ${checked} onchange="studentAnswers[${currentQIndex}] = {type: 'mcq', choice: ${idx}}"> ${opt}</label>`;
             });
         } else {
             let savedText = (studentAnswers[currentQIndex] && studentAnswers[currentQIndex].text) ? studentAnswers[currentQIndex].text : '';
             html = `
-                <div class="form-group"><label>إجابتك المقالية:</label><textarea rows="3" placeholder="اكتب إجابتك هنا..." oninput="saveEssayText(${currentQIndex}, this.value)">${savedText}</textarea></div>
-                <div class="form-group"><label>إرفاق صورة الإجابة (اختياري):</label><input type="file" accept="image/*" onchange="saveEssayImage(${currentQIndex}, this)"></div>
+                <div class="form-group"><label>إجابتك المقالية:</label><textarea rows="3" placeholder="اكتب الإجابة..." oninput="saveEssayText(${currentQIndex}, this.value)">${savedText}</textarea></div>
+                <div class="form-group"><label>إرفاق صورة إجابة (اختياري):</label><input type="file" accept="image/*" onchange="saveEssayImage(${currentQIndex}, this)"></div>
             `;
         }
         box.innerHTML = html;
@@ -1294,7 +1434,7 @@
     }
 
     function confirmAndSubmitExam() {
-        if (confirm('هل أنت متأكد من رغبتك في تسليم الامتحان نهائياً؟')) {
+        if (confirm('هل أنت متأكد من تسليم الامتحان نهائياً؟')) {
             submitExamPipeline();
         }
     }
@@ -1334,9 +1474,9 @@
             document.getElementById('res-exam-title').innerText = currentExamData.title;
             document.getElementById('res-score-val').innerText = mcqScore;
             document.getElementById('res-total-val').innerText = record.maxTotal;
-            document.getElementById('res-status-note').innerText = hasEssay ? '📌 درجة الاختياري ظهرت، وفي انتظار تصحيح المعلم للمقالي!' : '🎉 تم رصد الدرجة النهائية بنجاح!';
+            document.getElementById('res-status-note').innerText = hasEssay ? '📌 تم رصد درجات الاختياري، وفي انتظار تصحيح المعلم للمقالي!' : '🎉 تم رصد الدرجة النهائية بنجاح!';
         }).catch((err) => {
-            alert('❌ حدث خطأ أثناء الاتصال بقاعدة البيانات أثناء التسليم، برجاء المحاولة مجدداً.');
+            alert('❌ حدث خطأ أثناء التسليم، برجاء المحاولة مجدداً.');
             console.error(err);
         });
     }
