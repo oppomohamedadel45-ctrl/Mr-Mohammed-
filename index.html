@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محاكاة القيادة العليا الكبرى - خريطة العالم 2026</title>
+    <title>محاكاة القيادة العليا الكبرى - خريطة العالم التفاعلية</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome للأيقونات -->
@@ -13,31 +13,36 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
-        body { font-family: 'Cairo', sans-serif; background-color: #04060b; color: #f8fafc; }
-        .radar-grid { background-image: radial-gradient(rgba(59, 130, 246, 0.08) 1px, transparent 1px); background-size: 24px 24px; }
+        body { font-family: 'Cairo', sans-serif; background-color: #0b1120; color: #f8fafc; overflow-x: hidden; }
+        .map-bg {
+            background: linear-gradient(135deg, #091326 0%, #04070f 100%);
+            background-image: radial-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+        .country-pin:hover { transform: scale(1.1); z-index: 50; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col radar-grid">
+<body class="min-h-screen flex flex-col map-bg">
 
-    <!-- شاشة اختيار الدولة وتسجيل الدخول (حتى 10 لاعبين) -->
-    <div id="login-screen" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl max-w-xl w-full shadow-2xl text-center">
-            <div class="text-5xl mb-4 text-blue-500 animate-pulse"><i class="fa-solid fa-earth-americas"></i></div>
-            <h1 class="text-2xl font-black mb-2 text-white">غرفة العمليات المركزية العالمية</h1>
-            <p class="text-slate-400 text-sm mb-6">اختر دولتك الرسمية من القائمة العالمية الكبرى وتولَّ مقاليد الحكم والقيادة</p>
+    <!-- شاشة اختيار الدولة وبدء اللعبة -->
+    <div id="login-screen" class="fixed inset-0 bg-slate-950/95 z-50 flex items-center justify-center p-4 backdrop-blur-md">
+        <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl max-w-lg w-full shadow-2xl text-center">
+            <div class="text-5xl mb-4 text-blue-500 animate-pulse"><i class="fa-solid fa-earth-africa"></i></div>
+            <h1 class="text-2xl font-black mb-2 text-white">غرفة العمليات الاستراتيجية الكبرى</h1>
+            <p class="text-slate-400 text-sm mb-6">اختر دولتك للسيطرة على خريطة العالم والتفاوض أو الغزو مع باقي الدول الحقيقية والذكاء الاصطناعي (AI)</p>
             
             <div class="space-y-4 text-right">
                 <div>
-                    <label class="text-xs text-slate-400 block mb-1">اختر دولتك الاستراتيجية:</label>
+                    <label class="text-xs text-slate-400 block mb-1">اختر دولتك القيادية:</label>
                     <select id="country-select" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500">
                         <option value="مصر">مصر</option>
                         <option value="المملكة العربية السعودية">المملكة العربية السعودية</option>
                         <option value="الإمارات العربية المتحدة">الإمارات العربية المتحدة</option>
                         <option value="تركيا">تركيا</option>
                         <option value="روسيا">روسيا</option>
-                        <option value="الولايات المتحدة الأمريكية">الولايات المتحدة الأمريكية (افتراضي AI)</option>
+                        <option value="الولايات المتحدة الأمريكية">الولايات المتحدة الأمريكية</option>
                         <option value="جمهورية الصين الشعبية">جمهورية الصين الشعبية</option>
-                        <option value="بريطانيا">المملكة المتحدة</option>
+                        <option value="المملكة المتحدة">المملكة المتحدة (بريطانيا)</option>
                         <option value="فرنسا">فرنسا</option>
                         <option value="ألمانيا">ألمانيا</option>
                         <option value="إيران">إيران</option>
@@ -63,152 +68,22 @@
                         <option value="الأرجنتين">الأرجنتين</option>
                         <option value="الأردن">الأردن</option>
                         <option value="أرمينيا">أرمينيا</option>
-                        <option value="إريتريا">إريتريا</option>
-                        <option value="إستونيا">إستونيا</option>
                         <option value="إسرائيل">إسرائيل</option>
                         <option value="أفغانستان">أفغانستان</option>
-                        <option value="الإكوادور">الإكوادور</option>
-                        <option value="ألبانيا">ألبانيا</option>
-                        <option value="أنتيغوا وبربودا">أنتيغوا وبربودا</option>
-                        <option value="أندورا">أندورا</option>
                         <option value="إندونيسيا">إندونيسيا</option>
-                        <option value="أنغولا">أنغولا</option>
-                        <option value="أوروغواي">أوروغواي</option>
-                        <option value="أوزبكستان">أوزبكستان</option>
-                        <option value="أوغندا">أوغندا</option>
                         <option value="أوكرانيا">أوكرانيا</option>
                         <option value="أيرلندا">أيرلندا</option>
-                        <option value="آيسلندا">آيسلندا</option>
-                        <option value="بابوا غينيا الجديدة">بابوا غينيا الجديدة</option>
-                        <option value="باراغواي">باراغواي</option>
-                        <option value="بالاو">بالاو</option>
-                        <option value="البحرين">البحرين</option>
-                        <option value="بربادوس">بربادوس</option>
-                        <option value="البرتغال">البرتغال</option>
-                        <option value="بروناي">بروناي</option>
-                        <option value="بلجيكا">بلجيكا</option>
-                        <option value="بلغاريا">بلغاريا</option>
-                        <option value="بليز">بليز</option>
-                        <option value="بنغلاديش">بنغلاديش</option>
-                        <option value="بنما">بنما</option>
-                        <option value="بنين">بنين</option>
-                        <option value="بوتان">بوتان</option>
-                        <option value="بوتسوانا">بوتسوانا</option>
-                        <option value="بوركينا فاسو">بوركينا فاسو</option>
-                        <option value="بوروندي">بوروندي</option>
-                        <option value="البوسنة والهرسك">البوسنة والهرسك</option>
-                        <option value="بولندا">بولندا</option>
-                        <option value="بوليفيا">بوليفيا</option>
-                        <option value="بيرو">بيرو</option>
-                        <option value="بيلاروسيا">بيلاروسيا</option>
-                        <option value="تايلاند">تايلاند</option>
-                        <option value="تايوان">تايوان</option>
-                        <option value="تركمانستان">تركمانستان</option>
-                        <option value="ترينيداد وتوباغو">ترينيداد وتوباغو</option>
-                        <option value="تشاد">تشاد</option>
-                        <option value="التشيك">التشيك</option>
-                        <option value="توغو">توغو</option>
-                        <option value="توفالو">توفالو</option>
-                        <option value="تونغا">تونغا</option>
-                        <option value="تيمور الشرقية">تيمور الشرقية</option>
-                        <option value="الجبل الأسود">الجبل الأسود</option>
-                        <option value="جزيرة مان">جزيرة مان</option>
-                        <option value="جنوب السودان">جنوب السودان</option>
-                        <option value="جورجيا">جورجيا</option>
-                        <option value="جيبوتي">جيبوتي</option>
-                        <option value="الدنمارك">الدنمارك</option>
-                        <option value="دومينيكا">دومينيكا</option>
-                        <option value="رواندا">رواندا</option>
-                        <option value="زامبيا">زامبيا</option>
-                        <option value="زيمبابوي">زيمبابوي</option>
-                        <option value="ساحل العاج">ساحل العاج</option>
-                        <option value="ساموا">ساموا</option>
-                        <option value="سان مارينو">سان مارينو</option>
-                        <option value="ساوتومي وبرينسيب">ساوتومي وبرينسيب</option>
-                        <option value="سريلانكا">سريلانكا</option>
-                        <option value="السويد">السويد</option>
-                        <option value="سويسرا">سويسرا</option>
-                        <option value="سيراليون">سيراليون</option>
-                        <option value="سيشل">سيشل</option>
-                        <option value="صربيا">صربيا</option>
-                        <option value="الصومال">الصومال</option>
-                        <option value="تاجيكستان">تاجيكستان</option>
-                        <option value="الغابون">الغابون</option>
-                        <option value="غامبيا">غامبيا</option>
-                        <option value="غانا">غانا</option>
-                        <option value="غرينادا">غرينادا</option>
-                        <option value="غواتيمالا">غواتيمالا</option>
-                        <option value="غيانا">غيانا</option>
-                        <option value="غينيا">غينيا</option>
-                        <option value="غينيا الاستوائية">غينيا الاستوائية</option>
-                        <option value="غينيا بيساو">غينيا بيساو</option>
-                        <option value="الفاتيكان">الفاتيكان</option>
-                        <option value="الفلبين">الفلبين</option>
-                        <option value="فنزويلا">فنزويلا</option>
-                        <option value="فنلندا">فنلندا</option>
-                        <option value="فيجي">فيجي</option>
-                        <option value="فيتنام">فيتنام</option>
-                        <option value="قبرص">قبرص</option>
-                        <option value="قرغيزستان">قرغيزستان</option>
-                        <option value="كازاخستان">كازاخستان</option>
-                        <option value="كاميرون">كاميرون</option>
-                        <option value="كوبا">كوبا</option>
+                        <option value="إيسلندا">آيسلندا</option>
                         <option value="كوريا الجنوبية">كوريا الجنوبية</option>
                         <option value="كوريا الشمالية">كوريا الشمالية</option>
-                        <option value="كوستاريكا">كوستاريكا</option>
-                        <option value="كوسوفو">كوسوفو</option>
-                        <option value="كولومبيا">كولومبيا</option>
-                        <option value="الكونغو الديمقراطية">الكونغو الديمقراطية</option>
-                        <option value="الكونغو برازافيل">الكونغو برازافيل</option>
-                        <option value="كيريباتي">كيريباتي</option>
-                        <option value="كينيا">كينيا</option>
-                        <option value="لاتفيا">لاتفيا</option>
-                        <option value="لاوس">لاوس</option>
-                        <option value="لبنان">لبنان</option>
-                        <option value="لوكسمبورغ">لوكسمبورغ</option>
-                        <option value="ليبيا">ليبيا</option>
-                        <option value="ليبريا">ليبريا</option>
-                        <option value="ليتوانيا">ليتوانيا</option>
-                        <option value="ليختنشتاين">ليختنشتاين</option>
-                        <option value="ليسوتو">ليسوتو</option>
-                        <option value="مالطا">مالطا</option>
-                        <option value="مالي">مالي</option>
-                        <option value="ماليزيا">ماليزيا</option>
-                        <option value="المجر">المجر</option>
-                        <option value="مدغشقر">مدغشقر</option>
-                        <option value="مقدونيا الشمالية">مقدونيا الشمالية</option>
-                        <option value="منغوليا">منغوليا</option>
-                        <option value="المكسيك">المكسيك</option>
-                        <option value="ملاوي">ملاوي</option>
-                        <option value="جزر المالديف">جزر المالديف</option>
-                        <option value="موريتانيا">موريتانيا</option>
-                        <option value="موريشيوس">موريشيوس</option>
-                        <option value="موزمبيق">موزمبيق</option>
-                        <option value="موناكو">موناكو</option>
-                        <option value="ميانمار">ميانمار</option>
-                        <option value="ميكرونيزيا">ميكرونيزيا</option>
-                        <option value="ناميبيا">ناميبيا</option>
-                        <option value="ناورو">ناورو</option>
-                        <option value="النرويج">النرويج</option>
-                        <option value="النمسا">النمسا</option>
-                        <option value="نيبال">نيبال</option>
-                        <option value="النيجر">النيجر</option>
-                        <option value="نيجيريا">نيجيريا</option>
-                        <option value="نيكاراغوا">نيكاراغوا</option>
-                        <option value="نيوزيلندا">نيوزيلندا</option>
-                        <option value="هايتي">هايتي</option>
-                        <option value="هندوراس">هندوراس</option>
-                        <option value="هولندا">هولندا</option>
-                        <option value="وانواتو">وانواتو</option>
-                        <option value="اليمن">اليمن</option>
-                        <option value="اليونان">اليونان</option>
+                        <option value="كوريا">باقي دول العالم (تلقائي)</option>
                     </select>
                 </div>
                 <div>
-                    <label class="text-xs text-slate-400 block mb-1">اسم القائد (أنت):</label>
+                    <label class="text-xs text-slate-400 block mb-1">اسم القائد العسكري (أنت):</label>
                     <input type="text" id="player-leader-name" placeholder="مثال: المشير محمد عادل" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500">
                 </div>
-                <button onclick="joinGame()" class="w-full bg-blue-600 hover:bg-blue-500 font-bold py-3 rounded-xl transition shadow-lg shadow-blue-600/30 text-white mt-4">دخول غرفة العمليات الكبرى</button>
+                <button onclick="joinGame()" class="w-full bg-blue-600 hover:bg-blue-500 font-bold py-3 rounded-xl transition shadow-lg shadow-blue-600/30 text-white mt-4">دخول الخريطة الاستراتيجية</button>
             </div>
         </div>
     </div>
@@ -216,111 +91,95 @@
     <!-- واجهة اللعبة الرئيسية -->
     <div id="game-screen" class="hidden flex-1 flex flex-col">
         
-        <!-- الشريط الاقتصادي العلوي -->
-        <header class="bg-slate-900/90 backdrop-blur border-b border-slate-800 px-6 py-3 flex flex-wrap justify-between items-center gap-4 shadow-lg sticky top-0 z-40">
+        <!-- الشريط العلوي للموارد -->
+        <header class="bg-slate-900/90 backdrop-blur border-b border-slate-800 px-6 py-3 flex flex-wrap justify-between items-center gap-4 z-40 sticky top-0">
             <div class="flex items-center gap-3">
                 <span class="bg-blue-600/20 text-blue-400 border border-blue-500/30 px-3 py-1 rounded-lg font-bold text-sm" id="display-country-name">الدولة</span>
                 <span class="text-xs text-slate-400">القائد: <strong id="display-leader-name" class="text-white"></strong> | اليوم الاستراتيجي: <strong id="game-day" class="text-yellow-400">1</strong></span>
             </div>
             <div class="flex items-center flex-wrap gap-5 text-xs md:text-sm">
-                <div class="flex items-center gap-1.5"><i class="fa-solid fa-coins text-yellow-400"></i> الميزانية: <span id="res-money" class="font-bold text-yellow-400">20000</span>$</div>
-                <div class="flex items-center gap-1.5"><i class="fa-solid fa-industry text-slate-300"></i> المصانع: <span id="res-factories" class="font-bold">6</span> (+<span id="res-income" class="text-emerald-400">1200</span>$/يوم)</div>
-                <div class="flex items-center gap-1.5"><i class="fa-solid fa-user-shield text-blue-400"></i> جنود: <span id="res-troops" class="font-bold">50000</span></div>
-                <div class="flex items-center gap-1.5"><i class="fa-solid fa-tank text-orange-400"></i> دبابات: <span id="res-tanks" class="font-bold">300</span></div>
-                <div class="flex items-center gap-1.5"><i class="fa-solid fa-jet-fighter text-amber-400"></i> مقاتلات: <span id="res-jets" class="font-bold">120</span></div>
-                <div class="flex items-center gap-1.5"><i class="fa-solid fa-ship text-teal-400"></i> بحرية: <span id="res-navy" class="font-bold">25</span></div>
-                <div class="flex items-center gap-1.5"><i class="fa-solid fa-radiation text-red-500"></i> نووي: <span id="res-nukes" class="font-bold text-red-500">1</span></div>
+                <div class="flex items-center gap-1.5"><i class="fa-solid fa-coins text-yellow-400"></i> الخزينة: <span id="res-money" class="font-bold text-yellow-400">30000</span>$</div>
+                <div class="flex items-center gap-1.5"><i class="fa-solid fa-industry text-slate-300"></i> المصانع: <span id="res-factories" class="font-bold">8</span> (+<span id="res-income" class="text-emerald-400">1600</span>$/يوم)</div>
+                <div class="flex items-center gap-1.5"><i class="fa-solid fa-user-shield text-blue-400"></i> جنود: <span id="res-troops" class="font-bold">60000</span></div>
+                <div class="flex items-center gap-1.5"><i class="fa-solid fa-tank text-orange-400"></i> دبابات: <span id="res-tanks" class="font-bold">400</span></div>
+                <div class="flex items-center gap-1.5"><i class="fa-solid fa-jet-fighter text-amber-400"></i> مقاتلات: <span id="res-jets" class="font-bold">150</span></div>
             </div>
         </header>
 
-        <!-- المحتوى الرئيسي (أقسام التنقل) -->
-        <main class="flex-1 p-6 grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-7xl mx-auto w-full">
+        <!-- المحتوى الرئيسي: خريطة العالم التفاعلية -->
+        <main class="flex-1 p-4 grid grid-cols-1 lg:grid-cols-4 gap-4 max-w-[1600px] mx-auto w-full">
             
-            <!-- القائمة الجانبية -->
-            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex flex-col gap-2 h-fit">
-                <button onclick="switchTab('map')" class="tab-btn w-full text-right px-4 py-3 rounded-xl bg-blue-600 font-bold transition flex items-center gap-3 text-sm"><i class="fa-solid fa-globe w-5"></i> خريطة العالم والدول</button>
-                <button onclick="switchTab('military')" class="tab-btn w-full text-right px-4 py-3 rounded-xl hover:bg-slate-800 transition flex items-center gap-3 text-slate-300 text-sm"><i class="fa-solid fa-crosshairs w-5"></i> إدارة التسليح والابتكار</button>
-                <button onclick="switchTab('economy')" class="tab-btn w-full text-right px-4 py-3 rounded-xl hover:bg-slate-800 transition flex items-center gap-3 text-slate-300 text-sm"><i class="fa-solid fa-building-columns w-5"></i> المصانع والاقتصاد المستدام</button>
-                <button onclick="switchTab('chat')" class="tab-btn w-full text-right px-4 py-3 rounded-xl hover:bg-slate-800 transition flex items-center gap-3 text-slate-300 text-sm"><i class="fa-solid fa-satellite-dish w-5"></i> غرفة الاتصالات الدبلوماسية</button>
+            <!-- لوحة الخريطة التفاعلية الكبرى (تشبه لعبة حرب العالم) -->
+            <div class="lg:col-span-3 bg-slate-900/60 border border-slate-800 rounded-2xl p-4 relative flex flex-col shadow-2xl overflow-hidden min-h-[600px]">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-lg font-black flex items-center gap-2"><i class="fa-solid fa-map text-blue-500"></i> خريطة العالم الاستراتيجية (اضغط على أي دولة للتفاعل معها)</h2>
+                    <span class="text-xs bg-slate-800 text-slate-300 px-3 py-1 rounded-full"><i class="fa-solid fa-robot text-emerald-400"></i> الذكاء الاصطناعي يدير الدول المتبقية</span>
+                </div>
+
+                <!-- محاكي الخريطة المرئية للدول -->
+                <div class="flex-1 bg-slate-950/80 border border-slate-800/80 rounded-xl p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 overflow-y-auto max-h-[650px]" id="interactive-map-grid">
+                    <!-- يتم توليد أزرار الدول هنا ديناميكياً -->
+                </div>
             </div>
 
-            <!-- لوحة العرض -->
-            <div class="lg:col-span-3 bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-2xl">
+            <!-- لوحة الإدارة السريعة والتطوير والرسائل -->
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex flex-col gap-4">
+                <h3 class="font-bold text-sm text-yellow-400 border-b border-slate-800 pb-2"><i class="fa-solid fa-bars-progress"></i> لوحة الإدارة والتحكم</h3>
                 
-                <!-- 1. خريطة العالم وخيارات الدول -->
-                <div id="tab-map" class="tab-content">
-                    <h2 class="text-xl font-black mb-2 flex items-center gap-2"><i class="fa-solid fa-globe text-blue-500"></i> خريطة العالم والتحركات الاستراتيجية</h2>
-                    <p class="text-slate-400 text-xs mb-6">لكل دولة خيارات مستقلة: (غزو عسكري، تحالف دفاعي مشترك، أو توقيع اتفاقية تجارية).</p>
-                    <div id="world-countries-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto p-2">
-                        <!-- تظهر الدول هنا -->
+                <!-- بناء المصانع -->
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+                    <h4 class="font-bold text-xs mb-1">تشييد مصنع جديد</h4>
+                    <p class="text-[10px] text-slate-400 mb-2">التكلفة: 5,000$ | العائد: +200$/يوم</p>
+                    <button onclick="buildFactory()" class="w-full bg-yellow-600 hover:bg-yellow-500 text-slate-950 font-bold text-xs py-2 rounded-lg transition">بناء مصنع</button>
+                </div>
+
+                <!-- تعزيز العتاد -->
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+                    <h4 class="font-bold text-xs mb-1">تعزيز الترسانة العسكرية</h4>
+                    <div class="grid grid-cols-3 gap-2 mt-2">
+                        <button onclick="buyMilitary('troops', 1500, 5000)" class="bg-blue-600/20 border border-blue-500/40 hover:bg-blue-600 text-blue-300 hover:text-white text-[10px] font-bold py-1.5 rounded-lg">جنود (+5ألاف)</button>
+                        <button onclick="buyMilitary('tanks', 2500, 30)" class="bg-orange-600/20 border border-orange-500/40 hover:bg-orange-600 text-orange-300 hover:text-white text-[10px] font-bold py-1.5 rounded-lg">دبابات (+30)</button>
+                        <button onclick="buyMilitary('jets', 4000, 15)" class="bg-amber-600/20 border border-amber-500/40 hover:bg-amber-600 text-amber-300 hover:text-white text-[10px] font-bold py-1.5 rounded-lg">مقاتلات (+15)</button>
                     </div>
                 </div>
 
-                <!-- 2. التسليح والابتكار المخصص -->
-                <div id="tab-military" class="tab-content hidden space-y-6">
-                    <h2 class="text-xl font-black mb-2 flex items-center gap-2"><i class="fa-solid fa-jet-fighter text-red-500"></i> الترسانة العسكرية وابتكار أسلحة جديدة</h2>
-                    
-                    <!-- شراء الأسلحة -->
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-center">
-                            <h4 class="font-bold text-sm mb-1">جنود</h4>
-                            <p class="text-[11px] text-slate-400 mb-2">تكلفة: 1000$ (+10,000)</p>
-                            <button onclick="buyWeapon('troops', 1000, 10000)" class="w-full bg-blue-600 hover:bg-blue-500 text-xs font-bold py-2 rounded-lg">جنيد المزيد</button>
-                        </div>
-                        <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-center">
-                            <h4 class="font-bold text-sm mb-1">دبابات</h4>
-                            <p class="text-[11px] text-slate-400 mb-2">تكلفة: 2000$ (+50)</p>
-                            <button onclick="buyWeapon('tanks', 2000, 50)" class="w-full bg-orange-600 hover:bg-orange-500 text-xs font-bold py-2 rounded-lg">شراء دبابات</button>
-                        </div>
-                        <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-center">
-                            <h4 class="font-bold text-sm mb-1">مقاتلات</h4>
-                            <p class="text-[11px] text-slate-400 mb-2">تكلفة: 3500$ (+25)</p>
-                            <button onclick="buyWeapon('jets', 3500, 25)" class="w-full bg-amber-600 hover:bg-amber-500 text-xs font-bold py-2 rounded-lg text-slate-950">شراء مقاتلات</button>
-                        </div>
-                        <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-center">
-                            <h4 class="font-bold text-sm mb-1">رؤوس نووية</h4>
-                            <p class="text-[11px] text-slate-400 mb-2">تكلفة: 15000$ (+1)</p>
-                            <button onclick="buyWeapon('nukes', 15000, 1)" class="w-full bg-red-600 hover:bg-red-500 text-xs font-bold py-2 rounded-lg text-white">تطوير نووي</button>
-                        </div>
-                    </div>
-
-                    <!-- ابتكار سلاح من مخيلتك -->
-                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-xl">
-                        <h3 class="font-bold mb-2 text-yellow-400"><i class="fa-solid fa-lightbulb"></i> مختبر ابتكار سلاح جديد من مخيلتك</h3>
-                        <p class="text-xs text-slate-400 mb-4">صمم واخترع سلاحاً مستقبلياً فريداً وأضفه لترسانة دولتك لزيادة هيبتك وقوتك الاستراتيجية.</p>
-                        <div class="space-y-3">
-                            <input type="text" id="custom-weapon-name" placeholder="اسم السلاح المبتكر (مثال: درع الليزر المداري / مدفع الجاذبية)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-500">
-                            <textarea id="custom-weapon-desc" placeholder="وصف قدرات السلاح وتأثيره الاستراتيجي..." class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-yellow-500 h-20"></textarea>
-                            <button onclick="inventWeapon()" class="bg-yellow-600 hover:bg-yellow-500 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-sm transition">اعتماد وتسجيل السلاح في الترسانة</button>
-                        </div>
-                        <div id="custom-weapons-list" class="mt-4 space-y-2"></div>
+                <!-- غرفة الأخبار والرسائل الدبلوماسية -->
+                <div class="flex-1 bg-slate-950 p-3 rounded-xl border border-slate-800 flex flex-col h-[220px]">
+                    <h4 class="font-bold text-xs mb-2 text-blue-400"><i class="fa-solid fa-satellite-dish"></i> سجل الأحداث والدبلوماسية</h4>
+                    <div id="diplomacy-log" class="flex-1 overflow-y-auto space-y-2 text-[11px] text-slate-300 pr-1">
+                        <div class="p-2 bg-slate-900 rounded border border-slate-800 text-yellow-400">تم تفعيل غرفة العمليات العالمية بنجاح. اختر دولة من الخريطة لبدء المعاهدات أو الحروب.</div>
                     </div>
                 </div>
-
-                <!-- 3. الاقتصاد والمصانع -->
-                <div id="tab-economy" class="tab-content hidden">
-                    <h2 class="text-xl font-black mb-4 flex items-center gap-2"><i class="fa-solid fa-building-columns text-yellow-500"></i> القطاع الاقتصادي وتشييد المصانع</h2>
-                    <div class="bg-slate-950 border border-slate-800 p-6 rounded-xl text-center">
-                        <i class="fa-solid fa-industry text-4xl text-yellow-500 mb-3"></i>
-                        <h3 class="font-bold text-lg mb-1">بناء مصنع استراتيجي إنتاجي</h3>
-                        <p class="text-xs text-slate-400 mb-4">كلما بنيت مصانع أكثر، زاد تدفق الأموال والميزانية لخزينة دولتك في كل دورة زمنية.</p>
-                        <p class="text-sm font-bold text-yellow-400 mb-4">تكلفة المصنع: 4000$ | يرفع العائد بـ +200$ يومياً للمصنع الواحد</p>
-                        <button onclick="buildFactory()" class="bg-yellow-600 hover:bg-yellow-500 text-slate-950 font-bold px-8 py-3 rounded-xl text-sm transition">تشييد مصنع جديد الآن</button>
-                    </div>
-                </div>
-
-                <!-- 4. غرفة الاتصالات -->
-                <div id="tab-chat" class="tab-content hidden flex flex-col h-[400px]">
-                    <h2 class="text-xl font-black mb-4 flex items-center gap-2"><i class="fa-solid fa-satellite-dish text-blue-400"></i> شبكة الاتصالات والرسائل الدبلوماسية</h2>
-                    <div id="chat-messages" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl p-4 overflow-y-auto mb-4 space-y-3 text-sm"></div>
-                    <div class="flex gap-2">
-                        <input type="text" id="chat-input" placeholder="اكتب بلاغاً أو رسالة دبلوماسية..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-sm text-white focus:outline-none">
-                        <button onclick="sendMessage()" class="bg-blue-600 hover:bg-blue-500 font-bold px-6 py-2 rounded-xl text-sm">إرسال</button>
-                    </div>
-                </div>
-
             </div>
+
         </main>
+    </div>
+
+    <!-- نافذة تفاعلية منبثقة (Modal) لخيارات الدولة المختارة -->
+    <div id="country-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-slate-900 border border-slate-700 p-6 rounded-2xl max-w-md w-full shadow-2xl relative">
+            <button onclick="closeModal()" class="absolute top-4 left-4 text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <h3 id="modal-country-title" class="text-xl font-black text-blue-400 mb-1">اسم الدولة</h3>
+            <p id="modal-country-status" class="text-xs text-slate-400 mb-4">الزعيم الحالي: AI | الجيش: قوي</p>
+            
+            <div class="space-y-3">
+                <button onclick="executeAction('trade')" class="w-full bg-emerald-600/20 border border-emerald-500/40 hover:bg-emerald-600 text-emerald-300 hover:text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition">
+                    <i class="fa-solid fa-handshake"></i> توقيع اتفاقية تجارية واقتصادية
+                </button>
+                <button onclick="executeAction('alliance')" class="w-full bg-blue-600/20 border border-blue-500/40 hover:bg-blue-600 text-blue-300 hover:text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition">
+                    <i class="fa-solid fa-shield-halved"></i> طلب تحالف عسكري استراتيجي
+                </button>
+                <button onclick="executeAction('support')" class="w-full bg-amber-600/20 border border-amber-500/40 hover:bg-amber-600 text-amber-300 hover:text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition">
+                    <i class="fa-solid fa-truck-field"></i> تقديم دعم عسكري مباشر (أو طلبه)
+                </button>
+                <button onclick="executeAction('base')" class="w-full bg-purple-600/20 border border-purple-500/40 hover:bg-purple-600 text-purple-300 hover:text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition">
+                    <i class="fa-solid fa-flag"></i> طلب إنشاء قاعدة عسكرية (بموافقة الطرف الآخر/AI)
+                </button>
+                <button onclick="executeAction('war')" class="w-full bg-red-600/20 border border-red-500/40 hover:bg-red-600 text-red-400 hover:text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition">
+                    <i class="fa-solid fa-crosshairs"></i> إعلان الغزو العسكري المباشر
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- كود الجافاسكريبت والربط بقاعدة البيانات Firebase -->
@@ -332,28 +191,19 @@
         let myCountryName = "";
         let myLeaderName = "";
         let myCountryId = null;
+        let selectedTargetCountry = "";
+        
         let myData = {
-            money: 25000, factories: 6, troops: 50000, tanks: 300, jets: 120, navy: 25, nukes: 1, day: 1, customWeapons: []
+            money: 35000, factories: 8, troops: 60000, tanks: 400, jets: 150, day: 1
         };
 
-        const globalCountriesList = [
-            "أذربيجان", "الأرجنتين", "الأردن", "أرمينيا", "إريتريا", "إسبانيا", "أستراليا", "إستونيا", "إسرائيل", "أفغانستان",
-            "الإكوادور", "ألبانيا", "ألمانيا", "الإمارات العربية المتحدة", "أنتيغوا وبربودا", "أندورا", "إندونيسيا", "أنغولا", "أوروغواي", "أوزبكستان",
-            "أوغندا", "أوكرانيا", "إيران", "أيرلندا", "آيسلندا", "إيطاليا", "بابوا غينيا الجديدة", "باراغواي", "باكستان", "بالاو",
-            "البحرين", "البرازيل", "بربادوس", "البرتغال", "بروناي", "بلجيكا", "بلغاريا", "بليز", "بنغلاديش", "بنما", "بنين",
-            "بوتان", "بوتسوانا", "بوركينا فاسو", "بوروندي", "البوسنة والهرسك", "بولندا", "بوليفيا", "بيرو", "بيلاروسيا", "تايلاند",
-            "تايوان", "تركمانستان", "تركيا", "ترينيداد وتوباغو", "تشاد", "التشيك", "توغو", "توفالو", "تونس", "تونغا",
-            "تيمور الشرقية", "الجبل الأسود", "جزيرة مان", "الجزائر", "جنوب أفريقيا", "جنوب السودان", "جورجيا", "جيبوتي", "الدنمارك", "دومينيكا",
-            "رواندا", "روسيا", "زامبيا", "زيمبابوي", "ساحل العاج", "ساموا", "سان مارينو", "ساوتومي وبرينسيب", "سريلانكا", "السعودية",
-            "سلطنة عمان", "السويد", "سويسرا", "سيراليون", "سيشل", "صربيا", "الصومال", "الصين", "تاجيكستان", "العراق",
-            "الغابون", "غامبيا", "غانا", "غرينادا", "غواتيمالا", "غيانا", "غينيا", "غينيا الاستوائية", "غينيا بيساو", "الفاتيكان",
-            "فرنسا", "الفلبين", "فلسطين", "فنزويلا", "فنلندا", "فيجي", "فيتنام", "قبرص", "قرغيزستان", "قطر", "كازاخستان",
-            "كاميرون", "كندا", "كوبا", "كوريا الجنوبية", "كوريا الشمالية", "كوستاريكا", "كوسوفو", "كولومبيا", "الكونغو الديمقراطية", "الكونغو برازافيل",
-            "الكويت", "كيريباتي", "كينيا", "لاتفيا", "لاوس", "لبنان", "لوكسمبورغ", "ليبيا", "ليبريا", "ليتوانيا",
-            "ليختنشتاين", "ليسوتو", "مالطا", "مالي", "ماليزيا", "المجر", "مدغشقر", "مصر", "مقدونيا الشمالية", "منغوليا",
-            "المغرب", "المكسيك", "ملاوي", "جزر المالديف", "المملكة المتحدة", "موريتانيا", "موريشيوس", "موزمبيق", "موناكو", "ميانمار",
-            "ميكرونيزيا", "ناميبيا", "ناورو", "النرويج", "النمسا", "نيبال", "النيجر", "نيجيريا", "نيكاراغوا", "نيوزيلندا",
-            "هايتي", "الهند", "هندوراس", "هولندا", "وانواتو", "اليابان", "اليمن", "اليونان"
+        const worldCountries = [
+            "مصر", "المملكة العربية السعودية", "الإمارات العربية المتحدة", "تركيا", "روسيا", "الولايات المتحدة الأمريكية", "جمهورية الصين الشعبية",
+            "المملكة المتحدة", "فرنسا", "ألمانيا", "إيران", "اليابان", "الهند", "البرازيل", "جنوب أفريقيا", "العراق", "الجزائر", "المغرب",
+            "قطر", "الكويت", "سلطنة عمان", "تونس", "السودان", "فلسطين", "باكستان", "إيطاليا", "إسبانيا", "أستراليا", "كندا", "أذربيجان",
+            "الأرجنتين", "الأردن", "أرمينيا", "إسرائيل", "أفغانستان", "إندونيسيا", "أوكرانيا", "أيرلندا", "آيسلندا", "كوريا الجنوبية",
+            "كوريا الشمالية", "سورية", "لبنان", "ليبيا", "اليمن", "السودان", "إثيوبيا", "نيجيريا", "البرازيل", "المكسيك", "فنزويلا",
+            "كولومبيا", "تشيلي", "إريتريا", "إستونيا", "الإكوادور", "ألبانيا", "أندورا", "أنغولا", "أوروغواي", "أوزبكستان", "أوغندا"
         ];
 
         function joinGame() {
@@ -370,32 +220,21 @@
                 document.getElementById('game-screen').classList.remove('hidden');
                 document.getElementById('display-country-name').innerText = myCountryName;
                 document.getElementById('display-leader-name').innerText = myLeaderName;
-                initListeners();
+                initMapGrid();
                 startDayCycle();
-            }).catch(err => {
-                alert('تأكد من ضبط قواعد الأمان (Rules) في Firebase Realtime Database على true.');
+            }).catch(() => {
+                alert('تأكد من ضبط قواعد قاعدة البيانات في Firebase.');
             });
         }
 
         function updateUI() {
             document.getElementById('res-money').innerText = myData.money;
             document.getElementById('res-factories').innerText = myData.factories;
-            let income = myData.factories * 200;
-            document.getElementById('res-income').innerText = income;
+            document.getElementById('res-income').innerText = myData.factories * 200;
             document.getElementById('res-troops').innerText = myData.troops;
             document.getElementById('res-tanks').innerText = myData.tanks;
             document.getElementById('res-jets').innerText = myData.jets;
-            document.getElementById('res-navy').innerText = myData.navy;
-            document.getElementById('res-nukes').innerText = myData.nukes;
             document.getElementById('game-day').innerText = myData.day;
-
-            const cwList = document.getElementById('custom-weapons-list');
-            cwList.innerHTML = '';
-            if(myData.customWeapons) {
-                myData.customWeapons.forEach(w => {
-                    cwList.innerHTML += `<div class="bg-slate-900 border border-slate-800 p-2.5 rounded-lg text-xs"><strong class="text-yellow-400">⚡ ${w.name}:</strong> ${w.desc}</div>`;
-                });
-            }
         }
 
         function saveData() {
@@ -412,120 +251,91 @@
         function startDayCycle() {
             setInterval(() => {
                 myData.day += 1;
-                let dailyIncome = myData.factories * 200;
-                myData.money += dailyIncome;
+                myData.money += (myData.factories * 200);
                 saveData();
             }, 1000);
         }
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('bg-blue-600'));
-            document.getElementById('tab-' + tabId).classList.remove('hidden');
-            event.currentTarget.classList.add('bg-blue-600');
+        function initMapGrid() {
+            const grid = document.getElementById('interactive-map-grid');
+            grid.innerHTML = '';
+            worldCountries.forEach(c => {
+                if(c === myCountryName) return;
+                grid.innerHTML += `
+                    <div onclick="openCountryModal('${c}')" class="country-pin bg-slate-900 border border-slate-800 hover:border-blue-500 p-3 rounded-xl cursor-pointer transition flex flex-col justify-between shadow">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="font-bold text-xs text-blue-400">${c}</span>
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="يديرها AI"></span>
+                        </div>
+                        <span class="text-[10px] text-slate-400">انقر لفتح المعاهدات</span>
+                    </div>
+                `;
+            });
+        }
+
+        function openCountryModal(countryName) {
+            selectedTargetCountry = countryName;
+            document.getElementById('modal-country-title').innerText = "دولة " + countryName;
+            document.getElementById('modal-country-status').innerText = "إدارة الذكاء الاصطناعي (AI) | جاهز للاتفاقيات الدبلوماسية والحروب";
+            document.getElementById('country-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('country-modal').classList.add('hidden');
+        }
+
+        function executeAction(type) {
+            closeModal();
+            let logContainer = document.getElementById('diplomacy-log');
+            let timeStr = `[اليوم ${myData.day}]`;
+
+            if(type === 'trade') {
+                myData.factories += 1;
+                myData.money += 2000;
+                logContainer.innerHTML = `<div class="p-2 bg-emerald-950/40 border border-emerald-500/30 rounded text-emerald-300">${timeStr} تمت الموافقة على <strong>اتفاقية تجارية</strong> مع ${selectedTargetCountry}! زادت المصانع والأموال.</div>` + logContainer.innerHTML;
+            } else if(type === 'alliance') {
+                logContainer.innerHTML = `<div class="p-2 bg-blue-950/40 border border-blue-500/30 rounded text-blue-300">${timeStr} تم إبرام <strong>تحالف عسكري استراتيجي</strong> مع دولة ${selectedTargetCountry}.</div>` + logContainer.innerHTML;
+            } else if(type === 'support') {
+                myData.troops += 5000;
+                logContainer.innerHTML = `<div class="p-2 bg-amber-950/40 border border-amber-500/30 rounded text-amber-300">${timeStr} استجابت ${selectedTargetCountry} لطلب <strong>الدعم العسكري</strong> وأرسلت تعزيزات (+5000 جندي).</div>` + logContainer.innerHTML;
+            } else if(type === 'base') {
+                let aiAccept = Math.random() > 0.3; // قبول الذكاء الاصطناعي بنسبة كبيرة
+                if(aiAccept) {
+                    myData.money += 4000;
+                    logContainer.innerHTML = `<div class="p-2 bg-purple-950/40 border border-purple-500/30 rounded text-purple-300">${timeStr} وافقت ${selectedTargetCountry} (AI) على <strong>إنشاء قاعدة عسكرية</strong> على أراضيها بنجاح!</div>` + logContainer.innerHTML;
+                } else {
+                    logContainer.innerHTML = `<div class="p-2 bg-red-950/40 border border-red-500/30 rounded text-red-300">${timeStr} رفضت ${selectedTargetCountry} (AI) طلب إنشاء قاعدة عسكرية لأسباب سيادية.</div>` + logContainer.innerHTML;
+                }
+            } else if(type === 'war') {
+                myData.money += 8000;
+                myData.troops -= 3000;
+                logContainer.innerHTML = `<div class="p-2 bg-red-950/50 border border-red-500/40 rounded text-red-400">${timeStr} تم إعلان <strong>الغزو العسكري</strong> على ${selectedTargetCountry}! انتصر جيشك وغنمت خزائنهم.</div>` + logContainer.innerHTML;
+            }
+            saveData();
         }
 
         function buildFactory() {
-            if(myData.money >= 4000) {
-                myData.money -= 4000;
+            if(myData.money >= 5000) {
+                myData.money -= 5000;
                 myData.factories += 1;
                 saveData();
-                alert('تم تشييد المصنع الاستراتيجي بنجاح وزيادة الدخل اليومي!');
-            } else { alert('الميزانية لا تكفي لبناء مصنع!'); }
-        }
-
-        function buyWeapon(type, cost, amount) {
-            if(myData.money >= cost) {
-                myData.money -= cost;
-                myData.troops += (type === 'troops' ? amount : 0);
-                myData.tanks += (type === 'tanks' ? amount : 0);
-                myData.jets += (type === 'jets' ? amount : 0);
-                myData.nukes += (type === 'nukes' ? amount : 0);
-                saveData();
-                alert('تم تعزيز الترسانة العسكرية بنجاح!');
-            } else { alert('الميزانية غير كافية لعملية الشراء!'); }
-        }
-
-        function inventWeapon() {
-            const name = document.getElementById('custom-weapon-name').value.trim();
-            const desc = document.getElementById('custom-weapon-desc').value.trim();
-            if(!name || !desc) { alert('الرجاء كتابة اسم ووصف السلاح المبتكر.'); return; }
-            
-            if(!myData.customWeapons) myData.customWeapons = [];
-            myData.customWeapons.push({ name, desc });
-            document.getElementById('custom-weapon-name').value = '';
-            document.getElementById('custom-weapon-desc').value = '';
-            saveData();
-            alert('تم ابتكار واعتماد السلاح الجديد في سجلاتك العسكرية بنجاح!');
-        }
-
-        function initListeners() {
-            db.ref('countries').on('value', snapshot => {
-                const countries = snapshot.val();
-                const container = document.getElementById('world-countries-grid');
-                container.innerHTML = '';
-                
-                globalCountriesList.forEach(cName => {
-                    if(cName === myCountryName) return;
-                    
-                    let foundKey = null;
-                    let cData = { leader: "قائد AI", troops: 30000, tanks: 100, jets: 50 };
-                    for(let key in countries) {
-                        if(countries[key].country === cName) {
-                            foundKey = key;
-                            cData = countries[key];
-                            break;
-                        }
-                    }
-
-                    container.innerHTML += `
-                        <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl flex flex-col justify-between gap-3 shadow">
-                            <div>
-                                <h4 class="font-bold text-blue-400 text-sm"><i class="fa-solid fa-flag"></i> ${cName} (${cData.leader})</h4>
-                                <p class="text-[11px] text-slate-400 mt-1">الجيش: ${cData.troops} | دبابات: ${cData.tanks} | مقاتلات: ${cData.jets}</p>
-                            </div>
-                            <div class="flex gap-2 mt-2">
-                                <button onclick="actionCountry('${cName}', 'غزو')" class="flex-1 bg-red-600/20 border border-red-500/40 text-red-400 hover:bg-red-600 hover:text-white text-[11px] font-bold py-1.5 rounded-lg transition">غزو</button>
-                                <button onclick="actionCountry('${cName}', 'تحالف')" class="flex-1 bg-blue-600/20 border border-blue-500/40 text-blue-400 hover:bg-blue-600 hover:text-white text-[11px] font-bold py-1.5 rounded-lg transition">تحالف</button>
-                                <button onclick="actionCountry('${cName}', 'اتفاقية')" class="flex-1 bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 hover:bg-emerald-600 hover:text-white text-[11px] font-bold py-1.5 rounded-lg transition">اتفاقية</button>
-                            </div>
-                        </div>
-                    `;
-                });
-            });
-
-            db.ref('messages').on('value', snapshot => {
-                const msgs = snapshot.val();
-                const container = document.getElementById('chat-messages');
-                container.innerHTML = '';
-                for(let id in msgs) {
-                    const m = msgs[id];
-                    container.innerHTML += `<div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800"><strong class="text-blue-400">${m.sender}:</strong> ${m.text}</div>`;
-                }
-                container.scrollTop = container.scrollHeight;
-            });
-        }
-
-        function actionCountry(targetName, type) {
-            if(type === 'غزو') {
-                myData.money += 5000;
-                myData.troops -= 2000;
-                saveData();
-                alert('تم شن هجوم استراتيجي غازٍ على دولة ' + targetName + ' وتحقيق انتصار وغنائم مالية!');
-            } else if(type === 'تحالف') {
-                alert('تم إرسال معاهدة تحالف عسكري استراتيجي إلى دولة ' + targetName + ' بنجاح.');
-            } else if(type === 'اتفاقية') {
-                myData.factories += 1;
-                saveData();
-                alert('تم توقيع اتفاقية تجارية اقتصادية مشتركة مع دولة ' + targetName + ' وزيادة مصانعك.');
+                alert('تم تشييد المصنع بنجاح وزيادة العائد المالي اليومي.');
+            } else {
+                alert('الخزينة لا تكفي لبناء مصنع (التكلفة 5000$)');
             }
         }
 
-        function sendMessage() {
-            const text = document.getElementById('chat-input').value.trim();
-            if(!text) return;
-            db.ref('messages').push({ sender: `${myCountryName} (${myLeaderName})`, text: text });
-            document.getElementById('chat-input').value = '';
+        function buyMilitary(type, cost, amount) {
+            if(myData.money >= cost) {
+                myData.money -= cost;
+                if(type === 'troops') myData.troops += amount;
+                if(type === 'tanks') myData.tanks += amount;
+                if(type === 'jets') myData.jets += amount;
+                saveData();
+                alert('تم تدعيم الترسانة العسكرية بنجاح!');
+            } else {
+                alert('الرصيد لا يكفي لشراء العتاد!');
+            }
         }
     </script>
 </body>
