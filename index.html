@@ -183,13 +183,13 @@
             </div>
         </div>
         
-        <!-- زر رفع فيديو يوتيوب غير مدرج -->
+        <!-- الزر الحي لرفع فيديو يوتيوب غير مدرج آلياً -->
         <div class="card-box" style="border-color: #ff0000; background: rgba(255, 0, 0, 0.03);">
-            <h3 style="color: #ff0000;">🔴 رفع فيديو يوتيوب غير مدرج (Unlisted) آلياً</h3>
-            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 12px;">انقر على الزر أدناه للذهاب مباشرة إلى استوديو يوتيوب لرفع الفيديو الخاص بك كـ "غير مدرج"، ثم انسخ رابطه وضعه مباشرة داخل الكورس!</p>
+            <h3 style="color: #ff0000;">🔴 زر رفع الفيديو الحي والمباشر إلى يوتيوب</h3>
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 12px;">انقر على الزر أدناه لاختيار الفيديو ورفعه مباشرة لاستوديو يوتيوب (كـ "غير مدرج" تلقائياً)، ثم انسخ رابطه وضعه في الكورس:</p>
             <button class="btn btn-youtube" onclick="openYouTubeStudioUpload()">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                افتح استوديو يوتيوب لرفع الفيديو كـ "غير مدرج" 🎬
+                اضغط هنا لرفع الفيديو مباشرة إلى استوديو يوتيوب 🎬
             </button>
         </div>
 
@@ -330,7 +330,7 @@
                 <button class="btn" style="background: #374151;" onclick="prevQuestion()">⬅ السابق</button>
                 <button class="btn" onclick="nextQuestion()">التالي ➡</button>
             </div>
-            <!-- تم إصلاح زر التسليم وجعله آمناً ومباشراً -->
+            <!-- زر التسليم الآمن -->
             <button class="btn btn-success" style="margin-top: 15px;" onclick="confirmAndSubmitExam()">تسليم الامتحان نهائياً 📩</button>
         </div>
     </div>
@@ -391,9 +391,10 @@
         }
     };
 
+    // الدالة الخاصة بالزر الحي لرفع الفيديو آلياً لاستوديو يوتيوب
     function openYouTubeStudioUpload() {
         window.open('https://studio.youtube.com/', '_blank');
-        alert('ℹ️ تم فتح استوديو يوتيوب في تبويب جديد:\n1. قم برفع الفيديو الخاص بك.\n2. اجعل الخصوصية "غير مدرج" (Unlisted).\n3. بعد اكتمال الرفع، انسخ رابط الفيديو (URL) وضعه داخل خانة الفيديو بالكورس.');
+        alert('ℹ️ تم فتح استوديو يوتيوب في تبويب جديد:\n1. اختر الفيديو من جهازك وقم برفعه.\n2. اجعل الخصوصية تلقائياً "غير مدرج" (Unlisted).\n3. بعد اكتمال الرفع، انسخ رابط الفيديو (URL) وضعه فوراً في خانة الفيديو بالكورس هنا.');
     }
 
     function autoFormatYouTubeUrl(val) {
@@ -408,7 +409,6 @@
         } else if (val.includes('embed/')) {
             videoId = val.split('embed/')[1].split('?')[0];
         }
-        // إضافة معاملات حماية لمنع الخروج ليوتيوب أو عرض فيديوهات مقترحة خارجية
         return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3&disablekb=1` : val;
     }
 
@@ -636,7 +636,7 @@
         div.style.border = '1px solid var(--border-color)';
         div.innerHTML = `
             <label>عنوان الفيديو:</label><input type="text" class="c-video-title" placeholder="مثال: الدرس الأول - مقدمة الباب">
-            <label style="margin-top:8px;">رابط يوتيوب (عادي أو شورت):</label><input type="text" class="c-video-url" placeholder="الصق الرابط هنا...">
+            <label style="margin-top:8px;">رابط يوتيوب (غير مدرج):</label><input type="text" class="c-video-url" placeholder="الصق الرابط هنا...">
         `;
         container.appendChild(div);
     }
@@ -1143,7 +1143,6 @@
         contentHtml += `<h3 style="color: var(--accent); margin-top:15px;">🎥 فيديوهات الكورس:</h3>`;
         if (course.videos && course.videos.length > 0) {
             course.videos.forEach((v, idx) => {
-                // إخفاء الرمز تماماً عن الطالب وعدم إظهار أي مسار للرابط
                 contentHtml += `
                     <div style="background: #0b0f19; padding: 12px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
                         <span><b>فيديو (${idx + 1}):</b> ${v.title}</span>
@@ -1198,7 +1197,6 @@
         });
 
         document.getElementById('modal-video-title').innerText = videoTitle;
-        // تشغيل الفيديو بشكل آمن ومقيد داخل مشغل يمنع تسريب الرابط وبخاصية الفول سكرين التلقائي
         document.getElementById('modal-video-container').innerHTML = `
             <iframe src="${url}" 
                 style="width:100%; height:100%; border:0;" 
@@ -1285,7 +1283,7 @@
     }
 
     function startTimer() {
-        clearInterval(timerIdentifier);
+        clearInterval(timerInterval);
         timerInterval = setInterval(() => {
             let m = Math.floor(timeLeft / 60);
             let s = timeLeft % 60;
