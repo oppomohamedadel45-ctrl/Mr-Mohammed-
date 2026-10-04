@@ -170,6 +170,18 @@
     <div id="teacher-dashboard" class="hidden">
         <h1 id="teacher-dash-title">لوحة تحكم المعلم</h1>
         <p style="text-align:center; color: var(--success); font-weight:700; margin-bottom:20px;" id="teacher-welcome-msg"></p>
+
+        <!-- محفظة المعلم -->
+        <div class="card-box" style="border-color: var(--success); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+            <div>
+                <h3 style="color: var(--success); margin-bottom: 5px;">💰 محفظة المعلم (أرباح النقاط من اشتراكات الطلاب)</h3>
+                <p style="color: var(--text-muted); font-size: 13px;">تُضاف نقاط اشتراكات الطلاب في كورساتك هنا مباشرة.</p>
+            </div>
+            <div style="background: rgba(16, 185, 129, 0.1); padding: 15px 25px; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.3); text-align: center; margin-top: 10px;">
+                <span style="font-size: 13px; color: var(--text-muted); display: block;">رصيد أرباح محفظتك:</span>
+                <span id="teacher-wallet-display" style="font-size: 1.8rem; font-weight: 900; color: var(--success);">0 نقطة</span>
+            </div>
+        </div>
         
         <!-- زر رفع فيديو يوتيوب غير مدرج -->
         <div class="card-box" style="border-color: #ff0000; background: rgba(255, 0, 0, 0.03);">
@@ -211,10 +223,16 @@
             <button class="btn btn-success" style="margin-top: 20px; padding: 14px;" onclick="publishAdvancedCourse()">نشر الكورس الشامل بكافة محتوياته للطلاب 🚀</button>
         </div>
 
-        <!-- إدارة كورسات المعلم (حذف الكورس في أي وقت) -->
+        <!-- إدارة كورسات المعلم (حذف الكورس وقفل الكورس عن أي طالب) -->
         <div class="card-box" style="border-color: var(--warning);">
-            <h3 style="color: var(--warning);">🗑️ إدارة كورساتك (حذف أي كورس في أي وقت)</h3>
+            <h3 style="color: var(--warning);">⚙️ إدارة كورساتك (الحذف وقفل الكورس عن أي طالب مشترك)</h3>
             <div id="teacher-manage-courses-list"><p style="color: var(--text-muted);">جاري تحميل كورساتك...</p></div>
+        </div>
+
+        <!-- تقرير متابعة نسبة فتح الفيديوهات للطلاب -->
+        <div class="card-box" style="border-color: var(--accent);">
+            <h3 style="color: var(--accent);">📊 تقرير متابعة فتح الفيديوهات ونسب تفاعل الطلاب</h3>
+            <div id="teacher-video-analytics-list"><p style="color: var(--text-muted);">جاري تحميل بيانات تفاعل الطلاب...</p></div>
         </div>
 
         <div class="card-box" style="border-color: var(--warning);">
@@ -338,11 +356,6 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-
-    const paymobIntegrationData = {
-        merchantId: "769992",
-        integrationKey: "700f1022-4a30-40a8-933f7dd772fc-3b9f-4a96"
-    };
 
     const defaultTeachers = {
         "TCH-101": { name: "أستاذ التاريخ", subject: "التاريخ", password: "Hist@2026_#1", role: "teacher" },
@@ -610,7 +623,6 @@
         location.reload();
     }
 
-    // دوال بناء الكอร์س الشامل للمعلم (إضافة حقول فيديوهات، صور، وامتحان خاص بالكورس)
     function addCourseVideoField() {
         const container = document.getElementById('course-videos-container');
         const div = document.createElement('div');
@@ -679,7 +691,6 @@
             return;
         }
 
-        // جمع الفيديوهات
         let videos = [];
         document.querySelectorAll('#course-videos-container > div').forEach(div => {
             let vTitle = div.querySelector('.c-video-title').value.trim();
@@ -689,13 +700,11 @@
             }
         });
 
-        // جمع الصور مع معالجة الـ FileReader
         let imageDivs = document.querySelectorAll('#course-images-container > div');
         let images = [];
         let pendingImages = imageDivs.length;
 
         let finalizeCoursePublish = (processedImages) => {
-            // جمع امتحان الكورس
             let examTitle = document.getElementById('course-exam-title').value.trim();
             let duration = parseInt(document.getElementById('course-exam-time').value) * 60 || 1800;
             let qCards = document.querySelectorAll('#course-exam-questions-container > .question-card-builder');
@@ -792,7 +801,13 @@
         document.getElementById('teacher-dash-title').innerText = `لوحة تحكم المعلم: ${currentUser.name}`;
         document.getElementById('teacher-welcome-msg').innerText = `التخصص: ${currentUser.subject} | الكود التعريفي: ${currentUser.id}`;
 
-        // إدارة وحذف الكورسات في أي وقت
+        // محفظة المعلم وأرباحه
+        db.ref('teacher_wallets/' + currentUser.id).on('value', (snap) => {
+            const w = snap.val() || { points: 0 };
+            document.getElementById('teacher-wallet-display').innerText = `${w.points} نقطة`;
+        });
+
+        // إدارة وحذف وقفل الكورسات عن الطلاب
         db.ref(`courses/${currentUser.id}`).on('value', (snap) => {
             const courses = snap.val() || {};
             const container = document.getElementById('teacher-manage-courses-list');
@@ -802,14 +817,37 @@
             Object.keys(courses).forEach(cId => {
                 let c = courses[cId];
                 hasC = true;
+                let isLocked = c.locked === true;
                 html += `
-                    <div style="background: #111827; padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color);">
-                        <div><b>${c.title}</b> (السعر: ${c.price} نقطة)</div>
-                        <button class="btn btn-danger" style="width: auto; padding: 5px 12px; margin-top:0;" onclick="deleteTeacherCourse('${currentUser.id}', '${cId}')">حذف الكورس نهائياً 🗑️</button>
+                    <div style="background: #111827; padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 10px;">
+                        <div><b>${c.title}</b> (السعر: ${c.price} نقطة) | الحالة: <span style="color: ${isLocked ? 'var(--danger)' : 'var(--success)'};">${isLocked ? 'مقفل 🔒' : 'متاح للطلاب ✅'}</span></div>
+                        <div style="display: flex; gap: 5px;">
+                            <button class="btn ${isLocked ? 'btn-success' : 'btn-warning'}" style="width: auto; padding: 5px 12px; margin-top:0;" onclick="toggleCourseLock('${currentUser.id}', '${cId}', ${isLocked})">${isLocked ? 'فتح الكورس 🔓' : 'قفل الكورس 🔒'}</button>
+                            <button class="btn btn-danger" style="width: auto; padding: 5px 12px; margin-top:0;" onclick="deleteTeacherCourse('${currentUser.id}', '${cId}')">حذف 🗑️</button>
+                        </div>
                     </div>
                 `;
             });
             container.innerHTML = hasC ? html : '<p style="color: var(--text-muted);">لا توجد كورسات منشورة حالياً.</p>';
+        });
+
+        // تقرير تتبع نسبة فتح ومشاهدة الفيديوهات للطلاب
+        db.ref(`video_analytics/${currentUser.id}`).on('value', (snap) => {
+            const analytics = snap.val() || {};
+            const container = document.getElementById('teacher-video-analytics-list');
+            let html = `<table><tr><th>هاتف الطالب</th><th>عنوان الفيديو</th><th>نسبة المشاهدة / الحالة</th></tr>`;
+            let hasData = false;
+
+            Object.keys(analytics).forEach(stPhone => {
+                let studentVideos = analytics[stPhone];
+                Object.keys(studentVideos).forEach(vKey => {
+                    let vData = studentVideos[vKey];
+                    hasData = true;
+                    html += `<tr><td>${stPhone}</td><td>${vData.videoTitle}</td><td><span class="badge badge-success">تم الفتح والمشاهدة (${vData.percent || '100%'})</span></td></tr>`;
+                });
+            });
+            html += `</table>`;
+            container.innerHTML = hasData ? html : '<p style="color: var(--text-muted);">لا توجد بيانات مسجلة لفتح الفيديوهات حتى الآن.</p>';
         });
 
         db.ref('join_requests/' + currentUser.id).on('value', (snap) => {
@@ -851,6 +889,7 @@
             container.innerHTML = hasSt ? html : '<p style="color: var(--text-muted);">لا يوجد طلاب مقبولة عضويتهم معك حالياً.</p>';
         });
 
+        // قسم تصحيح الأسئلة المقالية وإرسال الدرجات لطالب
         db.ref('exam_results').on('value', (snap) => {
             const allResults = snap.val() || {};
             const essayContainer = document.getElementById('teacher-essay-grading-list');
@@ -873,7 +912,7 @@
                                         ${ans.fileData ? `<div style="margin: 10px 0;"><img src="${ans.fileData}" style="max-width:200px; max-height:130px; border-radius:6px; border:1px solid var(--border-color);" alt="صورة إجابة الطالب"></div>` : ''}
                                         <div class="flex-row" style="align-items: center; margin-top: 10px;">
                                             <input type="number" id="grade_input_${stPhone}_${examId}_${qIdx}" placeholder="أدخل الدرجة" style="max-width: 180px;" min="0">
-                                            <button class="btn btn-success" style="padding: 10px 20px; font-size: 14px; width: auto; margin-top:0;" onclick="submitEssayGrade('${stPhone}', '${examId}', '${qIdx}')">اعتماد الدرجة 🎯</button>
+                                            <button class="btn btn-success" style="padding: 10px 20px; font-size: 14px; width: auto; margin-top:0;" onclick="submitEssayGrade('${stPhone}', '${examId}', '${qIdx}')">اعتماد و إرسال الدرجة للطالب 🎯</button>
                                         </div>
                                     </div>
                                 `;
@@ -883,6 +922,12 @@
                 });
             });
             essayContainer.innerHTML = hasEssay ? essayHtml : '<p style="color: var(--text-muted);">لا توجد إجابات مقالية مرسلة تنتظر التصحيح حالياً.</p>';
+        });
+    }
+
+    function toggleCourseLock(teacherId, courseId, currentLockStatus) {
+        db.ref(`courses/${teacherId}/${courseId}/locked`).set(!currentLockStatus).then(() => {
+            alert(!currentLockStatus ? '🔒 تم قفل الكورس عن الطلاب بنجاح.' : '🔓 تم فتح الكورس وإتاحته للطلاب بنجاح.');
         });
     }
 
@@ -908,7 +953,7 @@
                 res.answers[qIdx].givenScore = essayScore;
 
                 db.ref(`exam_results/${stPhone}/${examId}`).set(res).then(() => {
-                    alert('✅ تمت إضافة الدرجة بنجاح للطالب!');
+                    alert('✅ تمت إضافة وإرسال الدرجة بنجاح لطالب!');
                 });
             }
         });
@@ -1042,6 +1087,7 @@
 
                 Object.keys(courses).forEach(cId => {
                     let c = courses[cId];
+                    if (c.locked) return; // تخطي الكورسات المقفلة من المعلم
                     hasCourses = true;
                     let isBought = purchased[cId] === true;
 
@@ -1051,18 +1097,18 @@
                             <p style="color: var(--text-muted); margin: 5px 0;">${c.desc || ''}</p>
                             <p style="color: var(--warning); font-weight: 700; margin-bottom: 10px;">السعر: ${c.price} نقطة</p>
                             ${isBought ? 
-                                `<button class="btn btn-success" style="width: auto; padding: 8px 20px;" onclick='openCourseModal(${JSON.stringify(c)})'>دخول لمحتوى الكورس (فيديوهات، صور، امتحان) 📺</button>` :
-                                `<button class="btn btn-warning" style="width: auto; padding: 8px 20px;" onclick="buyCourse('${cId}',${c.price})">شراء الكورس بالنقاط 💳</button>`
+                                `<button class="btn btn-success" style="width: auto; padding: 8px 20px;" onclick='openCourseModal("${teacherId}", ${JSON.stringify(c)})'>دخول لمحتوى الكورس (فيديوهات، صور، امتحان) 📺</button>` :
+                                `<button class="btn btn-warning" style="width: auto; padding: 8px 20px;" onclick="buyCourse('${teacherId}','${cId}',${c.price})">شراء الكورس بالنقاط 💳</button>`
                             }
                         </div>
                     `;
                 });
-                box.innerHTML = hasCourses ? html : '<p style="color: var(--text-muted);">لا توجد كورسات مرفوعة حالياً من هذا المعلم.</p>';
+                box.innerHTML = hasCourses ? html : '<p style="color: var(--text-muted);">لا توجد كورسات متاحة حالياً (قد تكون مقفلة من المعلم).</p>';
             });
         });
     }
 
-    function buyCourse(courseId, price) {
+    function buyCourse(teacherId, courseId, price) {
         db.ref('wallets/' + currentUser.phone).once('value', (snap) => {
             let wallet = snap.val() || { points: 0 };
             if (wallet.points < price) {
@@ -1074,26 +1120,33 @@
                 let newBalance = wallet.points - price;
                 db.ref('wallets/' + currentUser.phone).set({ points: newBalance }).then(() => {
                     db.ref(`student_purchases/${currentUser.phone}/${courseId}`).set(true).then(() => {
-                        alert('🎉 مبروك! تم شراء الكورس بنجاح وبإمكانك مشاهدته الآن.');
-                        location.reload();
+                        // تحويل نقاط شراء الكورس لمحفظة المعلم
+                        db.ref('teacher_wallets/' + teacherId).once('value', (tWSnap) => {
+                            let tWallet = tWSnap.val() || { points: 0 };
+                            let newTPoints = tWallet.points + price;
+                            db.ref('teacher_wallets/' + teacherId).set({ points: newTPoints }).then(() => {
+                                alert('🎉 مبروك! تم شراء الكورس بنجاح وتم إيداع النقاط لمحفظة المعلم.');
+                                location.reload();
+                            });
+                        });
                     });
                 });
             }
         });
     }
 
-    function openCourseModal(course) {
+    function openCourseModal(teacherId, course) {
         document.getElementById('modal-course-title').innerText = course.title;
         let contentHtml = `<p style="color: var(--text-muted); margin-bottom: 15px;">${course.desc || ''}</p>`;
 
-        // قسم الفيديوهات
+        // قسم الفيديوهات مع تسجيل فتح المشاهدة للمعلم
         contentHtml += `<h3 style="color: var(--accent); margin-top:15px;">🎥 فيديوهات الكورس:</h3>`;
         if (course.videos && course.videos.length > 0) {
             course.videos.forEach((v, idx) => {
                 contentHtml += `
                     <div style="background: #0b0f19; padding: 12px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
                         <span><b>فيديو (${idx + 1}):</b> ${v.title}</span>
-                        <button class="btn btn-success" style="width: auto; padding: 6px 15px; margin-top:0;" onclick="openVideoModal('${v.title}', '${v.url}')">مشاهدة الفيديو 📺</button>
+                        <button class="btn btn-success" style="width: auto; padding: 6px 15px; margin-top:0;" onclick="openVideoWithTracking('${teacherId}', '${v.title}', '${v.url}')">فتح ومشاهدة الفيديو 📺</button>
                     </div>
                 `;
             });
@@ -1101,7 +1154,6 @@
             contentHtml += `<p style="color: var(--text-muted);">لا توجد فيديوهات مرفقة في هذا الكورس.</p>`;
         }
 
-        // قسم الصور
         contentHtml += `<h3 style="color: var(--success); margin-top:20px;">🖼️ صور ومخططات الكورس:</h3>`;
         if (course.images && course.images.length > 0) {
             course.images.forEach(img => {
@@ -1116,7 +1168,6 @@
             contentHtml += `<p style="color: var(--text-muted);">لا توجد صور مرفقة في هذا الكورس.</p>`;
         }
 
-        // قسم امتحان الكورس
         contentHtml += `<h3 style="color: var(--danger); margin-top:20px;">📝 اختبار الكورس:</h3>`;
         if (course.examData) {
             contentHtml += `
@@ -1136,14 +1187,22 @@
         document.getElementById('course-view-modal').classList.remove('hidden');
     }
 
-    function closeCourseModal() {
-        document.getElementById('course-view-modal').classList.add('hidden');
-    }
+    function openVideoWithTracking(teacherId, videoTitle, url) {
+        // تسجيل فتح الفيديو وإرسال نسبة المشاهدة لمعلم المادة
+        db.ref(`video_analytics/${teacherId}/${currentUser.phone}/${btoa(videoTitle).replace(/=/g, '')}`).set({
+            videoTitle: videoTitle,
+            opened: true,
+            percent: '100% (تم الفتح)',
+            timestamp: Date.now()
+        });
 
-    function openVideoModal(title, url) {
-        document.getElementById('modal-video-title').innerText = title;
+        document.getElementById('modal-video-title').innerText = videoTitle;
         document.getElementById('modal-video-container').innerHTML = `<iframe src="${url}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" allowfullscreen></iframe>`;
         document.getElementById('video-modal').classList.remove('hidden');
+    }
+
+    function closeCourseModal() {
+        document.getElementById('course-view-modal').classList.add('hidden');
     }
 
     function closeVideoModal() {
