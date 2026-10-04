@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محاكاة القيادة العليا - خريطة العالم المرسومة أونلاين</title>
+    <title>محاكاة القيادة العليا - خريطة العالم الكبرى أونلاين</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome للأيقونات -->
@@ -14,18 +14,9 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
         body { font-family: 'Cairo', sans-serif; background-color: #030712; color: #f8fafc; overflow-x: hidden; }
-        .map-bg {
-            background: linear-gradient(135deg, #07101f 0%, #020408 100%);
-        }
-        /* تأثيرات الدول على الخريطة المرسومة */
-        .map-country {
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .map-country:hover {
-            fill-opacity: 0.9 !important;
-            filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.8));
-        }
+        .map-bg { background: linear-gradient(135deg, #07101f 0%, #020408 100%); }
+        .map-country { transition: all 0.3s ease; cursor: pointer; }
+        .map-country:hover { fill-opacity: 0.85 !important; filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.8)); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col map-bg">
@@ -35,41 +26,60 @@
         <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl max-w-lg w-full shadow-2xl text-center">
             <div class="text-5xl mb-4 text-blue-500 animate-pulse"><i class="fa-solid fa-earth-americas"></i></div>
             <h1 class="text-2xl font-black mb-2 text-white">غرفة العمليات الاستراتيجية الكبرى</h1>
-            <p class="text-slate-400 text-sm mb-6">اللعبة تدعم حتى 10 لاعبين أونلاين على خريطة العالم المرسومة. الدول غير المحجوزة يديرها الذكاء الاصطناعي (AI)!</p>
+            <p class="text-slate-400 text-sm mb-6">اللعبة تدعم حتى 10 لاعبين أونلاين بـخريطة العالم الشاملة. الدول غير المحجوزة يديرها الذكاء الاصطناعي (AI)!</p>
             
             <div class="space-y-4 text-right">
                 <div>
                     <label class="text-xs text-slate-400 block mb-1">اختر دولتك للسيطرة عليها:</label>
                     <select id="country-select" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500">
+                        <option value="egypt">مصر</option>
+                        <option value="ksa">المملكة العربية السعودية</option>
+                        <option value="uae">الإمارات العربية المتحدة</option>
                         <option value="usa">الولايات المتحدة الأمريكية</option>
                         <option value="china">جمهورية الصين الشعبية</option>
                         <option value="russia">روسيا</option>
-                        <option value="egypt">مصر</option>
-                        <option value="ksa">المملكة العربية السعودية</option>
                         <option value="uk">المملكة المتحدة</option>
                         <option value="france">فرنسا</option>
                         <option value="germany">ألمانيا</option>
                         <option value="turkey">تركيا</option>
+                        <option value="iran">إيران</option>
                         <option value="brazil">البرازيل</option>
+                        <option value="japan">اليابان</option>
+                        <option value="india">الهند</option>
+                        <option value="qatar">قطر</option>
+                        <option value="algeria">الجزائر</option>
+                        <option value="iraq">العراق</option>
                     </select>
                 </div>
                 <div>
                     <label class="text-xs text-slate-400 block mb-1">اسم القائد العسكري (أنت):</label>
-                    <input type="text" id="player-leader-name" placeholder="مثال: القائد محمد" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500">
+                    <input type="text" id="player-leader-name" placeholder="مثال: القائد محمد عادل" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500">
                 </div>
-                <button onclick="joinGame()" class="w-full bg-blue-600 hover:bg-blue-500 font-bold py-3 rounded-xl transition shadow-lg shadow-blue-600/30 text-white mt-4">دخول الخريطة المرسومة</button>
+                <button onclick="joinGame()" class="w-full bg-blue-600 hover:bg-blue-500 font-bold py-3 rounded-xl transition shadow-lg shadow-blue-600/30 text-white mt-4">دخول خريطة العالم</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إشعارات الطلبات الواردة من اللاعبين الآخرين -->
+    <div id="incoming-request-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-slate-900 border border-amber-500 p-6 rounded-2xl max-w-md w-full shadow-2xl text-center">
+            <div class="text-4xl text-amber-400 mb-3"><i class="fa-solid fa-envelope-open-text animate-bounce"></i></div>
+            <h3 class="text-lg font-black text-white mb-1">طلب استراتيجي وارد!</h3>
+            <p id="request-desc-text" class="text-xs text-slate-300 mb-6">هناك دولة تريد إبرام اتفاقية معك.</p>
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="respondRequest(true)" class="bg-emerald-600 hover:bg-emerald-500 font-bold py-2.5 rounded-xl text-xs text-white">موافقة</button>
+                <button onclick="respondRequest(false)" class="bg-red-600 hover:bg-red-500 font-bold py-2.5 rounded-xl text-xs text-white">رفض</button>
             </div>
         </div>
     </div>
 
     <!-- واجهة اللعبة الرئيسية -->
     <div id="game-screen" class="hidden flex-1 flex flex-col">
-        
         <!-- الشريط العلوي -->
         <header class="bg-slate-900/90 backdrop-blur border-b border-slate-800 px-6 py-3 flex flex-wrap justify-between items-center gap-4 z-40 sticky top-0">
             <div class="flex items-center gap-3">
                 <span class="bg-blue-600/20 text-blue-400 border border-blue-500/30 px-3 py-1 rounded-lg font-bold text-sm" id="display-country-name">الدولة</span>
-                <span class="text-xs text-slate-400">القائد: <strong id="display-leader-name" class="text-white"></strong> | اليوم الاستراتيجي: <strong id="game-day" class="text-yellow-400">1</strong></span>
+                <span class="text-xs text-slate-400">القائد: <strong id="display-leader-name" class="text-white"></strong> | اليوم: <strong id="game-day" class="text-yellow-400">1</strong></span>
             </div>
             <div class="flex items-center flex-wrap gap-5 text-xs md:text-sm">
                 <div class="flex items-center gap-1.5"><i class="fa-solid fa-coins text-yellow-400"></i> الخزينة: <span id="res-money" class="font-bold text-yellow-400">30000</span>$</div>
@@ -82,89 +92,117 @@
 
         <!-- المحتوى الرئيسي -->
         <main class="flex-1 p-4 grid grid-cols-1 lg:grid-cols-4 gap-4 max-w-[1700px] mx-auto w-full">
-            
-            <!-- خريطة العالم المرسومة Vector Map -->
+            <!-- خريطة العالم المرسومة الشاملة SVG -->
             <div class="lg:col-span-3 bg-slate-900/60 border border-slate-800 rounded-2xl p-4 relative flex flex-col shadow-2xl overflow-hidden min-h-[620px]">
                 <div class="flex justify-between items-center mb-3">
-                    <h2 class="text-lg font-black flex items-center gap-2"><i class="fa-solid fa-map text-blue-500"></i> خريطة العالم التفاعلية المرسومة (اضغط على أي دولة للتفاعل)</h2>
-                    <span class="text-xs bg-slate-800 text-slate-300 px-3 py-1 rounded-full"><i class="fa-solid fa-users text-blue-400"></i> متصل أونلاين</span>
+                    <h2 class="text-lg font-black flex items-center gap-2"><i class="fa-solid fa-globe text-blue-500"></i> خريطة العالم الكبرى المرسومة (انقر لأي دولة للتفاعل أو الغزو)</h2>
+                    <span class="text-xs bg-slate-800 text-slate-300 px-3 py-1 rounded-full"><i class="fa-solid fa-users text-blue-400"></i> نظام أونلاين مفعل</span>
                 </div>
 
-                <!-- مساحة الخريطة المرسومة بـ SVG -->
                 <div class="flex-1 bg-slate-950/90 border border-slate-800/80 rounded-xl p-2 relative flex items-center justify-center overflow-hidden">
                     <svg viewBox="0 0 1000 500" class="w-full h-full max-h-[580px]">
-                        <!-- خلفية خريطة العالم (محيطات) -->
-                        <rect width="1000" height="500" fill="#090d16" rx="12"/>
+                        <rect width="1000" height="500" fill="#070b14" rx="12"/>
                         
-                        <!-- شبكة خطوط الطول والعرض الجمالية -->
-                        <g stroke="#1e293b" stroke-width="0.5" stroke-dasharray="4 4">
-                            <line x1="0" y1="125" x2="1000" y2="125" />
-                            <line x1="0" y1="250" x2="1000" y2="250" />
-                            <line x1="0" y1="375" x2="1000" y2="375" />
-                            <line x1="250" y1="0" x2="250" y2="500" />
-                            <line x1="500" y1="0" x2="500" y2="500" />
-                            <line x1="750" y1="0" x2="750" y2="500" />
-                        </g>
-
-                        <!-- رسومات الدول التفاعلية (SVG Paths) -->
-                        <!-- أمريكا الشمالية / الولايات المتحدة -->
+                        <!-- أمريكا الشمالية -->
                         <g onclick="handleCountryClick('usa')" class="map-country">
-                            <path d="M 120,100 L 240,90 L 260,160 L 140,180 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-usa"/>
-                            <text x="180" y="140" fill="#cbd5e1" font-size="11" font-weight="bold" text-anchor="middle">USA</text>
+                            <path d="M 100,90 L 230,80 L 250,170 L 120,190 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-usa"/>
+                            <text x="165" y="140" fill="#cbd5e1" font-size="10" font-weight="bold" text-anchor="middle">USA</text>
                         </g>
 
-                        <!-- أمريكا الجنوبية / البرازيل -->
+                        <!-- أمريكا الجنوبية (البرازيل) -->
                         <g onclick="handleCountryClick('brazil')" class="map-country">
-                            <path d="M 270,280 L 340,270 L 360,370 L 280,390 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-brazil"/>
-                            <text x="315" y="335" fill="#cbd5e1" font-size="11" font-weight="bold" text-anchor="middle">البرازيل</text>
+                            <path d="M 260,270 L 340,260 L 360,380 L 270,390 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-brazil"/>
+                            <text x="310" y="325" fill="#cbd5e1" font-size="10" font-weight="bold" text-anchor="middle">البرازيل</text>
                         </g>
 
-                        <!-- أوروبا / المملكة المتحدة -->
+                        <!-- أوروبا (المملكة المتحدة) -->
                         <g onclick="handleCountryClick('uk')" class="map-country">
                             <path d="M 470,110 L 490,105 L 495,125 L 475,130 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-uk"/>
-                            <text x="482" y="120" fill="#cbd5e1" font-size="9" font-weight="bold" text-anchor="middle">UK</text>
+                            <text x="482" y="118" fill="#cbd5e1" font-size="8" font-weight="bold" text-anchor="middle">UK</text>
                         </g>
 
-                        <!-- أوروبا / فرنسا -->
+                        <!-- فرنسا -->
                         <g onclick="handleCountryClick('france')" class="map-country">
-                            <path d="M 505,135 L 530,130 L 535,155 L 510,160 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-france"/>
-                            <text x="520" y="148" fill="#cbd5e1" font-size="9" font-weight="bold" text-anchor="middle">فرنسا</text>
+                            <path d="M 500,135 L 525,130 L 530,155 L 505,160 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-france"/>
+                            <text x="515" y="145" fill="#cbd5e1" font-size="8" font-weight="bold" text-anchor="middle">فرنسا</text>
                         </g>
 
-                        <!-- أوروبا / ألمانيا -->
+                        <!-- ألمانيا -->
                         <g onclick="handleCountryClick('germany')" class="map-country">
-                            <path d="M 545,125 L 570,120 L 575,145 L 550,150 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-germany"/>
-                            <text x="560" y="138" fill="#cbd5e1" font-size="9" font-weight="bold" text-anchor="middle">ألمانيا</text>
-                        </g>
-
-                        <!-- روسيا -->
-                        <g onclick="handleCountryClick('russia')" class="map-country">
-                            <path d="M 580,70 L 800,60 L 820,140 L 590,150 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-russia"/>
-                            <text x="700" y="110" fill="#cbd5e1" font-size="12" font-weight="bold" text-anchor="middle">روسيا</text>
+                            <path d="M 540,125 L 565,120 L 570,145 L 545,150 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-germany"/>
+                            <text x="555" y="135" fill="#cbd5e1" font-size="8" font-weight="bold" text-anchor="middle">ألمانيا</text>
                         </g>
 
                         <!-- تركيا -->
                         <g onclick="handleCountryClick('turkey')" class="map-country">
-                            <path d="M 570,170 L 610,165 L 615,185 L 575,190 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-turkey"/>
-                            <text x="592" y="180" fill="#cbd5e1" font-size="9" font-weight="bold" text-anchor="middle">تركيا</text>
+                            <path d="M 575,165 L 610,160 L 615,185 L 580,190 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-turkey"/>
+                            <text x="595" y="176" fill="#cbd5e1" font-size="8" font-weight="bold" text-anchor="middle">تركيا</text>
                         </g>
 
                         <!-- مصر -->
                         <g onclick="handleCountryClick('egypt')" class="map-country">
-                            <path d="M 570,200 L 605,195 L 610,225 L 575,230 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-egypt"/>
-                            <text x="590" y="215" fill="#cbd5e1" font-size="10" font-weight="bold" text-anchor="middle">مصر</text>
+                            <path d="M 570,195 L 605,190 L 610,220 L 575,225 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-egypt"/>
+                            <text x="590" y="210" fill="#cbd5e1" font-size="9" font-weight="bold" text-anchor="middle">مصر</text>
                         </g>
 
                         <!-- السعودية -->
                         <g onclick="handleCountryClick('ksa')" class="map-country">
-                            <path d="M 620,220 L 670,210 L 685,260 L 625,270 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-ksa"/>
-                            <text x="650" y="242" fill="#cbd5e1" font-size="10" font-weight="bold" text-anchor="middle">السعودية</text>
+                            <path d="M 620,215 L 675,205 L 685,255 L 625,265 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-ksa"/>
+                            <text x="650" y="238" fill="#cbd5e1" font-size="9" font-weight="bold" text-anchor="middle">السعودية</text>
+                        </g>
+
+                        <!-- الإمارات -->
+                        <g onclick="handleCountryClick('uae')" class="map-country">
+                            <path d="M 690,230 L 710,225 L 715,240 L 695,245 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-uae"/>
+                            <text x="702" y="235" fill="#cbd5e1" font-size="7" font-weight="bold" text-anchor="middle">الإمارات</text>
+                        </g>
+
+                        <!-- قطر -->
+                        <g onclick="handleCountryClick('qatar')" class="map-country">
+                            <path d="M 678,220 L 687,218 L 689,228 L 680,230 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-qatar"/>
+                            <text x="683" y="225" fill="#cbd5e1" font-size="6" font-weight="bold" text-anchor="middle">قطر</text>
+                        </g>
+
+                        <!-- العراق -->
+                        <g onclick="handleCountryClick('iraq')" class="map-country">
+                            <path d="M 620,185 L 650,180 L 655,205 L 625,210 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-iraq"/>
+                            <text x="637" y="198" fill="#cbd5e1" font-size="8" font-weight="bold" text-anchor="middle">العراق</text>
+                        </g>
+
+                        <!-- الجزائر -->
+                        <g onclick="handleCountryClick('algeria')" class="map-country">
+                            <path d="M 500,180 L 545,175 L 550,210 L 505,215 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-algeria"/>
+                            <text x="525" y="197" fill="#cbd5e1" font-size="8" font-weight="bold" text-anchor="middle">الجزائر</text>
+                        </g>
+
+                        <!-- إيران -->
+                        <g onclick="handleCountryClick('iran')" class="map-country">
+                            <path d="M 660,175 L 700,170 L 705,200 L 665,205 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-iran"/>
+                            <text x="682" y="190" fill="#cbd5e1" font-size="9" font-weight="bold" text-anchor="middle">إيران</text>
+                        </g>
+
+                        <!-- روسيا -->
+                        <g onclick="handleCountryClick('russia')" class="map-country">
+                            <path d="M 580,60 L 810,50 L 835,140 L 590,150 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-russia"/>
+                            <text x="700" y="105" fill="#cbd5e1" font-size="11" font-weight="bold" text-anchor="middle">روسيا</text>
                         </g>
 
                         <!-- الصين -->
                         <g onclick="handleCountryClick('china')" class="map-country">
-                            <path d="M 730,160 L 850,150 L 870,230 L 740,240 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-china"/>
-                            <text x="800" y="200" fill="#cbd5e1" font-size="12" font-weight="bold" text-anchor="middle">الصين</text>
+                            <path d="M 730,155 L 860,145 L 880,225 L 745,235 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-china"/>
+                            <text x="805" y="195" fill="#cbd5e1" font-size="11" font-weight="bold" text-anchor="middle">الصين</text>
+                        </g>
+
+                        <!-- الهند -->
+                        <g onclick="handleCountryClick('india')" class="map-country">
+                            <path d="M 740,240 L 790,235 L 800,290 L 750,295 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-india"/>
+                            <text x="770" y="270" fill="#cbd5e1" font-size="9" font-weight="bold" text-anchor="middle">الهند</text>
+                        </g>
+
+                        <!-- اليابان -->
+                        <g onclick="handleCountryClick('japan')" class="map-country">
+                            <path d="M 890,170 L 910,165 L 915,195 L 895,200 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2" id="path-japan"/>
+                            <text x="902" y="185" fill="#cbd5e1" font-size="7" font-weight="bold" text-anchor="middle">اليابان</text>
                         </g>
                     </svg>
                 </div>
@@ -192,11 +230,10 @@
                 <div class="flex-1 bg-slate-950 p-3 rounded-xl border border-slate-800 flex flex-col h-[220px]">
                     <h4 class="font-bold text-xs mb-2 text-blue-400"><i class="fa-solid fa-satellite-dish"></i> السجل الدبلوماسي والأحداث</h4>
                     <div id="diplomacy-log" class="flex-1 overflow-y-auto space-y-2 text-[11px] text-slate-300 pr-1">
-                        <div class="p-2 bg-slate-900 rounded border border-slate-800 text-yellow-400">مرحباً بك على الخريطة المرسومة أونلاين. انقر على أي دولة لتوقيع المعاهدات أو إدارتها.</div>
+                        <div class="p-2 bg-slate-900 rounded border border-slate-800 text-yellow-400">مرحباً بك. اختر دولة لإرسال معاهدة تتطلب موافقة الطرف الآخر، أو شن حرب فورية لتكتسحه!</div>
                     </div>
                 </div>
             </div>
-
         </main>
     </div>
 
@@ -205,29 +242,26 @@
         <div class="bg-slate-900 border border-slate-700 p-6 rounded-2xl max-w-md w-full shadow-2xl relative">
             <button onclick="closeModal()" class="absolute top-4 left-4 text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
             <h3 id="modal-country-title" class="text-xl font-black text-blue-400 mb-1">اسم الدولة</h3>
-            <p id="modal-country-status" class="text-xs text-slate-400 mb-4">حالة الحاكم: جاري التحقق...</p>
+            <p id="modal-country-status" class="text-xs text-slate-400 mb-4">حالة الحاكم...</p>
             
             <div class="space-y-3">
-                <button onclick="executeAction('trade')" class="w-full bg-emerald-600/20 border border-emerald-500/40 hover:bg-emerald-600 text-emerald-300 hover:text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition">
-                    <i class="fa-solid fa-handshake"></i> توقيع اتفاقية تجارية واقتصادية
+                <button onclick="sendTreatyRequest('trade')" class="w-full bg-emerald-600/20 border border-emerald-500/40 hover:bg-emerald-600 text-emerald-300 hover:text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition">
+                    <i class="fa-solid fa-handshake"></i> طلب اتفاقية تجارية واقتصادية
                 </button>
-                <button onclick="executeAction('alliance')" class="w-full bg-blue-600/20 border border-blue-500/40 hover:bg-blue-600 text-blue-300 hover:text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition">
+                <button onclick="sendTreatyRequest('alliance')" class="w-full bg-blue-600/20 border border-blue-500/40 hover:bg-blue-600 text-blue-300 hover:text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition">
                     <i class="fa-solid fa-shield-halved"></i> طلب تحالف عسكري استراتيجي
                 </button>
-                <button onclick="executeAction('support')" class="w-full bg-amber-600/20 border border-amber-500/40 hover:bg-amber-600 text-amber-300 hover:text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition">
-                    <i class="fa-solid fa-truck-field"></i> تقديم / طلب دعم عسكري مباشر
+                <button onclick="sendTreatyRequest('support')" class="w-full bg-amber-600/20 border border-amber-500/40 hover:bg-amber-600 text-amber-300 hover:text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition">
+                    <i class="fa-solid fa-truck-field"></i> طلب دعم عسكري مباشر
                 </button>
-                <button onclick="executeAction('base')" class="w-full bg-purple-600/20 border border-purple-500/40 hover:bg-purple-600 text-purple-300 hover:text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition">
-                    <i class="fa-solid fa-flag"></i> طلب إنشاء قاعدة عسكرية (موافقة الحاكم الآخر / AI)
-                </button>
-                <button onclick="executeAction('war')" class="w-full bg-red-600/20 border border-red-500/40 hover:bg-red-600 text-red-400 hover:text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition">
-                    <i class="fa-solid fa-crosshairs"></i> إعلان الغزو العسكري المباشر
+                <button onclick="executeWar()" class="w-full bg-red-600/20 border border-red-500/40 hover:bg-red-600 text-red-400 hover:text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition">
+                    <i class="fa-solid fa-crosshairs"></i> إعلان الحرب الفورية (قرار فردي - الأقوى يكتسح)
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- كود الجافاسكريبت والربط مع Firebase وخريطة SVG -->
+    <!-- كود الجافاسكريبت والربط المباشر مع Firebase -->
     <script>
         const firebaseConfig = { databaseURL: "https://mr-mohammed-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
@@ -239,18 +273,14 @@
         let myCountryId = null;
         let selectedTargetKey = "";
         let allActivePlayers = {};
+        let pendingRequestData = null;
 
         const countryNamesMap = {
-            "usa": "الولايات المتحدة الأمريكية",
-            "china": "جمهورية الصين الشعبية",
-            "russia": "روسيا",
-            "egypt": "مصر",
-            "ksa": "المملكة العربية السعودية",
-            "uk": "المملكة المتحدة",
-            "france": "فرنسا",
-            "germany": "ألمانيا",
-            "turkey": "تركيا",
-            "brazil": "البرازيل"
+            "egypt": "مصر", "ksa": "المملكة العربية السعودية", "uae": "الإمارات العربية المتحدة",
+            "usa": "الولايات المتحدة الأمريكية", "china": "جمهورية الصين الشعبية", "russia": "روسيا",
+            "uk": "المملكة المتحدة", "france": "فرنسا", "germany": "ألمانيا", "turkey": "تركيا",
+            "iran": "إيران", "brazil": "البرازيل", "japan": "اليابان", "india": "الهند",
+            "qatar": "قطر", "algeria": "الجزائر", "iraq": "العراق"
         };
 
         let myData = {
@@ -279,9 +309,10 @@
                 document.getElementById('display-leader-name').innerText = myLeaderName;
                 
                 listenToPlayers();
+                listenToRequests();
                 startDayCycle();
             }).catch(() => {
-                alert('تأكد من إعداد قواعد الاتصال في Firebase.');
+                alert('تأكد من إعداد قواعد الاتصال بقاعدة البيانات Firebase.');
             });
         }
 
@@ -293,7 +324,6 @@
         }
 
         function updateMapColors() {
-            // إعادة تعيين جميع الدول للون الافتراضي
             for (let key in countryNamesMap) {
                 let pathEl = document.getElementById('path-' + key);
                 if(pathEl) {
@@ -302,16 +332,15 @@
                 }
             }
 
-            // تلوين الدول حسب اللاعبين المتصلين أو الذكاء الاصطناعي
             for (let id in allActivePlayers) {
                 let pData = allActivePlayers[id];
                 let pathEl = document.getElementById('path-' + pData.countryKey);
                 if(pathEl) {
                     if(pData.countryKey === myCountryKey) {
-                        pathEl.setAttribute('fill', '#2563eb'); // لون دولتك (أزرق غامق مميز)
+                        pathEl.setAttribute('fill', '#2563eb');
                         pathEl.setAttribute('stroke', '#60a5fa');
                     } else {
-                        pathEl.setAttribute('fill', '#1d4ed8'); // لون لاعب أونلاين آخر
+                        pathEl.setAttribute('fill', '#1d4ed8');
                         pathEl.setAttribute('stroke', '#93c5fd');
                     }
                 }
@@ -326,7 +355,6 @@
             selectedTargetKey = cKey;
             let cName = countryNamesMap[cKey];
 
-            // البحث عما إذا كانت محجوزة من لاعب آخر
             let onlineLeader = null;
             for(let id in allActivePlayers) {
                 if(allActivePlayers[id].countryKey === cKey) {
@@ -344,33 +372,109 @@
             document.getElementById('country-modal').classList.add('hidden');
         }
 
-        function executeAction(type) {
-            closeModal();
+        // الاستماع للطلبات الاستراتيجية الموجهة إليك خصيصاً
+        function listenToRequests() {
+            db.ref('requests/' + myCountryKey).on('value', snapshot => {
+                let req = snapshot.val();
+                if(req) {
+                    pendingRequestData = req;
+                    let typeText = req.type === 'trade' ? 'اتفاقية تجارية واقتصادية' : (req.type === 'alliance' ? 'تحالف عسكري استراتيجي' : 'دعم عسكري مباشر');
+                    document.getElementById('request-desc-text').innerText = `القائد ${req.senderLeader} من دولة ${countryNamesMap[req.senderKey]} يطلب منك الموافقة على: (${typeText}).`;
+                    document.getElementById('incoming-request-modal').classList.remove('hidden');
+                }
+            });
+        }
+
+        function respondRequest(isApproved) {
+            document.getElementById('incoming-request-modal').classList.add('hidden');
             let logContainer = document.getElementById('diplomacy-log');
             let timeStr = `[اليوم ${myData.day}]`;
-            let targetName = countryNamesMap[selectedTargetKey];
+            let senderName = countryNamesMap[pendingRequestData.senderKey];
 
-            if(type === 'trade') {
-                myData.factories += 1;
-                myData.money += 2000;
-                logContainer.innerHTML = `<div class="p-2 bg-emerald-950/40 border border-emerald-500/30 rounded text-emerald-300">${timeStr} تمت الموافقة على <strong>اتفاقية تجارية</strong> مع ${targetName}!</div>` + logContainer.innerHTML;
-            } else if(type === 'alliance') {
-                logContainer.innerHTML = `<div class="p-2 bg-blue-950/40 border border-blue-500/30 rounded text-blue-300">${timeStr} تم إبرام <strong>تحالف عسكري استراتيجي</strong> مع ${targetName}.</div>` + logContainer.innerHTML;
-            } else if(type === 'support') {
-                myData.troops += 5000;
-                logContainer.innerHTML = `<div class="p-2 bg-amber-950/40 border border-amber-500/30 rounded text-amber-300">${timeStr} أرسلت ${targetName} <strong>دعمًا عسكريًا</strong> (+5000 جندي).</div>` + logContainer.innerHTML;
-            } else if(type === 'base') {
-                let isApproved = Math.random() > 0.3;
-                if(isApproved) {
-                    myData.money += 4000;
-                    logContainer.innerHTML = `<div class="p-2 bg-purple-950/40 border border-purple-500/30 rounded text-purple-300">${timeStr} وافقت ${targetName} على <strong>إنشاء قاعدة عسكرية</strong>!</div>` + logContainer.innerHTML;
+            if(isApproved) {
+                if(pendingRequestData.type === 'trade') {
+                    myData.factories += 1; myData.money += 3000;
+                } else if(pendingRequestData.type === 'alliance') {
+                    myData.troops += 5000;
                 } else {
-                    logContainer.innerHTML = `<div class="p-2 bg-red-950/40 border border-red-500/30 rounded text-red-300">${timeStr} رفضت ${targetName} طلب إنشاء قاعدة عسكرية.</div>` + logContainer.innerHTML;
+                    myData.troops += 10000;
                 }
-            } else if(type === 'war') {
-                myData.money += 8000;
-                myData.troops -= 3000;
-                logContainer.innerHTML = `<div class="p-2 bg-red-950/50 border border-red-500/40 rounded text-red-400">${timeStr} تم إعلان <strong>الغزو العسكري</strong> على ${targetName}! انتصر جيشك.</div>` + logContainer.innerHTML;
+                logContainer.innerHTML = `<div class="p-2 bg-emerald-950/40 border border-emerald-500/30 rounded text-emerald-300">${timeStr} قمت بال<strong>موافقة</strong> على طلب ${senderName} وتم تفعيل الاتفاقية بنجاح!</div>` + logContainer.innerHTML;
+            } else {
+                logContainer.innerHTML = `<div class="p-2 bg-red-950/40 border border-red-500/30 rounded text-red-400">${timeStr} قمت برفض طلب ${senderName}.</div>` + logContainer.innerHTML;
+            }
+            saveData();
+            db.ref('requests/' + myCountryKey).remove(); // مسح الطلب بعد الرد
+        }
+
+        function sendTreatyRequest(type) {
+            closeModal();
+            let targetName = countryNamesMap[selectedTargetKey];
+            let logContainer = document.getElementById('diplomacy-log');
+            let timeStr = `[اليوم ${myData.day}]`;
+
+            // تحقق إن كان اللاعب أونلاين أم AI
+            let targetPlayerId = null;
+            for(let id in allActivePlayers) {
+                if(allActivePlayers[id].countryKey === selectedTargetKey) {
+                    targetPlayerId = id;
+                    break;
+                }
+            }
+
+            if(targetPlayerId) {
+                // إرسال طلب حقيقي لللاعب أونلاين
+                db.ref('requests/' + selectedTargetKey).set({
+                    senderKey: myCountryKey,
+                    senderLeader: myLeaderName,
+                    type: type
+                });
+                logContainer.innerHTML = `<div class="p-2 bg-blue-950/40 border border-blue-500/30 rounded text-blue-300">${timeStr} تم إرسال <strong>طلب المعاهدة</strong> إلى دولة ${targetName}، بانتظار موافقة القائد هناك.</div>` + logContainer.innerHTML;
+            } else {
+                // تفاعل مع الذكاء الاصطناعي الفوري
+                let accepted = Math.random() > 0.3;
+                if(accepted) {
+                    if(type === 'trade') { myData.factories += 1; myData.money += 2000; }
+                    else { myData.troops += 5000; }
+                    logContainer.innerHTML = `<div class="p-2 bg-emerald-950/40 border border-emerald-500/30 rounded text-emerald-300">${timeStr} وافق الـ AI في دولة ${targetName} على المعاهدة!</div>` + logContainer.innerHTML;
+                } else {
+                    logContainer.innerHTML = `<div class="p-2 bg-red-950/40 border border-red-500/30 rounded text-red-400">${timeStr} رفض الـ AI في دولة ${targetName} الطلب.</div>` + logContainer.innerHTML;
+                }
+                saveData();
+            }
+        }
+
+        // نظام الحرب الفورية (قرار فردي والأقوى يكتسح)
+        function executeWar() {
+            closeModal();
+            let targetName = countryNamesMap[selectedTargetKey];
+            let logContainer = document.getElementById('diplomacy-log');
+            let timeStr = `[اليوم ${myData.day}]`;
+
+            // حساب القوة العسكرية الإجمالية لك
+            let myTotalPower = myData.troops + (myData.tanks * 50) + (myData.jets * 100);
+            
+            // تقدير قوة الخصم (افتراضي أو حسب بياناته إذا كان أونلاين)
+            let enemyPower = 70000; // قوة افتراضية للدولة المستهدفة
+            for(let id in allActivePlayers) {
+                if(allActivePlayers[id].countryKey === selectedTargetKey) {
+                    let ep = allActivePlayers[id];
+                    enemyPower = ep.troops + (ep.tanks * 50) + (ep.jets * 100);
+                    break;
+                }
+            }
+
+            if(myTotalPower >= enemyPower) {
+                // انتصار واكتساح
+                myData.money += 12000;
+                myData.factories += 2;
+                myData.troops -= 4000;
+                logContainer.innerHTML = `<div class="p-2 bg-red-950/50 border border-red-500/40 rounded text-red-400">${timeStr} ⚔️ أعلنت الحرب واكتسحت دولة ${targetName}! كنت الأقوى وانتصرت، وغنمت خزائنهم ومصانعهم (+2 مصنع).</div>` + logContainer.innerHTML;
+            } else {
+                // هزيمة عسكرية بسبب ضعف القوة
+                myData.troops -= 15000;
+                myData.money -= 8000;
+                logContainer.innerHTML = `<div class="p-2 bg-red-950/80 border border-red-600 rounded text-red-300">${timeStr} ❌ هُزمت في حربك ضد ${targetName}! كانت قواتهم ومناعتهم العسكرية تفوق قواتك، وتكبدت خسائر فادحة (-15000 جندي).</div>` + logContainer.innerHTML;
             }
             saveData();
         }
