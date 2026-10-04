@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>المنصة التعليمية الذكية - الإصدار الآمن والمخفي</title>
+    <title>المنصة التعليمية الذكية - الإصدار المطور الشامل</title>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -81,11 +81,11 @@
         .badge-success { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.4); }
         .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.4); }
 
-        /* حاوية مشغل الفيديو المؤَمَّن والخفي */
+        /* حاوية مشغل الفيديو المؤَمَّن */
         .secure-video-container {
             position: relative;
             width: 100%;
-            padding-bottom: 56.25%;
+            padding-bottom: 56.25%; /* نسبة 16:9 */
             height: 0;
             background: #000;
             border-radius: 12px;
@@ -107,13 +107,13 @@
 
 <div class="container">
     <div style="text-align: center; margin-bottom: 15px; font-size: 13px; color: var(--primary); font-weight: 700;">
-        إشراف: محمد عادل - النظام التعليمي الآمن
+        إشراف: محمد عادل - النظام التعليمي المطور
     </div>
 
     <!-- شاشة تسجيل الدخول والباب الرئيسي -->
     <div id="login-screen">
-        <h1 style="color: var(--primary);">المنصة التعليمية الآمنة 🚀</h1>
-        <p style="text-align: center; color: var(--text-muted); margin-bottom: 25px;">محتوى تعليمي محمي وحصري</p>
+        <h1 style="color: var(--primary);">المنصة التعليمية الذكية 🚀</h1>
+        <p style="text-align: center; color: var(--text-muted); margin-bottom: 25px;">نظّم مستقبلك الدراسي بكل سهولة وأمان</p>
         
         <div class="tabs-nav">
             <button class="tab-btn active" id="tab-btn-student" onclick="switchLoginMode('student')">دخول طالب 👨‍🎓</button>
@@ -124,7 +124,7 @@
 
         <!-- تسجيل حساب طالب جديد -->
         <div id="box-student-register" class="card-box hidden" style="max-width: 550px; margin: 0 auto; border-color: var(--success);">
-            <h3 style="color: var(--success);">📝 طلب انضمام جديد</h3>
+            <h3 style="color: var(--success);">📝 طلب انضمام جديد (يُرسل للإدارة العامة)</h3>
             <div class="form-group"><label>الاسم الرباعي:</label><input type="text" id="reg-name" placeholder="محمد أحمد محمود علي"></div>
             <div class="form-group"><label>رقم هاتف الطالب:</label><input type="tel" id="reg-phone" placeholder="01012345678" maxlength="11"></div>
             <div class="form-group"><label>رقم هاتف ولي الأمر:</label><input type="tel" id="reg-parent" placeholder="01112345678" maxlength="11"></div>
@@ -135,7 +135,7 @@
 
         <!-- دخول الطالب -->
         <div id="box-student-login" class="card-box" style="max-width: 480px; margin: 0 auto;">
-            <h3>👤 تسجيل دخول الطالب</h3>
+            <h3>👤 تسجيل دخول الطالب (بإذن الإدارة العامة)</h3>
             <div class="form-group"><label>رقم الهاتف المعتمد:</label><input type="tel" id="st-login-phone" placeholder="01012345678" maxlength="11"></div>
             <div class="form-group"><label>الرقم السري:</label><input type="password" id="st-login-pass" placeholder="كلمة المرور"></div>
             <button class="btn" onclick="handleStudentLogin()">دخول لوحة الطالب 🎯</button>
@@ -157,7 +157,7 @@
                 <button class="btn btn-danger" onclick="verifyAdminAccess()">فك قفل لوحة الإدارة 🔓</button>
             </div>
             <div id="admin-panel-content" class="hidden">
-                <h4 style="color: var(--warning); margin-bottom: 10px;">📋 طلبات الطلاب المعلقة:</h4>
+                <h4 style="color: var(--warning); margin-bottom: 10px;">📋 طلبات الطلاب المعلقة (تنتظر موافقتك للاعتماد):</h4>
                 <div id="admin-pending-students-list" style="max-height: 250px; overflow-y: auto; margin-bottom: 20px; border: 1px solid var(--border-color); padding: 10px; border-radius: 8px;">
                     <p style="color: var(--text-muted);">لا توجد طلبات معلقة حالياً.</p>
                 </div>
@@ -198,11 +198,11 @@
         </div>
 
         <div class="card-box" style="border-color: var(--primary);">
-            <h3>📝 إنشاء ونشر امتحان جديد (مع فيديو شرح مخفي وآمن)</h3>
+            <h3>📝 إنشاء ونشر امتحان جديد (مع دعم الفيديو غير المدرج لشرح الامتحان)</h3>
             <div class="form-group" style="margin-top: 15px;"><label>عنوان الامتحان:</label><input type="text" id="exam-title-input" placeholder="اختبار الفصل الأول..."></div>
             <div class="form-group">
-                <label>رابط فيديو الشرح من يوتيوب (سيتم تخزينه ومشاهدته داخل المنصة فقط دون ظهور الرابط للطالب):</label>
-                <input type="text" id="exam-video-url" placeholder="مثال: https://www.youtube.com/watch?v=xxxxx">
+                <label>رابط فيديو الشرح من يوتيوب (اختياري - يدعم الفيديوهات غير المدرجة Unlisted):</label>
+                <input type="text" id="exam-video-url" placeholder="مثال: https://www.youtube.com/watch?v=xxxxx أو انسخ رابط المشاركة">
             </div>
             <div id="dynamic-questions-container"></div>
             <div class="flex-row" style="margin-bottom: 15px;">
@@ -241,10 +241,10 @@
             <div id="teacher-join-action-box" style="margin-top: 15px;"></div>
         </div>
 
-        <!-- قسم الامتحانات وفيديوهات الشرح المخفية -->
+        <!-- قسم الامتحانات -->
         <div id="student-active-section" class="hidden">
             <div class="card-box" style="border-color: var(--success);">
-                <h3 style="color: var(--success);">📚 امتحانات المعلم وفيديوهات الشرح الحصرية</h3>
+                <h3 style="color: var(--success);">📚 امتحانات المعلم وفيديوهات الشرح الخاصة بها</h3>
                 <div id="student-active-exams-box"><p style="color: var(--text-muted);">في انتظار تحميل الامتحانات...</p></div>
             </div>
 
@@ -327,7 +327,7 @@
         }
     };
 
-    // استخراج معرّف الفيديو برمجياً للاحتفاظ به في الخلفية وعدم إظهار الرابط نهائياً
+    // دالة استخراج معرف فيديو اليوتيوب من أي رابط (سواء عادي أو مشاركة أو غير مدرج)
     function extractYouTubeID(url) {
         if (!url) return null;
         let regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -462,7 +462,7 @@
                     alert('❌ الرقم السري غير صحيح!');
                 }
             } else {
-                alert('❌ هذا الرقم غير مصرح له بالدخول من الإدارة العامة!');
+                alert('❌ هذا الرقم غير مصرح له بالدخول من الإدارة العامة! (تأكد من إرسال طلب تسجيل جديد أولاً)');
             }
         });
     }
@@ -660,7 +660,6 @@
     function publishExam() {
         const title = document.getElementById('exam-title-input').value.trim();
         const videoInputUrl = document.getElementById('exam-video-url').value.trim();
-        // استخراج معرّف الفيديو خفياً وعدم تخزين الرابط الأصلي
         const videoId = extractYouTubeID(videoInputUrl);
         const duration = parseInt(document.getElementById('exam-time').value) * 60;
         const cards = document.querySelectorAll('.question-card-builder');
@@ -695,7 +694,7 @@
                     const examData = { 
                         id: 'exam_' + Date.now(), 
                         title, 
-                        videoId: videoId || null, // حفظ المعرف فقط في الخلفية
+                        videoId: videoId || null, 
                         teacherId: currentUser.id, 
                         teacherName: currentUser.name, 
                         subject: currentUser.subject, 
@@ -703,7 +702,7 @@
                         duration, 
                         maxTotal: (mcqCount * 10) + (cards.length - mcqCount) * 10 
                     };
-                    db.ref('active_exams/' + currentUser.id).set(examData).then(() => alert('🚀 تم نشر الامتحان وفيديو الشرح المخفي بنجاح! ولن يظهر أي رابط للطالب.'));
+                    db.ref('active_exams/' + currentUser.id).set(examData).then(() => alert('🚀 تم نشر الامتحان والفيديو المرتبط به بنجاح ولن يظهر إلا لطلابك المقبولين فقط!'));
                 }
             };
 
@@ -769,7 +768,7 @@
 
         db.ref(`teacher_students/${teacherId}/${currentUser.phone}`).once('value', (snap) => {
             if (snap.exists()) {
-                actionBox.innerHTML = '<p style="color: var(--success); font-weight: 750;">✅ أنت منضم ومقبول رسمياً لدى هذا المعلم، واختباراته وفيديوهاته متاحة أدناه.</p>';
+                actionBox.innerHTML = '<p style="color: var(--success); font-weight: 750;">✅ أنت منضم ومقبول رسمياً لدى هذا المعلم، واختباراته متاحة أدناه.</p>';
                 activeSec.classList.remove('hidden');
                 loadExamsForStudent(teacherId);
             } else {
@@ -814,13 +813,13 @@
                 return;
             }
 
-            // تشغيل الفيديو بشكل مخفي وآمن (بدون ظهور أي رابط نصي للطالب نهائياً)
+            // تضمين مشغل اليوتيوب المؤَمَّن (بدون اقتراحات، بدون شعار يوتيوب، مع دعم الشاشة الكاملة)
             let videoHtml = '';
             if (currentExamData.videoId) {
                 videoHtml = `
                     <div class="secure-video-container">
                         <iframe src="https://www.youtube-nocookie.com/embed/${currentExamData.videoId}?rel=0&modestbranding=1&iv_load_policy=3" 
-                                title="فيديو الشرح الحصري" 
+                                title="فيديو الشرح" 
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                                 allowfullscreen>
                         </iframe>
@@ -872,7 +871,7 @@
             let savedText = (studentAnswers[currentQIndex] && studentAnswers[currentQIndex].text) ? studentAnswers[currentQIndex].text : '';
             html = `
                 <div class="form-group"><label>إجابتك المقالية النصية:</label><textarea rows="3" placeholder="اكتب إجابتك هنا..." oninput="saveEssayText(${currentQIndex}, this.value)">${savedText}</textarea></div>
-                <div class="form-group"><label>إرفاق صورة الإجابة (اختياري):</label><input type="file" accept="image/*" onchange="saveEssayImage(${currentQIndex}, this)"></div>
+                <div class="form-group"><label>إرفاق صورة الإجابة (مطلوبة أو اختيارية للمقالي):</label><input type="file" accept="image/*" onchange="saveEssayImage(${currentQIndex}, this)"></div>
             `;
         }
         box.innerHTML = html;
@@ -943,7 +942,7 @@
             document.getElementById('res-exam-title').innerText = currentExamData.title;
             document.getElementById('res-score-val').innerText = mcqScore;
             document.getElementById('res-total-val').innerText = record.maxTotal;
-            document.getElementById('res-status-note').innerText = hasEssay ? '📌 درجة الاختياري ظهرت فوراً، وفي انتظار تصحيح المعلم للأسئلة المقالية!' : '🎉 تم رصد الدرجة النهائية بنجاح!';
+            document.getElementById('res-status-note').innerText = hasEssay ? '📌 درجة الاختياري ظهرت فوراً، وفي انتظار تصحيح المعلم للأسئلة المقالية لتنضاف للمجموع الكلي!' : '🎉 تم رصد الدرجة النهائية بنجاح!';
         });
     }
 
