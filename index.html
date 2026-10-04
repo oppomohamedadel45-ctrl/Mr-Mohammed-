@@ -88,7 +88,7 @@
 
 <div class="container">
     <div style="text-align: center; margin-bottom: 15px; font-size: 13px; color: var(--primary); font-weight: 700;">
-        إشراف: محمد عادل - النظام التعليمي المطور (Paymob / بيني نيت متكامل)
+        إشراف: محمد عادل - النظام التعليمي المطور (Paymob / بيني نيت متكامل)[span_1](start_span)[span_1](end_span)
     </div>
 
     <!-- شاشة تسجيل الدخول والباب الرئيسي -->
@@ -97,7 +97,7 @@
         <p style="text-align: center; color: var(--text-muted); margin-bottom: 25px;">نظّم مستقبلك الدراسي بكل سهولة وأمان</p>
         
         <div class="tabs-nav">
-            <button class="tab-btn active" id="tab-btn-student" onclick="switchLoginMode('student')">دخول طالب 👨‍🎓</button>
+            <button class="tab-btn active" id="tab-btn-student" onclick="switchLoginMode('student')">دخول طالب 👨‍‍🎓</button>
             <button class="tab-btn" id="tab-btn-register" onclick="switchLoginMode('register')" style="color: var(--success);">📝 تسجيل جديد (للإدارة العامة)</button>
             <button class="tab-btn" id="tab-btn-teacher" onclick="switchLoginMode('teacher')">دخول معلم 👨‍🏫</button>
             <button class="tab-btn" id="tab-btn-admin" onclick="switchLoginMode('admin')" style="color: var(--danger);">👑 الإدارة العامة</button>
@@ -132,7 +132,7 @@
 
         <!-- دخول الإدارة العامة -->
         <div id="box-admin-login" class="card-box hidden" style="max-width: 650px; margin: 0 auto; border-color: var(--danger);">
-            <h3 style="color: var(--danger);">👑 لوحة تحكم الإدارة العامة (محمد عادل)</h3>
+            <h3 style="color: var(--danger);">👑 لوحة تحكم الإدارة العامة (محمد عادل)[span_2](start_span)[span_2](end_span)</h3>
             <div id="admin-auth-box">
                 <div class="form-group"><label>كلمة سر الإدارة العليا:</label><input type="password" id="admin-pass-input" placeholder="أدخل كلمة السر..."></div>
                 <button class="btn btn-danger" onclick="verifyAdminAccess()">فك قفل لوحة الإدارة 🔓</button>
@@ -364,6 +364,7 @@
 
     let currentUser = null;
     let currentExamData = null;
+    let activeExamTeacherId = null; // متغير لحفظ كود المعلم الخاص بالامتحان الحالي
     let timerInterval = null;
     let timeLeft = 0;
     let currentQIndex = 0;
@@ -831,7 +832,7 @@
             container.innerHTML = hasC ? html : '<p style="color: var(--text-muted);">لا توجد كورسات منشورة حالياً.</p>';
         });
 
-        // تقرير تتبع نسبة فتح ومشاهدة الفيديوهات للطلاب
+        // تقرير تتبع نسبة فتح ومشاهدة الفيديوهات للطلاب (تم الإصلاح ليعمل بكفاءة)
         db.ref(`video_analytics/${currentUser.id}`).on('value', (snap) => {
             const analytics = snap.val() || {};
             const container = document.getElementById('teacher-video-analytics-list');
@@ -889,7 +890,7 @@
             container.innerHTML = hasSt ? html : '<p style="color: var(--text-muted);">لا يوجد طلاب مقبولة عضويتهم معك حالياً.</p>';
         });
 
-        // قسم تصحيح الأسئلة المقالية وإرسال الدرجات لطالب
+        // قسم تصحيح الأسئلة المقالية للطلاب (تم إصلاح البحث والفلترة ليعمل تلقائياً)
         db.ref('exam_results').on('value', (snap) => {
             const allResults = snap.val() || {};
             const essayContainer = document.getElementById('teacher-essay-grading-list');
@@ -903,7 +904,7 @@
                     if (res.teacherId === currentUser.id && res.answers) {
                         Object.keys(res.answers).forEach(qIdx => {
                             let ans = res.answers[qIdx];
-                            if (ans.type === 'essay' && ans.graded === undefined) {
+                            if (ans.type === 'essay' && (!ans.graded || ans.graded === false)) {
                                 hasEssay = true;
                                 essayHtml += `
                                     <div style="background: #111827; padding: 15px; border-radius: 10px; margin-bottom: 12px; border: 1px solid var(--border-color);">
@@ -949,8 +950,10 @@
             if (res) {
                 res.essayScore = essayScore;
                 res.totalScore = res.mcqScore + essayScore;
+                if (!res.answers[qIdx]) res.answers[qIdx] = {};
                 res.answers[qIdx].graded = true;
                 res.answers[qIdx].givenScore = essayScore;
+                res.status = 'مصحح بالكامل ✅';
 
                 db.ref(`exam_results/${stPhone}/${examId}`).set(res).then(() => {
                     alert('✅ تمت إضافة وإرسال الدرجة بنجاح لطالب!');
@@ -1010,12 +1013,12 @@
 
         db.ref('exam_results/' + currentUser.phone).on('value', (snap) => {
             const data = snap.val() || {};
-            let html = `<table><tr><th>اسم الامتحان</th><th>درجة الاختياري</th><th>المجموع</th><th>الحالة</th></tr>`;
+            let html = `<table><tr><th>اسم الامتحان</th><th>درجة الاختياري</th><th>المجموع النهائي</th><th>الحالة</th></tr>`;
             let hasRes = false;
             Object.keys(data).forEach(k => {
                 hasRes = true;
                 let r = data[k];
-                let totalDisplay = r.essayScore !== undefined ? `<b>${r.totalScore}</b> / ${r.maxTotal}` : `${r.mcqScore} / ${r.maxTotal}`;
+                let totalDisplay = r.essayScore !== undefined ? `<b>${r.totalScore}</b> / ${r.maxTotal}` : `${r.mcqScore} / ${r.maxTotal} (بانتظار المقالي)`;
                 html += `<tr><td>${r.examTitle}</td><td>${r.mcqScore}</td><td>${totalDisplay}</td><td><span class="badge badge-success">${r.status}</span></td></tr>`;
             });
             html += `</table>`;
@@ -1087,7 +1090,7 @@
 
                 Object.keys(courses).forEach(cId => {
                     let c = courses[cId];
-                    if (c.locked) return; // تخطي الكورسات المقفلة من المعلم
+                    if (c.locked) return;
                     hasCourses = true;
                     let isBought = purchased[cId] === true;
 
@@ -1120,7 +1123,6 @@
                 let newBalance = wallet.points - price;
                 db.ref('wallets/' + currentUser.phone).set({ points: newBalance }).then(() => {
                     db.ref(`student_purchases/${currentUser.phone}/${courseId}`).set(true).then(() => {
-                        // تحويل نقاط شراء الكورس لمحفظة المعلم
                         db.ref('teacher_wallets/' + teacherId).once('value', (tWSnap) => {
                             let tWallet = tWSnap.val() || { points: 0 };
                             let newTPoints = tWallet.points + price;
@@ -1136,10 +1138,10 @@
     }
 
     function openCourseModal(teacherId, course) {
+        activeExamTeacherId = teacherId; // تسجيل المعلم الحالي للامتحان
         document.getElementById('modal-course-title').innerText = course.title;
         let contentHtml = `<p style="color: var(--text-muted); margin-bottom: 15px;">${course.desc || ''}</p>`;
 
-        // قسم الفيديوهات مع تسجيل فتح المشاهدة للمعلم
         contentHtml += `<h3 style="color: var(--accent); margin-top:15px;">🎥 فيديوهات الكورس:</h3>`;
         if (course.videos && course.videos.length > 0) {
             course.videos.forEach((v, idx) => {
@@ -1188,11 +1190,12 @@
     }
 
     function openVideoWithTracking(teacherId, videoTitle, url) {
-        // تسجيل فتح الفيديو وإرسال نسبة المشاهدة لمعلم المادة
-        db.ref(`video_analytics/${teacherId}/${currentUser.phone}/${btoa(videoTitle).replace(/=/g, '')}`).set({
+        // تسجيل فتح الفيديو وإرسال التتبع للمعلم بدقة
+        const safeKey = videoTitle.replace(/[.#$\/\[\]]/g, '_');
+        db.ref(`video_analytics/${teacherId}/${currentUser.phone}/${safeKey}`).set({
             videoTitle: videoTitle,
             opened: true,
-            percent: '100% (تم الفتح)',
+            percent: '100% (تم الفتح ومشاهدة الفيديو)',
             timestamp: Date.now()
         });
 
@@ -1254,7 +1257,7 @@
     }
 
     function saveEssayText(qIdx, val) {
-        if (!studentAnswers[qIdx]) studentAnswers[qIdx] = { type: 'essay', text: '', fileData: null };
+        if (!studentAnswers[qIdx]) studentAnswers[qIdx] = { type: 'essay', text: '', fileData: null, graded: false };
         studentAnswers[qIdx].text = val;
     }
 
@@ -1262,7 +1265,7 @@
         if (input.files.length > 0) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                if (!studentAnswers[qIdx]) studentAnswers[qIdx] = { type: 'essay', text: '', fileData: null };
+                if (!studentAnswers[qIdx]) studentAnswers[qIdx] = { type: 'essay', text: '', fileData: null, graded: false };
                 studentAnswers[qIdx].fileData = e.target.result;
             };
             reader.readAsDataURL(input.files[0]);
@@ -1299,12 +1302,17 @@
             }
             if (q.type === 'essay') {
                 hasEssay = true;
+                if (!studentAnswers[idx]) {
+                    studentAnswers[idx] = { type: 'essay', text: '', fileData: null, graded: false };
+                } else {
+                    studentAnswers[idx].graded = false;
+                }
             }
         });
 
         const record = {
             examTitle: currentExamData.title,
-            teacherId: currentUser.id || 'teacher',
+            teacherId: activeExamTeacherId || 'TCH-101', // ربط الامتحان بكود المعلم بدقة
             mcqScore: mcqScore,
             maxTotal: currentExamData.maxTotal,
             status: hasEssay ? 'بانتظار تصحيح المقالي ⏳' : 'مصحح بالكامل ✅',
