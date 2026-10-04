@@ -171,29 +171,50 @@
         <h1 id="teacher-dash-title">لوحة تحكم المعلم</h1>
         <p style="text-align:center; color: var(--success); font-weight:700; margin-bottom:20px;" id="teacher-welcome-msg"></p>
         
-        <!-- إضافة زر رفع فيديو يوتيوب غير مدرج -->
+        <!-- زر رفع فيديو يوتيوب غير مدرج -->
         <div class="card-box" style="border-color: #ff0000; background: rgba(255, 0, 0, 0.03);">
             <h3 style="color: #ff0000;">🔴 رفع فيديو يوتيوب غير مدرج (Unlisted) آلياً</h3>
-            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 12px;">انقر على الزر أدناه للذهاب مباشرة إلى استوديو يوتيوب لرفع الفيديو الخاص بك كـ "غير مدرج"، ثم انسخ رابطه وضعه مباشرة في خانة الكورس!</p>
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 12px;">انقر على الزر أدناه للذهاب مباشرة إلى استوديو يوتيوب لرفع الفيديو الخاص بك كـ "غير مدرج"، ثم انسخ رابطه وضعه مباشرة داخل الكورس!</p>
             <button class="btn btn-youtube" onclick="openYouTubeStudioUpload()">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
                 افتح استوديو يوتيوب لرفع الفيديو كـ "غير مدرج" 🎬
             </button>
         </div>
 
+        <!-- إنشاء كورس شامل (عدة فيديوهات، صور، امتحانات) -->
         <div class="card-box" style="border-color: var(--primary);">
-            <h3 style="color: var(--primary);">📚 إضافة كورس جديد ورفع الفيديوهات وتحديد السعر بالنقاط</h3>
-            <div class="form-group"><label>عنوان الكورس:</label><input type="text" id="course-title" placeholder="كورس الباب الأول كيمياء..."></div>
+            <h3 style="color: var(--primary);">📚 إنشاء كورس شامل (عدة فيديوهات + صور + امتحانات خاصة)</h3>
+            <div class="form-group"><label>عنوان الكورس الشامل:</label><input type="text" id="course-title" placeholder="كورس الباب الأول كيمياء..."></div>
             <div class="form-group"><label>سعر الكورس (بالنقاط):</label><input type="number" id="course-price" placeholder="مثال: 150 نقطة"></div>
-            <div class="form-group">
-                <label>رابط فيديو يوتيوب (يدعم الروابط العادية والقصيرة Shorts والمضمنة):</label>
-                <div class="flex-row">
-                    <input type="text" id="course-video-url" placeholder="الصق أي رابط يوتيوب هنا (عادي أو شورت)...">
-                    <button class="btn btn-youtube" style="width: 140px; margin-top: 0;" onclick="autoFormatYouTubeUrl()">تحويل الرابط 🔗</button>
-                </div>
-            </div>
             <div class="form-group"><label>وصف مختصر للكورس:</label><textarea id="course-desc" rows="2" placeholder="محتويات الكورس..."></textarea></div>
-            <button class="btn btn-success" onclick="publishCourse()">نشر الكورس وإتاحته للطلاب 🚀</button>
+
+            <hr style="border-color: var(--border-color); margin: 15px 0;">
+            <h4 style="color: var(--accent);">🎥 إضافة فيديوهات للكورس</h4>
+            <div id="course-videos-container"></div>
+            <button class="btn btn-warning" style="margin-bottom: 15px;" onclick="addCourseVideoField()">➕ إضافة فيديو جديد للكورس</button>
+
+            <hr style="border-color: var(--border-color); margin: 15px 0;">
+            <h4 style="color: var(--success);">🖼️ إضافة صور وتوضيحات للكورس</h4>
+            <div id="course-images-container"></div>
+            <button class="btn btn-warning" style="margin-bottom: 15px;" onclick="addCourseImageField()">➕ إضافة صورة توضيحية للكورس</button>
+
+            <hr style="border-color: var(--border-color); margin: 15px 0;">
+            <h4 style="color: var(--danger);">📝 امتحان خاص بهذا الكورس</h4>
+            <div class="form-group"><label>عنوان الامتحان التابع للكورس:</label><input type="text" id="course-exam-title" placeholder="اختبار تقييمي على الكورس..."></div>
+            <div id="course-exam-questions-container"></div>
+            <div class="flex-row" style="margin-bottom: 15px;">
+                <button class="btn btn-warning" onclick="addCourseExamQuestion('mcq')">➕ إضافة سؤال اختياري للامتحان</button>
+                <button class="btn btn-success" onclick="addCourseExamQuestion('essay')">➕ إضافة سؤال مقالي للامتحان</button>
+            </div>
+            <div class="form-group"><label>وقت الامتحان (بالدقائق):</label><input type="number" id="course-exam-time" value="30" min="1"></div>
+
+            <button class="btn btn-success" style="margin-top: 20px; padding: 14px;" onclick="publishAdvancedCourse()">نشر الكورس الشامل بكافة محتوياته للطلاب 🚀</button>
+        </div>
+
+        <!-- إدارة كورسات المعلم (حذف الكورس في أي وقت) -->
+        <div class="card-box" style="border-color: var(--warning);">
+            <h3 style="color: var(--warning);">🗑️ إدارة كورساتك (حذف أي كورس في أي وقت)</h3>
+            <div id="teacher-manage-courses-list"><p style="color: var(--text-muted);">جاري تحميل كورساتك...</p></div>
         </div>
 
         <div class="card-box" style="border-color: var(--warning);">
@@ -209,21 +230,6 @@
         <div class="card-box" style="border-color: var(--accent);">
             <h3 style="color: var(--accent);">✍️ تصحيح إجابات الأسئلة المقالية للطلاب</h3>
             <div id="teacher-essay-grading-list"><p style="color: var(--text-muted);">لا توجد إجابات مقالية مرسلة تنتظر التصحيح حالياً.</p></div>
-        </div>
-
-        <div class="card-box" style="border-color: var(--primary);">
-            <h3>📊 إدارة ونشر الحذف/العدل للامتحانات (يمكنك حذف أو نشر الامتحان في أي وقت)</h3>
-            <div id="teacher-manage-exams-box"><p style="color: var(--text-muted);">جاري تحميل امتحاناتك...</p></div>
-            <hr style="border-color: var(--border-color); margin: 15px 0;">
-            <h4 style="color: var(--success);">📝 إنشاء ونشر امتحان جديد</h4>
-            <div class="form-group" style="margin-top: 10px;"><label>عنوان الامتحان:</label><input type="text" id="exam-title-input" placeholder="اختبار الفصل الأول..."></div>
-            <div id="dynamic-questions-container"></div>
-            <div class="flex-row" style="margin-bottom: 15px;">
-                <button class="btn btn-warning" onclick="addQuestionField('mcq')">➕ إضافة سؤال اختياري</button>
-                <button class="btn btn-success" onclick="addQuestionField('essay')">➕ إضافة سؤال مقالي</button>
-            </div>
-            <div class="form-group"><label>وقت الامتحان (بالدقائق):</label><input type="number" id="exam-time" value="30" min="1"></div>
-            <button class="btn btn-success" onclick="publishExam()">نشر الامتحان فوراً للطلاب 🚀</button>
         </div>
 
         <button class="btn btn-danger" onclick="logoutSession()">تسجيل الخروج الآمن 🚪</button>
@@ -248,9 +254,9 @@
             </div>
         </div>
 
-        <!-- اختيار المعلم والكورسات المدفوعة بالنقاط -->
+        <!-- اختيار المعلم -->
         <div class="card-box" style="border-color: var(--warning);">
-            <h3 style="color: var(--warning);">🏫 اختيار المعلم والكورسات المتاحة للشراء بالنقاط</h3>
+            <h3 style="color: var(--warning);">🏫 اختيار المعلم والكورسات الشاملة</h3>
             <div class="form-group">
                 <label>اختر المعلم من قائمة المعلمين المتاحين:</label>
                 <select id="student-select-teacher" onchange="checkStudentJoinStatus(this.value)">
@@ -260,19 +266,14 @@
             <div id="teacher-join-action-box" style="margin-top: 15px;"></div>
         </div>
 
-        <!-- قسم الكورسات والفيديوهات المشراة -->
+        <!-- قسم الكورسات الشاملة (فيديوهات، صور، امتحانات خاصة) -->
         <div id="student-courses-section" class="hidden card-box" style="border-color: var(--accent);">
-            <h3 style="color: var(--accent);">🎓 كورسات المعلم والفيديوهات (شراء ومشاهدة)</h3>
+            <h3 style="color: var(--accent);">🎓 الكورسات الشاملة للمعلم (فيديوهات متعددة، صور، وامتحانات)</h3>
             <div id="student-courses-list-box"><p style="color: var(--text-muted);">جاري تحميل الكورسات...</p></div>
         </div>
 
-        <!-- قسم الامتحانات -->
+        <!-- سجل الدرجات -->
         <div id="student-active-section" class="hidden">
-            <div class="card-box" style="border-color: var(--success);">
-                <h3 style="color: var(--success);">📚 امتحانات المعلم (المتاحة لك)</h3>
-                <div id="student-active-exams-box"><p style="color: var(--text-muted);">في انتظار تحميل الامتحانات...</p></div>
-            </div>
-
             <div class="card-box">
                 <h3>📊 سجل درجاتك ونتائجك بالكامل</h3>
                 <div id="student-history-table-container"><p style="color: var(--text-muted);">لا توجد اختبارات مؤداة حتى الآن.</p></div>
@@ -280,13 +281,20 @@
         </div>
     </div>
 
-    <!-- نافذة عرض الفيديو -->
+    <!-- نافذة عرض محتوى الكورس الشامل (فيديوهات متعددة + صور + امتحان الكورس) -->
+    <div id="course-view-modal" class="hidden" style="position: fixed; top: 0; right: 0; left: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 999; display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;">
+        <div style="background: var(--bg-card); width: 100%; max-width: 900px; max-height: 90vh; overflow-y: auto; padding: 25px; border-radius: 15px; border: 1px solid var(--border-color); position: relative;">
+            <h2 id="modal-course-title" style="color: var(--primary); margin-bottom: 15px;"></h2>
+            <div id="modal-course-content"></div>
+            <button class="btn btn-danger" style="margin-top: 25px;" onclick="closeCourseModal()">إغلاق الكورس ❌</button>
+        </div>
+    </div>
+
+    <!-- نافذة عرض الفيديو الفردي -->
     <div id="video-modal" class="hidden" style="position: fixed; top: 0; right: 0; left: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 999; display: flex; align-items: center; justify-content: center; padding: 20px;">
         <div style="background: var(--bg-card); width: 100%; max-width: 800px; padding: 25px; border-radius: 15px; border: 1px solid var(--border-color); position: relative;">
             <h3 id="modal-video-title" style="color: var(--primary); margin-bottom: 15px;">مشاهدة الفيديو التعليمي</h3>
-            <div id="modal-video-container" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 10px; background: #000;">
-                <!-- iframe أو video -->
-            </div>
+            <div id="modal-video-container" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 10px; background: #000;"></div>
             <button class="btn btn-danger" style="margin-top: 20px;" onclick="closeVideoModal()">إغلاق النافذة ❌</button>
         </div>
     </div>
@@ -331,7 +339,6 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // معلومات بوابة الدفع (بيني نيت / Paymob الرقمية)
     const paymobIntegrationData = {
         merchantId: "769992",
         integrationKey: "700f1022-4a30-40a8-933f7dd772fc-3b9f-4a96"
@@ -369,46 +376,24 @@
         }
     };
 
-    // دالة فتح استوديو يوتيوب لرفع الفيديو كـ غير مدرج (Unlisted)
     function openYouTubeStudioUpload() {
         window.open('https://studio.youtube.com/', '_blank');
-        alert('ℹ️ تم فتح استوديو يوتيوب في تبويب جديد:\n1. قم برفع الفيديو الخاص بك.\n2. اجعل الخصوصية "غير مدرج" (Unlisted).\n3. بعد اكتمال الرفع، انسخ رابط الفيديو (URL) وضعه في خانة رابط الفيديو بالمنصة ثم اضغط "تحويل الرابط".');
+        alert('ℹ️ تم فتح استوديو يوتيوب في تبويب جديد:\n1. قم برفع الفيديو الخاص بك.\n2. اجعل الخصوصية "غير مدرج" (Unlisted).\n3. بعد اكتمال الرفع، انسخ رابط الفيديو (URL) وضعه داخل خانة الفيديو بالكورس.');
     }
 
-    // دالة محسنة لتعرف المنصة على أي رابط يوتيوب (عادي، قصير Shorts، أو ايمبد Embed)
-    function autoFormatYouTubeUrl() {
-        const inputField = document.getElementById('course-video-url');
-        let val = inputField.value.trim();
-        if (!val) {
-            alert('برجاء إدخال رابط يوتيوب أولاً!');
-            return;
-        }
-
+    function autoFormatYouTubeUrl(val) {
+        if (!val) return '';
         let videoId = '';
-        
-        // فحص الروابط القصيرة (shorts)
         if (val.includes('/shorts/')) {
             videoId = val.split('/shorts/')[1].split('?')[0];
-        } 
-        // فحص روابط youtu.be المختصرة
-        else if (val.includes('youtu.be/')) {
+        } else if (val.includes('youtu.be/')) {
             videoId = val.split('youtu.be/')[1].split('?')[0];
-        } 
-        // فحص الروابط العادية (watch?v=)
-        else if (val.includes('watch?v=')) {
+        } else if (val.includes('watch?v=')) {
             videoId = val.split('watch?v=')[1].split('&')[0];
-        } 
-        // فحص روابط التضمين (embed/)
-        else if (val.includes('embed/')) {
+        } else if (val.includes('embed/')) {
             videoId = val.split('embed/')[1].split('?')[0];
         }
-
-        if (videoId) {
-            inputField.value = `https://www.youtube.com/embed/${videoId}`;
-            alert('✅ تم التعرف على الرابط وتنسيقه بنجاح (سواء كان عادياً أو شورتس) ليصبح جاهزاً للعرض داخل المنصة!');
-        } else {
-            alert('⚠️ لم نتمكن من التعرف على معرف الفيديو تلقائياً، تأكد من لصق رابط يوتيوب صحيح (عادي أو شورت).');
-        }
+        return videoId ? `https://www.youtube.com/embed/${videoId}` : val;
     }
 
     function switchLoginMode(mode) {
@@ -492,7 +477,6 @@
     function adminDeleteTeacher(teacherId) {
         if (confirm(`هل أنت متأكد من إزالة وحذف المعلم (كود: ${teacherId}) نهائياً من النظام؟`)) {
             db.ref('teachers/' + teacherId).remove().then(() => {
-                db.ref('active_exams/' + teacherId).remove();
                 db.ref(`courses/${teacherId}`).remove();
                 db.ref(`teacher_students/${teacherId}`).remove();
                 db.ref(`join_requests/${teacherId}`).remove();
@@ -626,23 +610,206 @@
         location.reload();
     }
 
+    // دوال بناء الكอร์س الشامل للمعلم (إضافة حقول فيديوهات، صور، وامتحان خاص بالكورس)
+    function addCourseVideoField() {
+        const container = document.getElementById('course-videos-container');
+        const div = document.createElement('div');
+        div.className = 'form-group';
+        div.style.background = '#111827';
+        div.style.padding = '12px';
+        div.style.borderRadius = '8px';
+        div.style.border = '1px solid var(--border-color)';
+        div.innerHTML = `
+            <label>عنوان الفيديو:</label><input type="text" class="c-video-title" placeholder="مثال: الدرس الأول - مقدمة الباب">
+            <label style="margin-top:8px;">رابط يوتيوب (عادي أو شورت):</label><input type="text" class="c-video-url" placeholder="الصق الرابط هنا...">
+        `;
+        container.appendChild(div);
+    }
+
+    function addCourseImageField() {
+        const container = document.getElementById('course-images-container');
+        const div = document.createElement('div');
+        div.className = 'form-group';
+        div.style.background = '#111827';
+        div.style.padding = '12px';
+        div.style.borderRadius = '8px';
+        div.style.border = '1px solid var(--border-color)';
+        div.innerHTML = `
+            <label>عنوان الصورة أو المخطط:</label><input type="text" class="c-img-title" placeholder="مثال: ملخص قوانين الباب الأول">
+            <label style="margin-top:8px;">اختر الصورة:</label><input type="file" class="c-img-file" accept="image/*">
+        `;
+        container.appendChild(div);
+    }
+
+    function addCourseExamQuestion(type) {
+        const container = document.getElementById('course-exam-questions-container');
+        const qCount = container.children.length + 1;
+        const qCard = document.createElement('div');
+        qCard.className = 'question-card-builder';
+        qCard.dataset.type = type;
+
+        if (type === 'mcq') {
+            qCard.innerHTML = `
+                <h4 style="color: var(--primary); margin-bottom: 10px;">سؤال اختياري رقم (${qCount})</h4>
+                <div class="form-group"><label>نص السؤال:</label><textarea class="m-q-text" rows="2" placeholder="اكتب نص السؤال هنا..."></textarea></div>
+                <div class="form-group"><label>إدراج صورة توضيحية للسؤال (اختياري):</label><input type="file" class="m-q-img" accept="image/*"></div>
+                <div class="form-group"><input type="text" class="m-opt-0" placeholder="الخيار الأول"></div>
+                <div class="form-group"><input type="text" class="m-opt-1" placeholder="الخيار الثاني"></div>
+                <div class="form-group"><input type="text" class="m-opt-2" placeholder="الخيار الثالث"></div>
+                <div class="form-group"><input type="text" class="m-opt-3" placeholder="الخيار الرابع"></div>
+                <div class="form-group"><label>الإجابة الصحيحة:</label><select class="m-correct"><option value="0">الخيار الأول</option><option value="1">الخيار الثاني</option><option value="2">الخيار الثالث</option><option value="3">الخيار الرابع</option></select></div>
+            `;
+        } else {
+            qCard.innerHTML = `
+                <h4 style="color: var(--success); margin-bottom: 10px;">سؤال مقالي رقم (${qCount})</h4>
+                <div class="form-group"><label>نص السؤال المقالي:</label><textarea class="m-q-text" rows="2" placeholder="اكتب نص السؤال المقالي..."></textarea></div>
+                <div class="form-group"><label>إدراج صورة توضيحية (اختياري):</label><input type="file" class="m-q-img" accept="image/*"></div>
+            `;
+        }
+        container.appendChild(qCard);
+    }
+
+    function publishAdvancedCourse() {
+        const title = document.getElementById('course-title').value.trim();
+        const price = parseInt(document.getElementById('course-price').value);
+        const desc = document.getElementById('course-desc').value.trim();
+        
+        if (!title || isNaN(price)) {
+            alert('برجاء إدخال عنوان الكورس وسعره بالنقاط!');
+            return;
+        }
+
+        // جمع الفيديوهات
+        let videos = [];
+        document.querySelectorAll('#course-videos-container > div').forEach(div => {
+            let vTitle = div.querySelector('.c-video-title').value.trim();
+            let vUrl = div.querySelector('.c-video-url').value.trim();
+            if (vTitle && vUrl) {
+                videos.push({ title: vTitle, url: autoFormatYouTubeUrl(vUrl) });
+            }
+        });
+
+        // جمع الصور مع معالجة الـ FileReader
+        let imageDivs = document.querySelectorAll('#course-images-container > div');
+        let images = [];
+        let pendingImages = imageDivs.length;
+
+        let finalizeCoursePublish = (processedImages) => {
+            // جمع امتحان الكورس
+            let examTitle = document.getElementById('course-exam-title').value.trim();
+            let duration = parseInt(document.getElementById('course-exam-time').value) * 60 || 1800;
+            let qCards = document.querySelectorAll('#course-exam-questions-container > .question-card-builder');
+            let questions = [];
+            let pendingQuestions = qCards.length;
+            let mcqCount = 0;
+
+            if (qCards.length === 0) {
+                saveCourseToFirebase(title, price, desc, videos, processedImages, null);
+                return;
+            }
+
+            qCards.forEach((card, index) => {
+                let type = card.dataset.type;
+                let qText = card.querySelector('.m-q-text').value.trim();
+                let imgInput = card.querySelector('.m-q-img');
+                if (type === 'mcq') mcqCount++;
+
+                let processQImg = (qImgData) => {
+                    let qData = { type, text: qText, imgData: qImgData || null };
+                    if (type === 'mcq') {
+                        qData.options = [
+                            card.querySelector('.m-opt-0').value.trim(),
+                            card.querySelector('.m-opt-1').value.trim(),
+                            card.querySelector('.m-opt-2').value.trim(),
+                            card.querySelector('.m-opt-3').value.trim()
+                        ];
+                        qData.correct = parseInt(card.querySelector('.m-correct').value);
+                    }
+                    questions[index] = qData;
+                    pendingQuestions--;
+
+                    if (pendingQuestions === 0) {
+                        let examData = {
+                            id: 'exam_' + Date.now(),
+                            title: examTitle || ('امتحان كورس: ' + title),
+                            questions,
+                            duration,
+                            maxTotal: (mcqCount * 10) + ((qCards.length - mcqCount) * 10)
+                        };
+                        saveCourseToFirebase(title, price, desc, videos, processedImages, examData);
+                    }
+                };
+
+                if (imgInput.files.length > 0) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) { processQImg(e.target.result); };
+                    reader.readAsDataURL(imgInput.files[0]);
+                } else {
+                    processQImg(null);
+                }
+            });
+        };
+
+        if (pendingImages === 0) {
+            finalizeCoursePublish([]);
+        } else {
+            imageDivs.forEach(div => {
+                let imgTitle = div.querySelector('.c-img-title').value.trim();
+                let fileInput = div.querySelector('.c-img-file');
+                if (fileInput.files.length > 0) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        images.push({ title: imgTitle || 'صورة توضيحية', data: e.target.result });
+                        pendingImages--;
+                        if (pendingImages === 0) finalizeCoursePublish(images);
+                    };
+                    reader.readAsDataURL(fileInput.files[0]);
+                } else {
+                    pendingImages--;
+                    if (pendingImages === 0) finalizeCoursePublish(images);
+                }
+            });
+        }
+    }
+
+    function saveCourseToFirebase(title, price, desc, videos, images, examData) {
+        const courseId = 'course_' + Date.now();
+        db.ref(`courses/${currentUser.id}/${courseId}`).set({
+            title, price, desc, videos, images, examData, timestamp: Date.now()
+        }).then(() => {
+            alert('🚀 تم نشر الكورس الشامل بكافة محتوياته بنجاح!');
+            document.getElementById('course-title').value = '';
+            document.getElementById('course-price').value = '';
+            document.getElementById('course-desc').value = '';
+            document.getElementById('course-videos-container').innerHTML = '';
+            document.getElementById('course-images-container').innerHTML = '';
+            document.getElementById('course-exam-title').value = '';
+            document.getElementById('course-exam-questions-container').innerHTML = '';
+        });
+    }
+
     function loadTeacherDashboardData() {
         document.getElementById('teacher-dash-title').innerText = `لوحة تحكم المعلم: ${currentUser.name}`;
         document.getElementById('teacher-welcome-msg').innerText = `التخصص: ${currentUser.subject} | الكود التعريفي: ${currentUser.id}`;
 
-        db.ref('active_exams/' + currentUser.id).on('value', (snap) => {
-            const exam = snap.val();
-            const box = document.getElementById('teacher-manage-exams-box');
-            if (!exam) {
-                box.innerHTML = '<p style="color: var(--text-muted);">لا توجد امتحانات منشورة حالياً. يمكنك نشر امتحان جديد أدناه.</p>';
-                return;
-            }
-            box.innerHTML = `
-                <div style="background: #111827; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-                    <div><b>${exam.title}</b> (عدد الأسئلة: ${exam.questions.length})</div>
-                    <button class="btn btn-danger" style="width: auto; padding: 5px 12px; margin-top:0;" onclick="deleteTeacherExam('${currentUser.id}')">حذف الامتحان 🗑️</button>
-                </div>
-            `;
+        // إدارة وحذف الكورسات في أي وقت
+        db.ref(`courses/${currentUser.id}`).on('value', (snap) => {
+            const courses = snap.val() || {};
+            const container = document.getElementById('teacher-manage-courses-list');
+            let html = '';
+            let hasC = false;
+
+            Object.keys(courses).forEach(cId => {
+                let c = courses[cId];
+                hasC = true;
+                html += `
+                    <div style="background: #111827; padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color);">
+                        <div><b>${c.title}</b> (السعر: ${c.price} نقطة)</div>
+                        <button class="btn btn-danger" style="width: auto; padding: 5px 12px; margin-top:0;" onclick="deleteTeacherCourse('${currentUser.id}', '${cId}')">حذف الكورس نهائياً 🗑️</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = hasC ? html : '<p style="color: var(--text-muted);">لا توجد كورسات منشورة حالياً.</p>';
         });
 
         db.ref('join_requests/' + currentUser.id).on('value', (snap) => {
@@ -719,35 +886,12 @@
         });
     }
 
-    function deleteTeacherExam(teacherId) {
-        if (confirm('هل أنت متأكد من حذف هذا الامتحان نهائياً؟')) {
-            db.ref('active_exams/' + teacherId).remove().then(() => {
-                alert('🗑️ تم حذف الامتحان بنجاح.');
+    function deleteTeacherCourse(teacherId, courseId) {
+        if (confirm('هل أنت متأكد من حذف هذا الكورس نهائياً؟')) {
+            db.ref(`courses/${teacherId}/${courseId}`).remove().then(() => {
+                alert('🗑️ تم حذف الكورس بنجاح.');
             });
         }
-    }
-
-    function publishCourse() {
-        const title = document.getElementById('course-title').value.trim();
-        const price = parseInt(document.getElementById('course-price').value);
-        const videoUrl = document.getElementById('course-video-url').value.trim();
-        const desc = document.getElementById('course-desc').value.trim();
-
-        if (!title || isNaN(price) || !videoUrl) {
-            alert('برجاء إدخال عنوان الكورس، السعر بالنقاط، ورابط الفيديو!');
-            return;
-        }
-
-        const courseId = 'course_' + Date.now();
-        db.ref(`courses/${currentUser.id}/${courseId}`).set({
-            title, price, videoUrl, desc, timestamp: Date.now()
-        }).then(() => {
-            alert('🚀 تم نشر الكورس وإتاحته للشراء بالنقاط بنجاح!');
-            document.getElementById('course-title').value = '';
-            document.getElementById('course-price').value = '';
-            document.getElementById('course-video-url').value = '';
-            document.getElementById('course-desc').value = '';
-        });
     }
 
     function submitEssayGrade(stPhone, examId, qIdx) {
@@ -790,80 +934,6 @@
     function rejectStudentJoin(teacherId, studentPhone) {
         db.ref(`join_requests/${teacherId}/${studentPhone}/status`).set('rejected').then(() => {
             alert('❌ تم رفض طلب الانضمام.');
-        });
-    }
-
-    function addQuestionField(type) {
-        const container = document.getElementById('dynamic-questions-container');
-        const qCount = container.children.length + 1;
-        const qCard = document.createElement('div');
-        qCard.className = 'question-card-builder';
-        qCard.dataset.type = type;
-
-        if (type === 'mcq') {
-            qCard.innerHTML = `
-                <h4 style="color: var(--primary); margin-bottom: 10px;">سؤال اختياري رقم (${qCount})</h4>
-                <div class="form-group"><label>نص السؤال:</label><textarea class="m-q-text" rows="2" placeholder="اكتب نص السؤال هنا..."></textarea></div>
-                <div class="form-group"><label>إدراج صورة توضيحية للسؤال (اختياري):</label><input type="file" class="m-q-img" accept="image/*"></div>
-                <div class="form-group"><input type="text" class="m-opt-0" placeholder="الخيار الأول"></div>
-                <div class="form-group"><input type="text" class="m-opt-1" placeholder="الخيار الثاني"></div>
-                <div class="form-group"><input type="text" class="m-opt-2" placeholder="الخيار الثالث"></div>
-                <div class="form-group"><input type="text" class="m-opt-3" placeholder="الخيار الرابع"></div>
-                <div class="form-group"><label>الإجابة الصحيحة:</label><select class="m-correct"><option value="0">الخيار الأول</option><option value="1">الخيار الثاني</option><option value="2">الخيار الثالث</option><option value="3">الخيار الرابع</option></select></div>
-            `;
-        } else {
-            qCard.innerHTML = `
-                <h4 style="color: var(--success); margin-bottom: 10px;">سؤال مقالي رقم (${qCount})</h4>
-                <div class="form-group"><label>نص السؤال المقالي:</label><textarea class="m-q-text" rows="2" placeholder="اكتب نص السؤال المقالي..."></textarea></div>
-                <div class="form-group"><label>إدراج صورة توضيحية (اختياري):</label><input type="file" class="m-q-img" accept="image/*"></div>
-            `;
-        }
-        container.appendChild(qCard);
-    }
-
-    function publishExam() {
-        const title = document.getElementById('exam-title-input').value.trim();
-        const duration = parseInt(document.getElementById('exam-time').value) * 60;
-        const cards = document.querySelectorAll('.question-card-builder');
-        if (!title || cards.length === 0) { alert('أدخل عنوان الامتحان وأضف سؤالاً واحداً على الأقل!'); return; }
-
-        let questions = [];
-        let pendingReads = cards.length;
-        let mcqCount = 0;
-
-        cards.forEach((card, index) => {
-            let type = card.dataset.type;
-            let text = card.querySelector('.m-q-text').value.trim();
-            let imgInput = card.querySelector('.m-q-img');
-            if (type === 'mcq') mcqCount++;
-
-            let processQuestionData = (imgData) => {
-                let qData = { type, text, imgData: imgData || null };
-                if (type === 'mcq') {
-                    qData.options = [
-                        card.querySelector('.m-opt-0').value.trim(),
-                        card.querySelector('.m-opt-1').value.trim(),
-                        card.querySelector('.m-opt-2').value.trim(),
-                        card.querySelector('.m-opt-3').value.trim()
-                    ];
-                    qData.correct = parseInt(card.querySelector('.m-correct').value);
-                }
-                questions[index] = qData;
-                pendingReads--;
-
-                if (pendingReads === 0) {
-                    const examData = { id: 'exam_' + Date.now(), title, teacherId: currentUser.id, teacherName: currentUser.name, subject: currentUser.subject, questions, duration, maxTotal: (mcqCount * 10) + (cards.length - mcqCount) * 10 };
-                    db.ref('active_exams/' + currentUser.id).set(examData).then(() => alert('🚀 تم نشر الامتحان بنجاح!'));
-                }
-            };
-
-            if (imgInput.files.length > 0) {
-                const reader = new FileReader();
-                reader.onload = function(e) { processQuestionData(e.target.result); };
-                reader.readAsDataURL(imgInput.files[0]);
-            } else {
-                processQuestionData(null);
-            }
         });
     }
 
@@ -925,7 +995,6 @@
                 actionBox.innerHTML = '<p style="color: var(--success); font-weight: 750;">✅ أنت منضم رسمياً لهذا المعلم.</p>';
                 activeSec.classList.remove('hidden');
                 coursesSec.classList.remove('hidden');
-                loadExamsForStudent(teacherId);
                 loadCoursesForStudent(teacherId);
             } else {
                 db.ref(`join_requests/${teacherId}/${currentUser.phone}`).once('value', (reqSnap) => {
@@ -941,7 +1010,6 @@
                         actionBox.innerHTML = '<p style="color: var(--success); font-weight: 750;">✅ أنت منضم رسمياً لهذا المعلم.</p>';
                         activeSec.classList.remove('hidden');
                         coursesSec.classList.remove('hidden');
-                        loadExamsForStudent(teacherId);
                         loadCoursesForStudent(teacherId);
                     } else if (req.status === 'rejected') {
                         actionBox.innerHTML = '<p style="color: var(--danger); font-weight: 750;">❌ تم رفض طلب انضمامك.</p>';
@@ -980,10 +1048,10 @@
                     html += `
                         <div style="background: #111827; padding: 15px; border-radius: 10px; margin-bottom: 12px; border: 1px solid var(--border-color);">
                             <h4>${c.title}</h4>
-                            <p style="color: var(--text-muted); margin: 5px 0;">${c.desc}</p>
+                            <p style="color: var(--text-muted); margin: 5px 0;">${c.desc || ''}</p>
                             <p style="color: var(--warning); font-weight: 700; margin-bottom: 10px;">السعر: ${c.price} نقطة</p>
                             ${isBought ? 
-                                `<button class="btn btn-success" style="width: auto; padding: 8px 20px;" onclick="openVideoModal('${c.title}', '${c.videoUrl}')">مشاهدة الكورس والفيديو 📺</button>` :
+                                `<button class="btn btn-success" style="width: auto; padding: 8px 20px;" onclick='openCourseModal(${JSON.stringify(c)})'>دخول لمحتوى الكورس (فيديوهات، صور، امتحان) 📺</button>` :
                                 `<button class="btn btn-warning" style="width: auto; padding: 8px 20px;" onclick="buyCourse('${cId}',${c.price})">شراء الكورس بالنقاط 💳</button>`
                             }
                         </div>
@@ -1014,6 +1082,64 @@
         });
     }
 
+    function openCourseModal(course) {
+        document.getElementById('modal-course-title').innerText = course.title;
+        let contentHtml = `<p style="color: var(--text-muted); margin-bottom: 15px;">${course.desc || ''}</p>`;
+
+        // قسم الفيديوهات
+        contentHtml += `<h3 style="color: var(--accent); margin-top:15px;">🎥 فيديوهات الكورس:</h3>`;
+        if (course.videos && course.videos.length > 0) {
+            course.videos.forEach((v, idx) => {
+                contentHtml += `
+                    <div style="background: #0b0f19; padding: 12px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                        <span><b>فيديو (${idx + 1}):</b> ${v.title}</span>
+                        <button class="btn btn-success" style="width: auto; padding: 6px 15px; margin-top:0;" onclick="openVideoModal('${v.title}', '${v.url}')">مشاهدة الفيديو 📺</button>
+                    </div>
+                `;
+            });
+        } else {
+            contentHtml += `<p style="color: var(--text-muted);">لا توجد فيديوهات مرفقة في هذا الكورس.</p>`;
+        }
+
+        // قسم الصور
+        contentHtml += `<h3 style="color: var(--success); margin-top:20px;">🖼️ صور ومخططات الكورس:</h3>`;
+        if (course.images && course.images.length > 0) {
+            course.images.forEach(img => {
+                contentHtml += `
+                    <div style="background: #0b0f19; padding: 12px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-color);">
+                        <b>${img.title}</b><br>
+                        <img src="${img.data}" style="max-width:100%; border-radius:8px; margin-top:10px; border:1px solid var(--border-color);" alt="مخطط الكورس">
+                    </div>
+                `;
+            });
+        } else {
+            contentHtml += `<p style="color: var(--text-muted);">لا توجد صور مرفقة في هذا الكورس.</p>`;
+        }
+
+        // قسم امتحان الكورس
+        contentHtml += `<h3 style="color: var(--danger); margin-top:20px;">📝 اختبار الكورس:</h3>`;
+        if (course.examData) {
+            contentHtml += `
+                <div style="background: #0b0f19; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <b>${course.examData.title}</b><br>
+                        <span style="color: var(--text-muted); font-size: 13px;">عدد الأسئلة: ${course.examData.questions.length}</span>
+                    </div>
+                    <button class="btn btn-success" style="width: auto; padding: 8px 20px; margin-top:0;" onclick='startCourseExam(${JSON.stringify(course.examData)})'>ابدأ امتحان الكورس 🚀</button>
+                </div>
+            `;
+        } else {
+            contentHtml += `<p style="color: var(--text-muted);">لا يوجد امتحان مرفق لهذا الكورس.</p>`;
+        }
+
+        document.getElementById('modal-course-content').innerHTML = contentHtml;
+        document.getElementById('course-view-modal').classList.remove('hidden');
+    }
+
+    function closeCourseModal() {
+        document.getElementById('course-view-modal').classList.add('hidden');
+    }
+
     function openVideoModal(title, url) {
         document.getElementById('modal-video-title').innerText = title;
         document.getElementById('modal-video-container').innerHTML = `<iframe src="${url}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" allowfullscreen></iframe>`;
@@ -1025,23 +1151,9 @@
         document.getElementById('video-modal').classList.add('hidden');
     }
 
-    function loadExamsForStudent(teacherId) {
-        const box = document.getElementById('student-active-exams-box');
-        db.ref('active_exams/' + teacherId).on('value', (snap) => {
-            currentExamData = snap.val();
-            if (!currentExamData) {
-                box.innerHTML = '<p style="color: var(--text-muted);">لا توجد امتحانات منشورة حالياً من هذا المعلم.</p>';
-                return;
-            }
-            box.innerHTML = `
-                <h4 style="color: var(--text-main); margin-bottom: 8px;">${currentExamData.title}</h4>
-                <p style="color: var(--text-muted); margin-bottom: 12px;">المادة: ${currentExamData.subject} | المعلم: ${currentExamData.teacherName}</p>
-                <button class="btn btn-success" onclick="startExamView()">ابدأ الامتحان الآن 🚀</button>
-            `;
-        });
-    }
-
-    function startExamView() {
+    function startCourseExam(examData) {
+        closeCourseModal();
+        currentExamData = examData;
         document.getElementById('student-dashboard').classList.add('hidden');
         document.getElementById('exam-taking-screen').classList.remove('hidden');
         document.getElementById('exam-view-title').innerText = currentExamData.title;
@@ -1133,7 +1245,7 @@
 
         const record = {
             examTitle: currentExamData.title,
-            teacherId: currentExamData.teacherId,
+            teacherId: currentUser.id || 'teacher',
             mcqScore: mcqScore,
             maxTotal: currentExamData.maxTotal,
             status: hasEssay ? 'بانتظار تصحيح المقالي ⏳' : 'مصحح بالكامل ✅',
@@ -1141,7 +1253,7 @@
             answers: studentAnswers
         };
 
-        db.ref(`exam_results/${currentUser.phone}/${currentExamData.id}`).set(record).then(() => {
+        db.ref(`exam_results/${currentUser.phone}/${currentExamData.id || ('exam_' + Date.now())}`).set(record).then(() => {
             document.getElementById('exam-taking-screen').classList.add('hidden');
             document.getElementById('exam-result-screen').classList.remove('hidden');
             document.getElementById('res-exam-title').innerText = currentExamData.title;
