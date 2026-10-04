@@ -1,148 +1,704 @@
-using System;
-using System.Collections.Generic;
-
-namespace GlobalWarGame
-{
-    // فئة تمثل الدولة (اللاعب أو العدو)
-    public class Nation
-    {
-        public string Name { get; set; }
-        public int Money { get; set; }
-        public int Food { get; set; }
-        public int Steel { get; set; }
-        public int Army { get; set; }
-        public int Factories { get; set; }
-        public int Farms { get; set; }
-        public int TechLevel { get; set; }
-        public bool IsAlive { get; set; }
-
-        public Nation(string name, int money, int food, int steel, int army, int factories, int farms, int tech)
-        {
-            Name = name;
-            Money = money;
-            Food = food;
-            Steel = steel;
-            Army = army;
-            Factories = factories;
-            Farms = farms;
-            TechLevel = tech;
-            IsAlive = true;
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محاكي الإمبراطوريات والحروب العالمية</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --panel-bg: #111827;
+            --card-bg: #1f2937;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --text: #f9fafb;
+            --muted: #9ca3af;
+            --border: #374151;
         }
 
-        public void CollectResources()
-        {
-            if (!IsAlive) return;
-            Money += (Factories * 75) + 50;
-            Food += (Farms * 60) + 40;
-            Steel += (Factories * 45) + 30;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-    }
 
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            // محاكي C# الاحترافي للألعاب (يمكن تشغيله في أي مترجم C# أونلاين مثل Programiz أو Replit)
-            Nation player = new Nation("جمهورية مصر العظمى", 600, 300, 200, 200, 2, 2, 1);
-            List<Nation> enemies = new List<Nation>
-            {
-                new Nation("الإمبراطورية المجاورة", 700, 350, 300, 220, 3, 2, 1),
-                new Nation("تحالف القوى الكبرى", 800, 400, 400, 280, 4, 3, 2)
-            };
+        body {
+            background-color: var(--bg-color);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
 
-            int turn = 1;
-            bool playing = true;
+        /* شاشة البداية واختيار الدولة */
+        #start-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #020617, #0f172a);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+            text-align: center;
+        }
 
-            Console.WriteLine("=== مرحباً بك في محاكي الحروب العالمي (بأفضل معايير لغة C#) ===");
+        #start-screen h1 {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+            text-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
+        }
 
-            while (playing && player.IsAlive)
-            {
-                Console.WriteLine($"\n================ الشهر الحالي: {turn} ================");
-                Console.WriteLine($"[دولتـك]: {player.Name}");
-                Console.WriteLine($"المال: {player.Money} | المؤن: {player.Food} | الصلب: {player.Steel} | الجيش: {player.Army} جندي");
-                Console.WriteLine($"المصانع: {player.Factories} | المزارع: {player.Farms} | التكنولوجيا: مستوى {player.TechLevel}");
-                Console.WriteLine("--------------------------------------------------");
-                Console.WriteLine("1. بناء مصنع عسكري (150 مال)");
-                Console.WriteLine("2. إنشاء مزرعة طعام (100 مال)");
-                Console.WriteLine("3. تموين وإطعام الجنود (40 مؤن)");
-                Console.WriteLine("4. ابتكار عتاد عسكري متقدم (150 مال + 100 صلب)");
-                Console.WriteLine("5. شن حرب واكتساح عدو");
-                Console.WriteLine("6. إنهاء الشهر وجمع الموارد");
-                Console.Write("اختر رقم العمليات: ");
+        #start-screen p {
+            color: var(--muted);
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
 
-                string input = Console.ReadLine();
+        .country-choice-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            max-width: 900px;
+            width: 100%;
+            margin-bottom: 30px;
+        }
 
-                if (input == "1" && player.Money >= 150)
-                {
-                    player.Money -= 150;
-                    player.Factories++;
-                    Console.WriteLine("-> تم بناء مصنع سلاح جديد بنجاح.");
-                }
-                else if (input == "2" && player.Money >= 100)
-                {
-                    player.Money -= 100;
-                    player.Farms++;
-                    Console.WriteLine("-> تم بناء مزرعة جديدة بنجاح.");
-                }
-                else if (input == "3" && player.Food >= 40)
-                {
-                    player.Food -= 40;
-                    player.Army += 20;
-                    Console.WriteLine("-> تم إطعام الجنود ورفع كفاءة الجيش.");
-                }
-                else if (input == "4" && player.Money >= 150 && player.Steel >= 100)
-                {
-                    player.Money -= 150;
-                    player.Steel -= 100;
-                    player.TechLevel++;
-                    Console.WriteLine("-> تم ابتكار وتطوير جيل جديد من العتاد الحربي!");
-                }
-                else if (input == "5")
-                {
-                    Console.WriteLine("\nاختر العدو للهجوم عليه:");
-                    for (int i = 0; i < enemies.Count; i++)
-                    {
-                        if (enemies[i].IsAlive)
-                            Console.WriteLine($"{i + 1}. {enemies[i].Name} (جيش العدو: {enemies[i].Army})");
-                    }
-                    
-                    int enemyIndex = Convert.ToInt32(Console.ReadLine()) - 1;
-                    if (enemyIndex >= 0 && enemyIndex < enemies.Count && enemies[enemyIndex].IsAlive)
-                    {
-                        Nation target = enemies[enemyIndex];
-                        Console.WriteLine($"\n[!] تتقدم طوابير العتاد والجيوش نحو حدود {target.Name}...");
+        .choice-card {
+            background-color: var(--panel-bg);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
 
-                        int playerPower = (player.Army * 1.2) * (player.TechLevel * 0.5);
-                        int enemyPower = (target.Army * 1.0) * (target.TechLevel * 0.4);
+        .choice-card:hover, .choice-card.selected {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+            background-color: var(--card-bg);
+        }
 
-                        if (playerPower > enemyPower)
-                        {
-                            Console.WriteLine($"[انتصار ساحق] سحقت قواتنا جيش {target.Name} وغنمنا خزائنهم!");
-                            player.Money += target.Money;
-                            player.Steel += target.Steel;
-                            target.IsAlive = false;
-                        }
-                        else
-                        {
-                            Console.WriteLine($"[هزيمة مريرة] تصدى العدو لهجومنا وكبدنا خسائر فادحة!");
-                            player.Army -= 50;
-                        }
-                    }
-                }
-                else if (input == "6")
-                {
-                    player.CollectResources();
-                    turn++;
-                    Console.WriteLine("-> انتهى الشهر. تم جمع أرباح المصانع والمزارع.");
-                }
+        .choice-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+        }
 
-                // التحقق من فناء الجيش
-                if (player.Army <= 10 && player.Money < 30)
-                {
-                    Console.WriteLine("\n=== سقوط الإمبراطورية: تم تدمير جيشك بالكامل! ===");
-                    break;
-                }
+        /* واجهة اللعبة الرئيسية */
+        #game-interface {
+            display: none;
+            width: 100%;
+            max-width: 1400px;
+            padding: 20px;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* شريط الموارد العلوي */
+        .top-bar {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .resource-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .res-item {
+            display: flex;
+            flex-direction: column;
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+
+        .res-item span {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        /* تخطيط اللعبة (خريطة + لوحة تحكم) */
+        .game-grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 20px;
+        }
+
+        @media(max-width: 1000px) {
+            .game-grid-layout {
+                grid-template-columns: 1fr;
             }
         }
-    }
-}
+
+        /* منطقة الخريطة والعالم */
+        .map-section {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: relative;
+            min-height: 500px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            color: var(--accent);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* حاوية الخريطة المرئية والدول */
+        .world-map-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            position: relative;
+        }
+
+        .country-node {
+            background-color: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 15px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .country-node.player-node {
+            border-color: var(--success);
+        }
+
+        .country-node.enemy-node {
+            border-color: var(--danger);
+        }
+
+        .country-node h4 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .country-details {
+            font-size: 0.85rem;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .country-details b {
+            color: var(--text);
+        }
+
+        /* طبقة الرسوم المتحركة للحروب والهجمات */
+        #animation-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        .moving-army {
+            position: absolute;
+            background: var(--warning);
+            color: #000;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            box-shadow: 0 0 10px var(--warning);
+            transition: all 1.5s linear;
+            z-index: 10;
+        }
+
+        /* لوحة التحكم الجانبية (إدارة مصانع، ورش، طعام، ابتكار) */
+        .control-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .panel-box {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .btn {
+            width: 100%;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 8px;
+        }
+
+        .btn:hover { background-color: var(--accent-hover); }
+        .btn-danger { background-color: var(--danger); }
+        .btn-danger:hover { background-color: #dc2626; }
+        .btn-warning { background-color: var(--warning); color: #111827; }
+        .btn-warning:hover { background-color: #d97706; }
+        .btn:disabled { background-color: var(--border); color: var(--muted); cursor: not-allowed; }
+
+        /* سجل الأحداث */
+        .log-box {
+            height: 150px;
+            overflow-y: auto;
+            background-color: rgba(0,0,0,0.3);
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .log-entry { border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 3px; }
+        .log-entry.war { color: var(--danger); }
+        .log-entry.success { color: var(--success); }
+        .log-entry.info { color: var(--warning); }
+
+        /* نافذة النهاية */
+        #modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- شاشة اختيار الدولة والبداية -->
+    <div id="start-screen">
+        <h1>محاكي الإمبراطوريات والحروب</h1>
+        <p>اختر دولتك العظمى وابدأ مسيرة السيطرة العالمية وإدارة المصانع والجيوش</p>
+        
+        <div class="country-choice-grid" id="country-choices">
+            <!-- يتم تعبئتها ديناميكياً -->
+        </div>
+
+        <button class="btn" style="max-width: 300px; font-size: 1.1rem; padding: 12px;" onclick="startGame()">بدء المحاكاة</button>
+    </div>
+
+    <!-- واجهة اللعبة الرئيسية -->
+    <div id="game-interface">
+        <!-- شريط الموارد العلوي -->
+        <div class="top-bar">
+            <div>
+                <h2 id="ui-country-title" style="color: var(--accent);">الدولة: ---</h2>
+                <span style="font-size: 0.85rem; color: var(--muted);" id="ui-leader-title">القائد: الرئيس الأعلى</span>
+            </div>
+            <div class="resource-group">
+                <div class="res-item">خزينة المال: <span id="res-money" style="color: var(--warning);">0</span></div>
+                <div class="res-item">المؤن الغذائية: <span id="res-food" style="color: var(--success);">0</span></div>
+                <div class="res-item">الصلب والمواد: <span id="res-steel" style="color: var(--muted);">0</span></div>
+                <div class="res-item">قوة الجيش: <span id="res-army" style="color: var(--danger);">0</span></div>
+            </div>
+            <button class="btn btn-warning" style="width: auto; padding: 8px 20px;" onclick="nextTurn()">إنهاء الشهر وجمع العوائد</button>
+        </div>
+
+        <div class="game-grid-layout">
+            <!-- الخريطة العالمية والدول -->
+            <div class="map-section">
+                <h3 class="section-title">خريطة العالم الاستراتيجية وحالة الدول</h3>
+                <div class="world-map-container" id="world-map">
+                    <!-- الدول تظهر هنا -->
+                </div>
+                <!-- طبقة الرسوم المتحركة لتحرك الجيوش -->
+                <div id="animation-overlay"></div>
+            </div>
+
+            <!-- لوحة التحكم الجانبية (تصنيع، ابتكار، حرب) -->
+            <div class="control-sidebar">
+                <!-- قسم المصانع والورش والتموين -->
+                <div class="panel-box">
+                    <h3 class="section-title" style="font-size: 1rem; margin-bottom: 10px;">الاقتصاد والبنية التحتية</h3>
+                    <div style="font-size: 0.85rem; margin-bottom: 8px; color: var(--muted);">
+                        مصانع الأسلحة: <b id="stat-factories" style="color:var(--text)">1</b> | مزارع ومؤن: <b id="stat-farms" style="color:var(--text)">1</b>
+                    </div>
+                    <button class="btn" onclick="buildFactory()">بناء مصنع سلاح (تكلفة: 150 مال)</button>
+                    <button class="btn" onclick="buildFarm()">بناء مزرعة طعام (تكلفة: 100 مال)</button>
+                    <button class="btn btn-warning" onclick="feedArmy()">تأمين وإطعام الجنود (تكلفة: 50 طعام)</button>
+                </div>
+
+                <!-- قسم الابتكار العسكري والمعدات -->
+                <div class="panel-box">
+                    <h3 class="section-title" style="font-size: 1rem; margin-bottom: 10px;">الابتكار وتطوير العتاد</h3>
+                    <div style="font-size: 0.85rem; margin-bottom: 8px; color: var(--muted);">
+                        مستوى التكنولوجيا والعتاد: <b id="stat-tech" style="color:var(--success)">المستوى 1</b>
+                    </div>
+                    <button class="btn" onclick="innovateEquipment()">ابتكار معدات وأسلحة جديدة (تكلفة: 200 صللب/مال)</button>
+                    <button class="btn" onclick="recruitTroops()">تجنيد وتجهيز جنود جدد (تكلفة: 80 مال)</button>
+                </div>
+
+                <!-- قسم إعلان الحرب والهجوم -->
+                <div class="panel-box">
+                    <h3 class="section-title" style="font-size: 1rem; margin-bottom: 10px;">العمليات الحربية</h3>
+                    <select id="target-select" style="width: 100%; padding: 8px; background: var(--bg-color); color: white; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 8px;"></select>
+                    <button class="btn btn-danger" onclick="declareWarAndAttack()">إشن هجوم عسكري متحرك!</button>
+                </div>
+
+                <!-- سجل الأحداث -->
+                <div class="panel-box">
+                    <h3 class="section-title" style="font-size: 1rem; margin-bottom: 10px;">سجل الموقف العسكري</h3>
+                    <div class="log-box" id="game-log">
+                        <div class="log-entry info">مرحباً بك يا سيادة الرئيس. العالم ينتظر قرارك الحاسم.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة نهاية اللعبة -->
+    <div id="modal-overlay">
+        <div style="background: var(--panel-bg); border: 2px solid var(--accent); padding: 30px; border-radius: 12px; text-align: center; max-width: 400px;">
+            <h2 id="modal-header" style="font-size: 1.8rem; margin-bottom: 10px;">نتيجة المحاكاة</h2>
+            <p id="modal-desc" style="color: var(--muted); margin-bottom: 20px;"></p>
+            <button class="btn" onclick="location.reload()">إعادة بدء المحاكاة</button>
+        </div>
+    </div>
+
+    <script>
+        // بيانات الدول المتاحة للاختيار
+        let countriesData = [
+            { id: 'egypt', name: "جمهورية مصر العظمى", money: 500, food: 300, steel: 200, army: 180, factories: 2, farms: 2, tech: 1, isAlive: true },
+            { id: 'usa', name: "الولايات المتحدة الاتحادية", money: 700, food: 400, steel: 350, army: 250, factories: 3, farms: 2, tech: 2, isAlive: true },
+            { id: 'russia', name: "الاتحاد الفيدرالي الروسي", money: 600, food: 350, steel: 400, army: 230, factories: 3, farms: 2, tech: 2, isAlive: true },
+            { id: 'china', name: "جمهورية الصينية الكبرى", money: 650, food: 450, steel: 450, army: 280, factories: 4, farms: 3, tech: 1, isAlive: true }
+        ];
+
+        let selectedCountryId = 'egypt';
+        let player = null;
+        let worldCountries = [];
+        let monthCount = 1;
+
+        // تهيئة شاشة اختيار الدولة
+        function initStartScreen() {
+            const container = document.getElementById('country-choices');
+            container.innerHTML = '';
+            countriesData.forEach((c, index) => {
+                const card = document.createElement('div');
+                card.className = `choice-card ${index === 0 ? 'selected' : ''}`;
+                card.onclick = () => selectCountry(c.id, card);
+                card.innerHTML = `
+                    <h3>${c.name}</h3>
+                    <p style="font-size: 0.85rem; color: var(--muted); margin-top: 5px;">
+                        الخزينة: <b>${c.money}</b> | الجيش: <b>${c.army} جندي</b><br>
+                        المصانع: <b>${c.factories}</b> | التكنولوجيا: <b>مستوى ${c.tech}</b>
+                    </p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function selectCountry(id, element) {
+            document.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedCountryId = id;
+        }
+
+        // بدء اللعبة الفعلية
+        function startGame() {
+            const basePlayer = countriesData.find(c => c.id === selectedCountryId);
+            // نسخة عميقة لخصائص اللاعب وبقية الدول
+            player = JSON.parse(JSON.stringify(basePlayer));
+            
+            worldCountries = countriesData
+                .filter(c => c.id !== selectedCountryId)
+                .map(c => JSON.parse(JSON.stringify(c)));
+
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('game-interface').style.display = 'flex';
+
+            updateUI();
+            logMessage(`توليت مقاليد الحكم في (${player.name}). استعد لإدارة الدولة بحكمة واقتدار.`, 'success');
+        }
+
+        // تحديث واجهة المستخدم بالكامل
+        function updateUI() {
+            document.getElementById('ui-country-title').innerText = `الدولة: ${player.name}`;
+            document.getElementById('res-money').innerText = player.money;
+            document.getElementById('res-food').innerText = player.food;
+            document.getElementById('res-steel').innerText = player.steel;
+            document.getElementById('res-army').innerText = player.army;
+
+            document.getElementById('stat-factories').innerText = player.factories;
+            document.getElementById('stat-farms').innerText = player.farms;
+            document.getElementById('stat-tech').innerText = `المستوى ${player.tech}`;
+
+            // رسم خريطة العالم والدول المنافسة
+            const mapContainer = document.getElementById('world-map');
+            mapContainer.innerHTML = `
+                <div class="country-node player-node">
+                    <h4>${player.name} (أنت) <span>علم الدولة</span></h4>
+                    <div class="country-details">
+                        الجيش والعتاد: <b>${player.army} وحدة</b><br>
+                        المصانع والورش: <b>${player.factories}</b> | المزارع: <b>${player.farms}</b>
+                    </div>
+                </div>
+            `;
+
+            const selectTarget = document.getElementById('target-select');
+            selectTarget.innerHTML = '';
+
+            worldCountries.forEach(enemy => {
+                const node = document.createElement('div');
+                node.className = `country-node enemy-node`;
+                node.innerHTML = `
+                    <h4>${enemy.name} ${enemy.isAlive ? '' : '(محتلة)'}</h4>
+                    <div class="country-details">
+                        الحالة: ${enemy.isAlive ? '<span style="color:var(--danger)">دولة معادية</span>' : '<span style="color:var(--success)">تم غزوها وسقوطها</span>'}<br>
+                        الجيش المعادي: <b>${enemy.army} وحدة</b><br>
+                        الخزينة المتاحة: <b>${enemy.money} مال</b>
+                    </div>
+                `;
+                mapContainer.appendChild(node);
+
+                if (enemy.isAlive) {
+                    const opt = document.createElement('option');
+                    opt.value = enemy.id;
+                    opt.innerText = `${enemy.name} (قوة الجيش: ${enemy.army})`;
+                    selectTarget.appendChild(opt);
+                }
+            });
+        }
+
+        function logMessage(text, type = 'info') {
+            const logBox = document.getElementById('game-log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.innerText = `[شهر ${monthCount}] ${text}`;
+            logBox.prepend(entry);
+        }
+
+        // بناء مصنع سلاح
+        function buildFactory() {
+            const cost = 150;
+            if (player.money >= cost) {
+                player.money -= cost;
+                player.factories += 1;
+                logMessage(`تم بناء مصنع سلاح وورشة جديدة بنجاح. زادت القدرة الإنتاجية.`, 'success');
+                updateUI();
+            } else {
+                alert("الخزينة لا تحتوي على أموال كافية لبناء مصنع!");
+            }
+        }
+
+        // بناء مزرعة
+        function buildFarm() {
+            const cost = 100;
+            if (player.money >= cost) {
+                player.money -= cost;
+                player.farms += 1;
+                logMessage(`تم إنشاء مزرعة جديدة لإنتاج المؤن والمحاصيل الغذائية.`, 'success');
+                updateUI();
+            } else {
+                alert("المال غير كافٍ لإنشاء مزارع جديدة!");
+            }
+        }
+
+        // إطعام الجنود وتأمين المؤن
+        function feedArmy() {
+            const foodCost = 40;
+            if (player.food >= foodCost) {
+                player.food -= foodCost;
+                player.army += 15; // رفع المعنويات والجاهزية القتالية
+                logMessage(`تم توزيع المؤن الغذائية وتموين الجنود بنجاح. ارتفعت معنويات وكفاءة الجيش!`, 'success');
+                updateUI();
+            } else {
+                alert("لا توجد مؤن طعام كافية في المخازن لإطعام الجنود! قم ببناء مزارع إضافية.");
+            }
+        }
+
+        // ابتكار وتطوير عتاد متقدم
+        function innovateEquipment() {
+            const moneyCost = 150;
+            const steelCost = 100;
+            if (player.money >= moneyCost && player.steel >= steelCost) {
+                player.money -= moneyCost;
+                player.steel -= steelCost;
+                player.tech += 1;
+                logMessage(`نجح قطاع الأبحاث والابتكار في تطوير جيل جديد كلياً من العتاد العسكري (المستوى ${player.tech}).`, 'success');
+                updateUI();
+            } else {
+                alert(`تحتاج إلى ${moneyCost} مال و ${steelCost} صلب ومواد لابتكار عتاد جديد!`);
+            }
+        }
+
+        // تجنيد جنود جدد
+        function recruitTroops() {
+            const cost = 80;
+            if (player.money >= cost && player.food >= 20) {
+                player.money -= cost;
+                player.food -= 20;
+                player.army += 30;
+                logMessage(`تم استدعاء وتجنيد كتيبة جديدة وتجهيزهم بالعتاد.`, 'success');
+                updateUI();
+            } else {
+                alert("شروط التجنيد غير متوفرة (تحتاج مال ومؤن طعام كافية)!");
+            }
+        }
+
+        // إعلان الحرب والهجوم مع حركة العتاد والجيوش بصرياً
+        function declareWarAndAttack() {
+            const targetId = document.getElementById('target-select').value;
+            const enemy = worldCountries.find(c => c.id === targetId);
+
+            if (!enemy || !enemy.isAlive) {
+                alert("يرجى اختيار دولة معادية صامدة للهجوم عليها!");
+                return;
+            }
+
+            if (player.army < 50) {
+                alert("جيشك ضعيف جداً ولا يملك القدرة الكافية لخوض غمار الحرب الآن!");
+                return;
+            }
+
+            // تشغيل الأنيميشن والحركة البصرية للعتاد والجيوش
+            playArmyMovementAnimation(() => {
+                // حساب نتائج المعركة بدقة بناءً على الجيش والتكنولوجيا والعتاد
+                const playerPower = (player.army * 1.2) * (player.tech * 0.5) + (Math.random() * 50);
+                const enemyPower = (enemy.army * 1.0) * (enemy.tech * 0.4) + (Math.random() * 40);
+
+                if (playerPower > enemyPower) {
+                    // انتصار اللاعب وغزو الدولة
+                    const lootMoney = enemy.money;
+                    const lootSteel = enemy.steel;
+                    player.money += lootMoney;
+                    player.steel += lootSteel;
+
+                    const losses = Math.floor(enemy.army * 0.4);
+                    player.army = Math.max(20, player.army - losses);
+
+                    enemy.isAlive = false;
+                    enemy.army = 0;
+                    enemy.money = 0;
+
+                    logMessage(`انتصار تاريخي ساحق! تقدمت قواتنا والعتاد الثقيل لاكتساح (${enemy.name}) وغنمنا خزائنهم بـ ${lootMoney} مال و ${lootSteel} صلب.`, 'war');
+                } else {
+                    // هزيمة وتراجع القوات
+                    const losses = Math.floor(player.army * 0.5);
+                    player.army = Math.max(10, player.army - losses);
+                    logMessage(`هزيمة مريرة ومقاومة عنيفة من جيش (${enemy.name})! تراجعت قواتنا مكبدة خسائر فادحة بـ ${losses} مقاتل.`, 'war');
+                }
+
+                checkGameConditions();
+                updateUI();
+            });
+        }
+
+        // دالة عرض حركة العتاد والجيوش على الخريطة بصرياً
+        function playArmyMovementAnimation(callback) {
+            const overlay = document.getElementById('animation-overlay');
+            overlay.innerHTML = '';
+
+            const armyIcon = document.createElement('div');
+            armyIcon.className = 'moving-army';
+            armyIcon.innerText = '🚀 طوابير العتاد والجيش تتحرك نحو الجبهة...';
+            armyIcon.style.top = '50%';
+            armyIcon.style.left = '10%';
+            overlay.appendChild(armyIcon);
+
+            setTimeout(() => {
+                armyIcon.style.left = '75%';
+            }, 100);
+
+            setTimeout(() => {
+                overlay.innerHTML = '';
+                callback();
+            }, 1600);
+        }
+
+        // إنهاء الشهر وجمع الموارد (الاقتصاد، المصانع، الزراعة)
+        function nextTurn() {
+            monthCount++;
+
+            // عوائد المصانع والورش والمزارع
+            const incomeMoney = player.factories * 70 + 50;
+            const incomeFood = player.farms * 60 + 40;
+            const incomeSteel = player.factories * 45 + 30;
+
+            player.money += incomeMoney;
+            player.food += incomeFood;
+            player.steel += incomeSteel;
+
+            // تحركات الدول الأخرى والذكاء الاصطناعي
+            worldCountries.forEach(enemy => {
+                if (enemy.isAlive) {
+                    enemy.money += 50;
+                    enemy.army += 15;
+                    // احتمال هجوم المعادي على اللاعب
+                    if (Math.random() < 0.25 && enemy.army > player.army) {
+                        player.army = Math.max(10, player.army - 20);
+                        logMessage(`تنبيه عسكري طارئ! قامت الدولة المعادية (${enemy.name}) بشن هجوم حدودي مباغت على أراضينا.`, 'war');
+                    }
+                }
+            });
+
+            logMessage(`بدأ الشهر ${monthCount}. تم جمع أرباح المصانع والمزارع بنجاح (+${incomeMoney} مال، +${incomeFood} مؤن).`, 'success');
+            checkGameConditions();
+            updateUI();
+        }
+
+        // فحص شروط الفوز والخسارة الشاملة
+        function checkGameConditions() {
+            if (player.army <= 10 && player.money < 50) {
+                triggerEndGame(false, "انتهت الإمبراطورية! تم تدمير جيشك بالكامل واجتاح الأعداء أراضيك.");
+                return;
+            }
+
+            const activeEnemies = worldCountries.filter(c => c.isAlive);
+            if (activeEnemies.length === 0) {
+                triggerEndGame(true, "مبارك يا سيادة الرئيس! لقد سيطرت على كافة دول العالم وأصبحت الإمبراطور الأوحد للبشرية!");
+            }
+        }
+
+        function triggerEndGame(isWin, msg) {
+            const modal = document.getElementById('modal-overlay');
+            const header = document.getElementById('modal-header');
+            const desc = document.getElementById('modal-desc');
+
+            modal.style.display = 'flex';
+            header.innerText = isWin ? "نصر عالمي عظيم!" : "سقوط الدولة";
+            header.style.color = isWin ? "var(--success)" : "var(--danger)";
+            desc.innerText = msg;
+        }
+
+        // تهيئة قائمة اختيار الدول عند التحميل
+        initStartScreen();
+    </script>
+</body>
+</html>
