@@ -22,33 +22,29 @@
             <h1 class="text-2xl font-black mb-2">محاكاة العالم الحديث</h1>
             <p class="text-slate-400 text-sm mb-6">أنشئ دولتك أو اخترها وابدأ الصراع الاقتصادي والعسكري</p>
             <input type="text" id="country-name-input" placeholder="اسم دولتك (مثال: مصر، تركيا...)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 mb-4 text-white focus:outline-none focus:border-blue-500">
-            <button onclick="joinGame()" class="w-full bg-blue-600 hover:bg-blue-500 font-bold py-3 rounded-xl transition shadow-lg shadow-blue-600/30">دخول اللعبة</button>
+            <button onclick="joinGame()" class="w-full bg-blue-600 hover:bg-blue-500 font-bold py-3 rounded-xl transition shadow-lg shadow-blue-600/35">دخول اللعبة</button>
         </div>
     </div>
 
     <!-- واجهة اللعبة -->
     <div id="game-screen" class="hidden flex-1 flex flex-col">
-        <!-- شريط الموارد العلوي -->
         <header class="bg-slate-900 border-b border-slate-800 px-6 py-3 flex flex-wrap justify-between items-center gap-4 shadow-md sticky top-0 z-40">
             <div class="flex items-center gap-3">
                 <span class="bg-blue-600/20 text-blue-400 border border-blue-500/30 px-3 py-1 rounded-lg font-bold text-sm" id="display-country-name">الدولة</span>
                 <span class="text-xs text-slate-400">اليوم باللعبة: <strong id="game-day" class="text-yellow-400">1</strong></span>
             </div>
             <div class="flex items-center flex-wrap gap-5 text-sm">
-                <div class="flex items-center gap-1.5"><i class="fa-solid fa-coins text-yellow-400"><span>الميزانية:</span></i> <span id="res-money" class="font-bold text-yellow-400">10000</span>$</div>
-                <div class="flex items-center gap-1.5"><i class="fa-solid fa-mountain text-amber-600"><span>معادن:</span></i> <span id="res-minerals" class="font-bold">500</span></div>
-                <div class="flex items-center gap-1.5"><i class="fa-solid fa-wheat-awn text-emerald-400"><span>طعام:</span></i> <span id="res-food" class="font-bold">1000</span></div>
-                <div class="flex items-center gap-1.5"><i class="fa-solid fa-industry text-slate-300"><span>مصانع:</span></i> <span id="res-factories" class="font-bold">3</span></div>
-                <div class="flex items-center gap-1.5"><i class="fa-solid fa-user-shield text-blue-400"><span>جيش:</span></i> <span id="res-troops" class="font-bold">5000</span></div>
-                <div class="flex items-center gap-1.5"><i class="fa-solid fa-ship text-teal-400"><span>بحرية:</span></i> <span id="res-navy" class="font-bold">5</span></div>
-                <div class="flex items-center gap-1.5"><i class="fa-solid fa-radiation text-red-500"><span>نووي:</span></i> <span id="res-nukes" class="font-bold text-red-500">0</span></div>
+                <div class="flex items-center gap-1.5"><i class="fa-solid fa-coins text-yellow-400"></i> الميزانية: <span id="res-money" class="font-bold text-yellow-400">10000</span>$</div>
+                <div class="flex items-center gap-1.5"><i class="fa-solid fa-mountain text-amber-600"></i> معادن: <span id="res-minerals" class="font-bold">500</span></div>
+                <div class="flex items-center gap-1.5"><i class="fa-solid fa-wheat-awn text-emerald-400"></i> طعام: <span id="res-food" class="font-bold">1000</span></div>
+                <div class="flex items-center gap-1.5"><i class="fa-solid fa-industry text-slate-300"></i> مصانع: <span id="res-factories" class="font-bold">3</span></div>
+                <div class="flex items-center gap-1.5"><i class="fa-solid fa-user-shield text-blue-400"></i> جيش: <span id="res-troops" class="font-bold">5000</span></div>
+                <div class="flex items-center gap-1.5"><i class="fa-solid fa-ship text-teal-400"></i> بحرية: <span id="res-navy" class="font-bold">5</span></div>
+                <div class="flex items-center gap-1.5"><i class="fa-solid fa-radiation text-red-500"></i> نووي: <span id="res-nukes" class="font-bold text-red-500">0</span></div>
             </div>
         </header>
 
-        <!-- المحتوى الرئيسي -->
         <main class="flex-1 p-6 grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-7xl mx-auto w-full">
-            
-            <!-- القائمة الجانبية -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col gap-2 h-fit">
                 <button onclick="switchTab('map')" class="tab-btn w-full text-right px-4 py-3 rounded-xl bg-blue-600 font-bold transition flex items-center gap-3"><i class="fa-solid fa-map w-6"></i> الخريطة الحية والعالم</button>
                 <button onclick="switchTab('economy')" class="tab-btn w-full text-right px-4 py-3 rounded-xl hover:bg-slate-800 font-bold transition flex items-center gap-3 text-slate-300"><i class="fa-solid fa-industry w-6"></i> التعدين، المصانع والغذاء</button>
@@ -57,92 +53,77 @@
                 <button onclick="switchTab('chat')" class="tab-btn w-full text-right px-4 py-3 rounded-xl hover:bg-slate-800 font-bold transition flex items-center gap-3 text-slate-300"><i class="fa-solid fa-comments w-6"></i> الرسائل والتحالفات</button>
             </div>
 
-            <!-- النوافذ -->
             <div class="lg:col-span-3 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
-                
-                <!-- 1. الخريطة الحية -->
                 <div id="tab-map" class="tab-content">
-                    <h2 class="text-xl font-black mb-2 flex items-center gap-2"><i class="fa-solid fa-earth-americas text-blue-500"></i> خريطة العالم الحية (اختر دولة لغزوها أو تفاعلها)</h2>
-                    <p class="text-slate-400 text-xs mb-6">كل ثانية تعادل يوماً كاملاً في المحاكاة. يمكنك إرسال جيوشك لغزو الدول الأخرى.</p>
-                    <div id="world-map-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- تظهر هنا جميع دول العالم وصديقك والدول المستقلة -->
-                    </div>
+                    <h2 class="text-xl font-black mb-2 flex items-center gap-2"><i class="fa-solid fa-earth-americas text-blue-500"></i> خريطة العالم الحية</h2>
+                    <p class="text-slate-400 text-xs mb-6">كل ثانية تعادل يوماً كاملاً في المحاكاة.</p>
+                    <div id="world-map-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                 </div>
 
-                <!-- 2. الاقتصاد والمصانع والتعدين والغذاء -->
                 <div id="tab-economy" class="tab-content hidden">
                     <h2 class="text-xl font-black mb-4 flex items-center gap-2"><i class="fa-solid fa-building-columns text-yellow-500"></i> الإنتاج والموارد اليومية</h2>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="bg-slate-950 border border-slate-800 p-5 rounded-xl">
-                            <h3 class="font-bold mb-1"><i class="fa-solid fa-mountain text-amber-600"></i> منجم تعدين</h3>
-                            <p class="text-xs text-slate-400 mb-4">يكلف 1000$ (ينتج معادن يومياً)</p>
+                            <h3 class="font-bold mb-1">منجم تعدين</h3>
+                            <p class="text-xs text-slate-400 mb-4">يكلف 1000$</p>
                             <button onclick="buildStructure('mine')" class="w-full bg-amber-600 hover:bg-amber-500 font-bold py-2 rounded-lg text-sm">بناء منجم (+1)</button>
                         </div>
                         <div class="bg-slate-950 border border-slate-800 p-5 rounded-xl">
-                            <h3 class="font-bold mb-1"><i class="fa-solid fa-industry text-slate-300"></i> مصنع عسكري/مدني</h3>
-                            <p class="text-xs text-slate-400 mb-4">يكلف 2000$ (يزيد الدخل المالي)</p>
+                            <h3 class="font-bold mb-1">مصنع</h3>
+                            <p class="text-xs text-slate-400 mb-4">يكلف 2000$</p>
                             <button onclick="buildStructure('factory')" class="w-full bg-slate-700 hover:bg-slate-600 font-bold py-2 rounded-lg text-sm">بناء مصنع (+1)</button>
                         </div>
                         <div class="bg-slate-950 border border-slate-800 p-5 rounded-xl">
-                            <h3 class="font-bold mb-1"><i class="fa-solid fa-wheat-awn text-emerald-400"></i> مزرعة طعام</h3>
-                            <p class="text-xs text-slate-400 mb-4">يكلف 800$ (ينتج طعام للجيش والسكان)</p>
+                            <h3 class="font-bold mb-1">مزرعة طعام</h3>
+                            <p class="text-xs text-slate-400 mb-4">يكلف 800$</p>
                             <button onclick="buildStructure('farm')" class="w-full bg-emerald-600 hover:bg-emerald-500 font-bold py-2 rounded-lg text-sm">بناء مزرعة (+1)</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- 3. الجيش والغواصات والنووي -->
                 <div id="tab-military" class="tab-content hidden">
-                    <h2 class="text-xl font-black mb-4 flex items-center gap-2"><i class="fa-solid fa-jet-fighter text-red-500"></i> الترسانة العسكرية والردع</h2>
+                    <h2 class="text-xl font-black mb-4 flex items-center gap-2"><i class="fa-solid fa-jet-fighter text-red-500"></i> الترسانة العسكرية</h2>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-center">
-                            <i class="fa-solid fa-user-plus text-3xl text-blue-400 mb-2"></i>
                             <h4 class="font-bold mb-1">تجنيد جنود</h4>
-                            <p class="text-xs text-slate-400 mb-3">تكلفة: 500$ (+1000 جندي)</p>
+                            <p class="text-xs text-slate-400 mb-3">تكلفة: 500$</p>
                             <button onclick="recruit('troops')" class="bg-blue-600 hover:bg-blue-500 text-xs font-bold px-3 py-2 rounded-lg w-full">تجنيد</button>
                         </div>
                         <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-center">
-                            <i class="fa-solid fa-ship text-3xl text-teal-400 mb-2"></i>
-                            <h4 class="font-bold mb-1">بناء غواصة وبحرية</h4>
-                            <p class="text-xs text-slate-400 mb-3">تكلفة: 1500$ + معادن</p>
+                            <h4 class="font-bold mb-1">بناء بحرية</h4>
+                            <p class="text-xs text-slate-400 mb-3">تكلفة: 1500$</p>
                             <button onclick="recruit('navy')" class="bg-teal-600 hover:bg-teal-500 text-xs font-bold px-3 py-2 rounded-lg w-full">بناء قطعة</button>
                         </div>
                         <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-center">
-                            <i class="fa-solid fa-radiation text-3xl text-red-500 mb-2"></i>
-                            <h4 class="font-bold mb-1">تطوير سلاح نووي</h4>
-                            <p class="text-xs text-slate-400 mb-3">تكلفة: 5000$ + معادن ومصانع</p>
+                            <h4 class="font-bold mb-1">سلاح نووي</h4>
+                            <p class="text-xs text-slate-400 mb-3">تكلفة: 5000$</p>
                             <button onclick="recruit('nuke')" class="bg-red-600 hover:bg-red-500 text-xs font-bold px-3 py-2 rounded-lg w-full">إنتاج نووي</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- 4. السوق والتبادل التجاري -->
                 <div id="tab-trade" class="tab-content hidden">
-                    <h2 class="text-xl font-black mb-4 flex items-center gap-2"><i class="fa-solid fa-handshake text-emerald-400"></i> السوق العالمي والتبادل</h2>
+                    <h2 class="text-xl font-black mb-4 flex items-center gap-2"><i class="fa-solid fa-handshake text-emerald-400"></i> السوق العالمي</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="bg-slate-950 border border-slate-800 p-5 rounded-xl">
                             <h3 class="font-bold mb-2">شراء طعام</h3>
-                            <p class="text-xs text-slate-400 mb-4">اشتري 500 وحدة طعام بـ 400$</p>
-                            <button onclick="buyResource('food', 500, 400)" class="bg-emerald-600 hover:bg-emerald-500 font-bold px-4 py-2 rounded-lg text-sm">شراء طعام</button>
+                            <button onclick="buyResource('food', 500, 400)" class="bg-emerald-600 hover:bg-emerald-500 font-bold px-4 py-2 rounded-lg text-sm">شراء طعام (400$)</button>
                         </div>
                         <div class="bg-slate-950 border border-slate-800 p-5 rounded-xl">
-                            <h3 class="font-bold mb-2">شراء معادن للتعدين</h3>
-                            <p class="text-xs text-slate-400 mb-4">اشتري 300 وحدة معادن بـ 500$</p>
-                            <button onclick="buyResource('minerals', 300, 500)" class="bg-amber-600 hover:bg-amber-500 font-bold px-4 py-2 rounded-lg text-sm">شراء معادن</button>
+                            <h3 class="font-bold mb-2">شراء معادن</h3>
+                            <button onclick="buyResource('minerals', 300, 500)" class="bg-amber-600 hover:bg-amber-500 font-bold px-4 py-2 rounded-lg text-sm">شراء معادن (500$)</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- 5. الدردشة -->
                 <div id="tab-chat" class="tab-content hidden flex flex-col h-[400px]">
-                    <h2 class="text-xl font-black mb-4 flex items-center gap-2"><i class="fa-solid fa-comments text-blue-400"></i> غرفة الاتصالات والرسائل الدبلوماسية</h2>
+                    <h2 class="text-xl font-black mb-4 flex items-center gap-2"><i class="fa-solid fa-comments text-blue-400"></i> غرفة الاتصالات</h2>
                     <div id="chat-messages" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl p-4 overflow-y-auto mb-4 space-y-3 text-sm"></div>
                     <div class="flex gap-2">
-                        <input type="text" id="chat-input" placeholder="اكتب رسالتك للدول الأخرى..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-sm text-white focus:outline-none">
+                        <input type="text" id="chat-input" placeholder="اكتب رسالتك..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-sm text-white focus:outline-none">
                         <button onclick="sendMessage()" class="bg-blue-600 hover:bg-blue-500 font-bold px-6 py-2 rounded-xl text-sm">إرسال</button>
                     </div>
                 </div>
-
             </div>
         </main>
     </div>
@@ -154,27 +135,14 @@
 
         let myCountryId = null;
         let myCountryData = {
-            name: "",
-            money: 10000,
-            minerals: 500,
-            food: 1000,
-            factories: 3,
-            mines: 2,
-            farms: 2,
-            troops: 5000,
-            navy: 5,
-            nukes: 0,
-            day: 1,
-            bases: [] // القواعد المنشأة في الدول المغزاة
+            name: "", money: 10000, minerals: 500, food: 1000,
+            factories: 3, mines: 2, farms: 2, troops: 5000, navy: 5, nukes: 0, day: 1, bases: []
         };
 
-        // قائمة الدول الافتراضية للذكاء الاصطناعي في الخريطة
         const defaultAIWorld = {
-            "ai_usa": { name: "الولايات المتحدة الأمريكية", money: 30000, troops: 25000, navy: 35, nukes: 10, owner: "AI" },
-            "ai_russia": { name: "روسيا الاتحادية", money: 25000, troops: 20000, navy: 25, nukes: 12, owner: "AI" },
-            "ai_china": { name: "جمهورية الصين", money: 35000, troops: 40000, navy: 30, nukes: 8, owner: "AI" },
-            "ai_uk": { name: "المملكة المتحدة", money: 15000, troops: 10000, navy: 18, nukes: 3, owner: "AI" },
-            "ai_france": { name: "فرنسا", money: 14000, troops: 12000, navy: 15, nukes: 3, owner: "AI" }
+            "ai_usa": { name: "الولايات المتحدة", money: 30000, troops: 25000, navy: 35, nukes: 10 },
+            "ai_russia": { name: "روسيا", money: 25000, troops: 20000, navy: 25, nukes: 12 },
+            "ai_china": { name: "الصين", money: 35000, troops: 40000, navy: 30, nukes: 8 }
         };
 
         function joinGame() {
@@ -184,23 +152,24 @@
             myCountryId = 'country_' + Math.random().toString(36).substr(2, 6);
             myCountryData.name = name;
 
-            db.ref('countries/' + myCountryId).set(myCountryData);
-            
-            // تهيئة الدول الافتراضية لو لم تكن موجودة
-            db.ref('countries/ai_usa').once('snapshot', snap => {
+            db.ref('countries/' + myCountryId).set(myCountryData).then(() => {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('game-screen').classList.remove('hidden');
+                document.getElementById('display-country-name').innerText = name;
+                initGameListeners();
+                startDayCycle();
+            }).catch(err => {
+                alert('فشل الاتصال بقاعدة البيانات، تأكد من تعديل الـ Rules في Firebase!');
+                console.error(err);
+            });
+
+            db.ref('countries/ai_usa').once('value', snap => {
                 if(!snap.exists()) {
                     for(let id in defaultAIWorld) {
                         db.ref('countries/' + id).set(defaultAIWorld[id]);
                     }
                 }
             });
-
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('game-screen').classList.remove('hidden');
-            document.getElementById('display-country-name').innerText = name;
-
-            initGameListeners();
-            startDayCycle(); // بدء عداد الثانية = يوم
         }
 
         function updateUI() {
@@ -221,19 +190,13 @@
             }
         }
 
-        // محاكاة مرور الأيام (كل ثانية يوم)
         function startDayCycle() {
             setInterval(() => {
                 myCountryData.day += 1;
-                // حساب الدخل اليومي تلقائياً
-                let dailyIncome = (myCountryData.factories * 400) + (myCountryData.mines * 300) - (myCountryData.troops * 0.1);
-                myCountryData.money += Math.round(dailyIncome);
+                myCountryData.money += (myCountryData.factories * 400) + (myCountryData.mines * 300) - Math.round(myCountryData.troops * 0.1);
                 myCountryData.minerals += myCountryData.mines * 50;
-                myCountryData.food += (myCountryData.farms * 100) - (myCountryData.troops * 0.2); // استهلاك الطعام
-
+                myCountryData.food += (myCountryData.farms * 100) - Math.round(myCountryData.troops * 0.2);
                 if(myCountryData.food < 0) myCountryData.food = 0;
-                if(myCountryData.money < 0) myCountryData.money = 0;
-
                 saveMyData();
             }, 1000);
         }
@@ -242,90 +205,63 @@
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('bg-blue-600'));
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.add('hover:bg-slate-800'));
-            
             document.getElementById('tab-' + tabId).classList.remove('hidden');
             event.currentTarget.classList.add('bg-blue-600');
-            event.currentTarget.classList.remove('hover:bg-slate-800');
         }
 
-        // بناء المنشآت
         function buildStructure(type) {
-            if(type === 'mine' && myCountryData.money >= 1000) {
-                myCountryData.money -= 1000; myCountryData.mines += 1;
-            } else if(type === 'factory' && myCountryData.money >= 2000) {
-                myCountryData.money -= 2000; myCountryData.factories += 1;
-            } else if(type === 'farm' && myCountryData.money >= 800) {
-                myCountryData.money -= 800; myCountryData.farms += 1;
-            } else {
-                alert('الميزانية لا تكفي!');
-                return;
-            }
+            if(type === 'mine' && myCountryData.money >= 1000) { myCountryData.money -= 1000; myCountryData.mines += 1; }
+            else if(type === 'factory' && myCountryData.money >= 2000) { myCountryData.money -= 2000; myCountryData.factories += 1; }
+            else if(type === 'farm' && myCountryData.money >= 800) { myCountryData.money -= 800; myCountryData.farms += 1; }
+            else { alert('الميزانية لا تكفي!'); return; }
             saveMyData();
         }
 
-        // التجنيد العسكري والنووي
         function recruit(type) {
-            if(type === 'troops' && myCountryData.money >= 500) {
-                myCountryData.money -= 500; myCountryData.troops += 1000;
-            } else if(type === 'navy' && myCountryData.money >= 1500 && myCountryData.minerals >= 200) {
-                myCountryData.money -= 1500; myCountryData.minerals -= 200; myCountryData.navy += 1;
-            } else if(type === 'nuke' && myCountryData.money >= 5000 && myCountryData.minerals >= 1000 && myCountryData.factories >= 5) {
-                myCountryData.money -= 5000; myCountryData.minerals -= 1000; myCountryData.nukes += 1;
-            } else {
-                alert('الموارد غير كافية أو لم تتطلَب الشروط (مصانع/معادن)!');
-                return;
-            }
+            if(type === 'troops' && myCountryData.money >= 500) { myCountryData.money -= 500; myCountryData.troops += 1000; }
+            else if(type === 'navy' && myCountryData.money >= 1500) { myCountryData.money -= 1500; myCountryData.navy += 1; }
+            else if(type === 'nuke' && myCountryData.money >= 5000) { myCountryData.money -= 5000; myCountryData.nukes += 1; }
+            else { alert('الميزانية لا تكفي!'); return; }
             saveMyData();
         }
 
-        // شراء الموارد
         function buyResource(res, amount, cost) {
             if(myCountryData.money >= cost) {
                 myCountryData.money -= cost;
                 if(res === 'food') myCountryData.food += amount;
                 if(res === 'minerals') myCountryData.minerals += amount;
                 saveMyData();
-            } else { alert('الميزانية لا تكفي للشراء!'); }
+            } else { alert('الميزانية لا تكفي!'); }
         }
 
-        // نظام الغزو العسكري وإنشاء قواعد
         function attackCountry(targetId, targetName, targetTroops) {
-            if(myCountryData.troops < targetTroops * 0.8) {
-                alert('جيشك ضعيف مقارنة بالدولة المستهدفة! قم بالتجنيد أولاً.');
-                return;
-            }
-            // نجاح الغزو
-            myCountryData.troops -= Math.round(targetTroops * 0.5);
-            myCountryData.money += 5000;
-            myCountryData.bases.push(targetName);
+            if(myCountryData.troops < targetTroops * 0.5) { alert('جيشك أضعف من غزو هذه الدولة!'); return; }
+            myCountryData.troops -= Math.round(targetTroops * 0.3);
+            myCountryData.money += 4000;
             saveMyData();
-            alert('تم غزو ' + targetName + ' بنجاح! تم إنشاء قاعدة عسكرية لك داخلها وغنائم مالية.');
+            alert('تم غزو ' + targetName + ' بنجاح وإنشاء قاعدة عسكرية!');
         }
 
-        // الاستماع للتغييرات العامة
         function initGameListeners() {
             db.ref('countries').on('value', snapshot => {
                 const countries = snapshot.val();
                 const container = document.getElementById('world-map-grid');
                 container.innerHTML = '';
                 for(let id in countries) {
-                    if(id === myCountryId) continue; // لا تعرض دولتك كهدف خارجي هنا
+                    if(id === myCountryId) continue;
                     const c = countries[id];
                     container.innerHTML += `
                         <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl flex flex-col justify-between gap-3">
                             <div>
                                 <h4 class="font-bold text-blue-400 text-base"><i class="fa-solid fa-flag"></i> ${c.name}</h4>
-                                <p class="text-xs text-slate-400 mt-1">الجيش: ${c.troops || 5000} | البحرية: ${c.navy || 2} | نووي: <span class="text-red-500 font-bold">${c.nukes || 0}</span></p>
+                                <p class="text-xs text-slate-400 mt-1">الجيش: ${c.troops || 5000} | نووي: <span class="text-red-500 font-bold">${c.nukes || 0}</span></p>
                             </div>
-                            <div class="flex gap-2">
-                                <button onclick="attackCountry('${id}', '${c.name}', ${c.troops || 5000})" class="flex-1 bg-red-600/20 border border-red-500/40 text-red-400 hover:bg-red-600 hover:text-white text-xs font-bold py-2 rounded-lg transition"><i class="fa-solid fa-crosshairs"></i> غزو وبناء قاعدة</button>
-                            </div>
+                            <button onclick="attackCountry('${id}', '${c.name}', ${c.troops || 5000})" class="bg-red-600/20 border border-red-500/40 text-red-400 hover:bg-red-600 hover:text-white text-xs font-bold py-2 rounded-lg transition">غزو الدولة</button>
                         </div>
                     `;
                 }
             });
 
-            // الدردشة الحية
             db.ref('messages').on('value', snapshot => {
                 const msgs = snapshot.val();
                 const container = document.getElementById('chat-messages');
